@@ -142,7 +142,7 @@ final readonly class MailerManager
     {
         $email = $this->createEmail('email/two-factor-recovery')
             ->to($user->getEmail())
-            ->subject('Récupérer l\'accès à votre compte - By Night')
+            ->subject("Récupérer l'accès à votre compte - By Night")
             ->context(['user' => $user, 'url' => $url, 'expiresAt' => $expiresAt]);
 
         $this->sendMail($email);

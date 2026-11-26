@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\EventSubscriber;
+namespace App\Tests\EventListener;
 
 use App\Factory\CityFactory;
 use App\Factory\EventFactory;
@@ -19,7 +19,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
-final class AppContextSubscriberTest extends AppWebTestCase
+final class AppContextListenerTest extends AppWebTestCase
 {
     use StubsAgendaSearch;
 

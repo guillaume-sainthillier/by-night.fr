@@ -25,7 +25,7 @@ final class TotpActivationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('code', OtpType::class, [
-            'label' => 'Code affiché par l\'application',
+            'label' => "Code affiché par l'application",
             'constraints' => [new NotBlank(), new TotpCode()],
         ]);
     }

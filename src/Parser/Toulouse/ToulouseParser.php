@@ -102,6 +102,7 @@ final class ToulouseParser extends AbstractParser
         $event->latitude = DecimalNumber::fromValue($tab[20]);
         $event->longitude = DecimalNumber::fromValue($tab[21]);
         $event->type = $tab[16];
+
         $categoryLabel = $tab[17] ?? null;
         if (null !== $categoryLabel && '' !== trim($categoryLabel)) {
             $event->category = TagDto::fromString($categoryLabel);

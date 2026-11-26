@@ -56,7 +56,7 @@ final class OpenAgendaCountryResolutionTest extends AppKernelTestCase
 
         $dtos = [];
         for ($i = 1; $i <= 130; ++$i) {
-            $dtos[] = self::openAgendaEvent($i, $code);
+            $dtos[] = $this->openAgendaEvent($i, $code);
         }
 
         $this->handler->handleMany($dtos);
@@ -70,7 +70,7 @@ final class OpenAgendaCountryResolutionTest extends AppKernelTestCase
         self::assertSame(0, EventFactory::count(['placeCountry' => null]), 'The denormalised country follows on every event');
     }
 
-    private static function openAgendaEvent(int $i, string $code): EventDto
+    private function openAgendaEvent(int $i, string $code): EventDto
     {
         $country = new CountryDto();
         $country->code = $code;
@@ -95,7 +95,7 @@ final class OpenAgendaCountryResolutionTest extends AppKernelTestCase
 
         $event = new EventDto();
         $event->name = \sprintf('Événement %d', $i);
-        $event->description = \sprintf('Description assez longue de l\'événement numéro %d pour passer le firewall.', $i);
+        $event->description = \sprintf("Description assez longue de l'événement numéro %d pour passer le firewall.", $i);
         $event->startDate = new DateTimeImmutable(\sprintf('+%d days', 1 + $i % 20));
         $event->endDate = new DateTimeImmutable(\sprintf('+%d days +2 hours', 1 + $i % 20));
         $event->externalId = (string) (5000 + $i);

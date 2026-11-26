@@ -86,7 +86,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
                 try {
                     $datas = $this->oAuthDataProvider->getDatasFromToken($service, $accessToken);
                 } catch (IdentityProviderException $e) {
-                    throw new CustomUserMessageAuthenticationException('La connexion a échoué, le réseau social n\'a pas transmis votre profil. Réessayez plus tard ou utilisez un autre moyen de connexion.', [], 0, $e);
+                    throw new CustomUserMessageAuthenticationException("La connexion a échoué, le réseau social n'a pas transmis votre profil. Réessayez plus tard ou utilisez un autre moyen de connexion.", [], 0, $e);
                 }
 
                 // In case of adding new socials in profile: only to a member fully logged in. Not to one whose second
@@ -133,7 +133,7 @@ final class UserSocialAuthenticator extends OAuth2Authenticator
             }),
             // Remembered as the login by the form is (its "Se souvenir de moi" is checked by default): the network's
             // callback carries no _remember_me, so the session alone, gone after 24 minutes idle, kept the member in
-            [(new RememberMeBadge())->enable()]
+            [new RememberMeBadge()->enable()]
         );
     }
 

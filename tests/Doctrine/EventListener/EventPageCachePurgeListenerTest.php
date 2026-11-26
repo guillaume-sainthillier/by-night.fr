@@ -198,6 +198,7 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         // As Vich stores an upload: the old logo is deleted, the pages must stop pointing at it
         $logo = new EmbeddedFile();
         $logo->setName('logo-6718f2.webp');
+
         $publisher->setLogo($logo);
         save($publisher);
 
@@ -262,6 +263,7 @@ final class EventPageCachePurgeListenerTest extends AppKernelTestCase
         // As EventEntityFactory does when the source gives a new picture
         $event->setName('Concert déplacé');
         $event->setUrl('https://example.test/new.jpg');
+
         $scheduler->schedule($event);
         flush_after(static function () use ($event): void {
             save($event);

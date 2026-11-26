@@ -81,10 +81,10 @@ final class Firewall implements BatchResetInterface
         $reject = new Reject();
         $reject->setReason($parserData->getReason());
 
-        $this->parserDatas[self::getKey((string) $parserData->getExternalOrigin(), (string) $parserData->getExternalId())] = $parserData->setReject($reject);
+        $this->parserDatas[$this->getKey((string) $parserData->getExternalOrigin(), (string) $parserData->getExternalId())] = $parserData->setReject($reject);
     }
 
-    private static function getKey(string $externalOrigin, string $externalId): string
+    private function getKey(string $externalOrigin, string $externalId): string
     {
         return ObjectKey::external(self::PARSER_DATA_KEY_PREFIX, $externalOrigin, $externalId);
     }
@@ -199,7 +199,7 @@ final class Firewall implements BatchResetInterface
             return null;
         }
 
-        return $this->parserDatas[self::getKey($dto->getExternalOrigin(), $dto->getExternalId())] ?? null;
+        return $this->parserDatas[$this->getKey($dto->getExternalOrigin(), $dto->getExternalId())] ?? null;
     }
 
     public function getPlaceExploration(PlaceDto $dto): ?ParserData
@@ -208,7 +208,7 @@ final class Firewall implements BatchResetInterface
             return null;
         }
 
-        return $this->parserDatas[self::getKey(self::getPlaceExplorationOrigin($dto->getExternalOrigin()), $dto->getExternalId())] ?? null;
+        return $this->parserDatas[$this->getKey(self::getPlaceExplorationOrigin($dto->getExternalOrigin()), $dto->getExternalId())] ?? null;
     }
 
     private function filterEventPlace(EventDto $dto): void

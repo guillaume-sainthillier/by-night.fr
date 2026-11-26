@@ -50,7 +50,7 @@ final class PriceLabelTest extends TestCase
         yield 'one price' => ['39€', "39\u{a0}€"];
         yield 'with cents' => ['27.5€', "27,50\u{a0}€"];
         yield 'a range' => ['De 39€ à 59€', "Dès 39\u{a0}€"];
-        yield 'the lowest, wherever it comes' => ['7€ Tarif normal / 6€ Tarif réduit sur présentation d\'un justificatif', "Dès 6\u{a0}€"];
+        yield 'the lowest, wherever it comes' => ["7€ Tarif normal / 6€ Tarif réduit sur présentation d'un justificatif", "Dès 6\u{a0}€"];
         yield 'the same price twice' => ['39€ sur place, 39€ en ligne', "39\u{a0}€"];
         yield 'paying for some only' => ['10 € adultes, gratuit pour les enfants', "10\u{a0}€"];
     }
@@ -122,7 +122,7 @@ final class PriceLabelTest extends TestCase
     {
         self::assertSame(['label' => "45\u{a0}€", 'free' => false], PriceLabel::fromPrices('45€', 45.0));
         self::assertSame(['label' => 'Gratuit', 'free' => true], PriceLabel::fromPrices('Gratuit', 0.0));
-        self::assertNull(PriceLabel::fromPrices(null, null));
+        self::assertNull(PriceLabel::fromPrices(null));
     }
 
     public function testNoPrices(): void

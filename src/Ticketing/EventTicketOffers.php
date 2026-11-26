@@ -76,10 +76,10 @@ final readonly class EventTicketOffers
 
         if ($row->isAffiliate()) {
             $url = $row->getSource();
-            $seller = self::sellerOf((string) $row->getFromData());
+            $seller = $this->sellerOf((string) $row->getFromData());
         } else {
             $url = $this->htmlFormatter->ensureProtocol($row->getTicketUrl());
-            $seller = null !== $url ? self::hostOf($url) : null;
+            $seller = null !== $url ? $this->hostOf($url) : null;
         }
 
         if (null === $url || '' === $url || null === $seller) {
@@ -100,12 +100,12 @@ final readonly class EventTicketOffers
     /**
      * The site, as its feed is named: "SeeTickets (ex Digitick)" is SeeTickets.
      */
-    private static function sellerOf(string $parserName): string
+    private function sellerOf(string $parserName): string
     {
         return mb_trim((string) preg_replace('/\s*\(.*\)$/', '', $parserName));
     }
 
-    private static function hostOf(string $url): ?string
+    private function hostOf(string $url): ?string
     {
         $host = parse_url($url, \PHP_URL_HOST);
 

@@ -155,7 +155,7 @@ final class OpenAgendaParser extends AbstractParser
             ]);
 
             foreach ($data['agendas'] as $agenda) {
-                if (self::hasEventsToImport($agenda['summary']['publishedEvents'] ?? [], $includePast)) {
+                if ($this->hasEventsToImport($agenda['summary']['publishedEvents'] ?? [], $includePast)) {
                     yield [$agenda['uid'], $agenda['slug']];
                 }
             }
@@ -204,7 +204,7 @@ final class OpenAgendaParser extends AbstractParser
      *
      * @param array{passed?: int, current?: int, upcoming?: int} $publishedEvents
      */
-    private static function hasEventsToImport(array $publishedEvents, bool $includePast): bool
+    private function hasEventsToImport(array $publishedEvents, bool $includePast): bool
     {
         // One event not over yet, running (current) or to come (upcoming), is enough: a
         // season announced weeks ahead has nothing running yet, and an agenda down to its
@@ -234,7 +234,7 @@ final class OpenAgendaParser extends AbstractParser
         // created by bulk imports have shown up empty or lower-cased before OpenAgenda
         // normalises them. An unusable value must take the region/department fallback
         // rather than travel as a code that no Country row will ever match.
-        $countryCode = self::normalizeCountryCode($location['countryCode'] ?? null);
+        $countryCode = $this->normalizeCountryCode($location['countryCode'] ?? null);
         if (
             null === $countryCode
             && (
@@ -338,7 +338,7 @@ final class OpenAgendaParser extends AbstractParser
         }
 
         $event->prices = $data['conditions'] ?? null;
-        $event->status = self::status($data['status'] ?? null);
+        $event->status = $this->status($data['status'] ?? null);
         $event->latitude = $location['latitude'];
         $event->longitude = $location['longitude'];
         $event->address = $location['address'];
@@ -385,7 +385,7 @@ final class OpenAgendaParser extends AbstractParser
      * Upper-cased, trimmed ISO alpha-2 code, or null for anything else ("", "fr " is
      * fine, "FRA" or "France" is not).
      */
-    private static function normalizeCountryCode(mixed $code): ?string
+    private function normalizeCountryCode(mixed $code): ?string
     {
         if (!\is_string($code)) {
             return null;
@@ -401,7 +401,7 @@ final class OpenAgendaParser extends AbstractParser
      * online (still taking place), 4 postponed, 5 full, 6 cancelled. It was not read: a
      * cancelled event was listed as taking place. A scheduled event has no status.
      */
-    private static function status(mixed $status): ?EventStatus
+    private function status(mixed $status): ?EventStatus
     {
         $id = \is_array($status) ? ($status['id'] ?? null) : $status;
 

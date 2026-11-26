@@ -2,7 +2,7 @@
 
 {% block title 'Service indisponible' %}
 
-{# Maintenance, or the search engine restarting (ElasticsearchUnavailableSubscriber, Retry-After): no search box, the
+{# Maintenance, or the search engine restarting (ElasticsearchUnavailableListener, Retry-After): no search box, the
    search may well be what is down #}
 {% block body %}
     <twig:ErrorPage code="503" illustration="maintenance" label="Maintenance" icon="lucide:hourglass">

@@ -23,8 +23,8 @@ final class NextSessionLabelTest extends TestCase
     public function testAnEventToComeSaysItsNextSessionAndWhenItStarts(): void
     {
         $event = new Event()->setStartDate(new DateTimeImmutable('2026-04-17'));
-        $event->addTimesheet(self::session('2026-04-17', '2026-04-17'));
-        $event->addTimesheet(self::session('2026-10-31', '2026-10-31', '20:30'));
+        $event->addTimesheet($this->session('2026-04-17', '2026-04-17'));
+        $event->addTimesheet($this->session('2026-10-31', '2026-10-31', '20:30'));
 
         self::assertSame('sam. 31 oct. · 20h30', NextSessionLabel::of($event, new DateTimeImmutable(self::TODAY)));
     }
@@ -42,10 +42,10 @@ final class NextSessionLabelTest extends TestCase
             ->setStartDate(new DateTimeImmutable('2026-04-17'))
             ->setEndDate(new DateTimeImmutable('2026-11-05'));
 
-        self::assertSame('Jusqu\'au 5 nov.', NextSessionLabel::of($event, new DateTimeImmutable(self::TODAY)));
+        self::assertSame("Jusqu'au 5 nov.", NextSessionLabel::of($event, new DateTimeImmutable(self::TODAY)));
     }
 
-    private static function session(string $start, string $end, ?string $time = null): EventTimesheet
+    private function session(string $start, string $end, ?string $time = null): EventTimesheet
     {
         return new EventTimesheet()
             ->setStartAt(new DateTimeImmutable($start))

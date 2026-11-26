@@ -31,7 +31,7 @@ final class ImageExtensionTest extends AppKernelTestCase
     {
         /** @var array<string, mixed> $mappings */
         $mappings = self::getContainer()->getParameter('vich_uploader.mappings');
-        $loaders = self::getContainer()->get('picasso.loader_registry');
+        $loaders = self::getContainer()->get(LoaderRegistry::class);
         self::assertInstanceOf(LoaderRegistry::class, $loaders);
 
         self::assertNotEmpty($mappings);

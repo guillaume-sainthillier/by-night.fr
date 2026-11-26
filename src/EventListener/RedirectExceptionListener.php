@@ -8,10 +8,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Exception\RedirectException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -19,15 +19,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Converts RedirectException into RedirectResponse.
  */
-final class RedirectExceptionSubscriber implements EventSubscriberInterface
+final class RedirectExceptionListener
 {
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::EXCEPTION => 'onKernelException',
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::EXCEPTION)]
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();

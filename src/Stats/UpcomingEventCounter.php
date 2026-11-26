@@ -84,8 +84,8 @@ final readonly class UpcomingEventCounter
             ->setParameter('ids', $placeIds)
             ->getQuery()
             ->getScalarResult();
-        $cityIds = self::ids(array_column($zones, 'city'));
-        $countryIds = self::ids(array_column($zones, 'country'));
+        $cityIds = $this->ids(array_column($zones, 'city'));
+        $countryIds = $this->ids(array_column($zones, 'country'));
 
         $places = $this->store(Place::class, $this->eventRepository->countUpcomingByPlace($placeIds), $placeIds);
 
@@ -219,7 +219,7 @@ final readonly class UpcomingEventCounter
         $stored = array_map(intval(...), array_column($rows, 'upcomingEvents', 'id'));
 
         $written = 0;
-        foreach (self::changes($stored, $counts) as $events => $ids) {
+        foreach ($this->changes($stored, $counts) as $events => $ids) {
             foreach (array_chunk($ids, self::BATCH_SIZE) as $chunk) {
                 $written += (int) $this
                     ->entityManager
@@ -242,7 +242,7 @@ final readonly class UpcomingEventCounter
      *
      * @return list<int|string> the ids given, without nulls and duplicates
      */
-    private static function ids(array $ids): array
+    private function ids(array $ids): array
     {
         return array_values(array_unique(array_filter($ids, static fn (int|string|null $id): bool => null !== $id)));
     }
@@ -255,7 +255,7 @@ final readonly class UpcomingEventCounter
      *
      * @return array<int, list<int|string>> the ids to write, by their new count
      */
-    private static function changes(array $stored, array $fresh): array
+    private function changes(array $stored, array $fresh): array
     {
         $changes = [];
         foreach ($fresh as $id => $events) {

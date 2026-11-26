@@ -80,7 +80,7 @@ final readonly class JsonLdExtension
     private function script(string $json): string
     {
         $unsafe = ['<', '>', '&'];
-        $escaped = array_map(static fn (string $char): string => \sprintf('\\u%04X', \ord($char)), $unsafe);
+        $escaped = array_map(static fn (string $char): string => \sprintf('\\u%04X', \ord($char[0])), $unsafe);
 
         return \sprintf('<script type="application/ld+json">%s</script>', str_replace($unsafe, $escaped, $json));
     }

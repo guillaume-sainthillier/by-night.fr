@@ -68,6 +68,7 @@ final class DependencyCatalogueTest extends TestCase
         $first = $this->place('Le Bikini', null);
         $first->externalOrigin = 'openagenda';
         $first->externalId = '1';
+
         $second = $this->place('Le Bikini', null);
         $second->externalOrigin = 'openagenda';
         $second->externalId = '2';

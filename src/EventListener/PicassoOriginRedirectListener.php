@@ -8,11 +8,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Picture\OriginUrlResolver;
 use Silarhi\PicassoBundle\Exception\ImageNotFoundException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -27,7 +27,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * shorteners — end up requesting a path we cannot serve. Redirecting to the origin
  * keeps the image resolving and the link worth something, instead of a 404.
  */
-final readonly class PicassoOriginRedirectSubscriber implements EventSubscriberInterface
+final readonly class PicassoOriginRedirectListener
 {
     /**
      * The redirect is permanent, but the target embeds the current public URL scheme,
@@ -39,13 +39,7 @@ final readonly class PicassoOriginRedirectSubscriber implements EventSubscriberI
     {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::EXCEPTION => 'onKernelException',
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::EXCEPTION)]
     public function onKernelException(ExceptionEvent $event): void
     {
         $throwable = $event->getThrowable();

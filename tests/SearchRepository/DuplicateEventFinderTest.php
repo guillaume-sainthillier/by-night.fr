@@ -63,13 +63,13 @@ final class DuplicateEventFinderTest extends TestCase
      */
     public function testTheEventsWhoseNamesSayTheSameEventAreKept(): void
     {
-        $twin = self::event('Musicophotographie', "L'Arsenal, Salle De L'Esplanade", 49.1199, 6.1700);
+        $twin = $this->event('Musicophotographie', "L'Arsenal, Salle De L'Esplanade", 49.1199, 6.1700);
         $this->candidates = [
-            self::event('Mai à Vélo 2026', "L'Arsenal, Salle De L'Esplanade", 49.1199, 6.1700),
+            $this->event('Mai à Vélo 2026', "L'Arsenal, Salle De L'Esplanade", 49.1199, 6.1700),
             $twin,
         ];
 
-        $duplicates = $this->finder->find(self::dto('Musicophotographie – Projection photographique 2026', 'Arsenal', 49.1196, 6.1695));
+        $duplicates = $this->finder->find($this->dto('Musicophotographie – Projection photographique 2026', 'Arsenal', 49.1196, 6.1695));
 
         self::assertSame([$twin], $duplicates);
     }
@@ -80,35 +80,35 @@ final class DuplicateEventFinderTest extends TestCase
      */
     public function testHalfTheWordsAreEnoughAtTheSameVenue(): void
     {
-        $dto = self::dto('Les Cachottiers, une comédie de Luc Chaumar', 'Théâtre Le Bout', 48.8820, 2.3390);
+        $dto = $this->dto('Les Cachottiers, une comédie de Luc Chaumar', 'Théâtre Le Bout', 48.8820, 2.3390);
 
-        $this->candidates = [self::event('Les cachottiers', 'Théâtre Le Bout', 48.8825, 2.3395)];
+        $this->candidates = [$this->event('Les cachottiers', 'Théâtre Le Bout', 48.8825, 2.3395)];
         self::assertCount(1, $this->finder->find($dto));
 
-        $this->candidates = [self::event('Les cachottiers', 'La Comédie de Paris', 48.8400, 2.3900)];
+        $this->candidates = [$this->event('Les cachottiers', 'La Comédie de Paris', 48.8400, 2.3900)];
         self::assertSame([], $this->finder->find($dto), 'Five kilometres off');
     }
 
     public function testAtMostTheLimitIsKept(): void
     {
         $this->candidates = [
-            self::event('Gervaise', 'Théâtre De La Violette', 43.6, 1.44),
-            self::event('GERVAISE', 'Théâtre De La Violette', 43.6, 1.44),
+            $this->event('Gervaise', 'Théâtre De La Violette', 43.6, 1.44),
+            $this->event('GERVAISE', 'Théâtre De La Violette', 43.6, 1.44),
         ];
 
-        self::assertCount(1, $this->finder->find(self::dto('Gervaise', 'Théâtre De La Violette', 43.6, 1.44), 1));
+        self::assertCount(1, $this->finder->find($this->dto('Gervaise', 'Théâtre De La Violette', 43.6, 1.44), 1));
     }
 
     public function testAnEventWithoutNameDatesOrPlaceIsNotSearched(): void
     {
-        $dto = self::dto('', 'Arsenal', 49.1196, 6.1695);
+        $dto = $this->dto('', 'Arsenal', 49.1196, 6.1695);
         self::assertSame([], $this->finder->find($dto));
 
-        $dto = self::dto('Musicophotographie', 'Arsenal', 49.1196, 6.1695);
+        $dto = $this->dto('Musicophotographie', 'Arsenal', 49.1196, 6.1695);
         $dto->timesheets = [];
         self::assertSame([], $this->finder->find($dto));
 
-        $dto = self::dto('Musicophotographie', 'Arsenal', null, null);
+        $dto = $this->dto('Musicophotographie', 'Arsenal', null, null);
         $dto->place->city = null;
         self::assertSame([], $this->finder->find($dto), 'Nowhere to look around');
 
@@ -120,7 +120,7 @@ final class DuplicateEventFinderTest extends TestCase
      */
     public function testTheEventPeriodIsSearchedWithoutDates(): void
     {
-        $dto = self::dto('Musicophotographie', 'Arsenal', 49.1196, 6.1695);
+        $dto = $this->dto('Musicophotographie', 'Arsenal', 49.1196, 6.1695);
         $dto->timesheets = [];
         $dto->startDate = new DateTimeImmutable('2026-05-16');
         $dto->endDate = new DateTimeImmutable('2026-05-20');
@@ -141,7 +141,7 @@ final class DuplicateEventFinderTest extends TestCase
      */
     public function testManyDatesSearchThePeriodTheySpan(): void
     {
-        $dto = self::dto('Brunch dominical', 'Le Comptoir', 43.6, 1.44);
+        $dto = $this->dto('Brunch dominical', 'Le Comptoir', 43.6, 1.44);
         $dto->timesheets = [];
         for ($week = 0; $week < 60; ++$week) {
             $timesheet = new EventTimesheetDto();
@@ -166,7 +166,7 @@ final class DuplicateEventFinderTest extends TestCase
      */
     public function testASavedEventIsSearchedAroundItsOwnCoordinates(): void
     {
-        $dto = self::dto('Musicophotographie', 'Arsenal', null, null);
+        $dto = $this->dto('Musicophotographie', 'Arsenal', null, null);
         $dto->latitude = 49.1196;
         $dto->longitude = 6.1695;
 
@@ -180,7 +180,7 @@ final class DuplicateEventFinderTest extends TestCase
      */
     public function testTheEventItselfIsLeftOut(): void
     {
-        $dto = self::dto('Musicophotographie', 'Arsenal', 49.1196, 6.1695);
+        $dto = $this->dto('Musicophotographie', 'Arsenal', 49.1196, 6.1695);
         $dto->entityId = 42;
 
         $this->finder->find($dto);
@@ -188,7 +188,7 @@ final class DuplicateEventFinderTest extends TestCase
         self::assertEquals([['ids' => ['values' => ['42']]]], $this->queries[0]['query']['bool']['must_not']);
     }
 
-    private static function dto(string $name, string $placeName, ?float $latitude, ?float $longitude): EventDto
+    private function dto(string $name, string $placeName, ?float $latitude, ?float $longitude): EventDto
     {
         $timesheet = new EventTimesheetDto();
         $timesheet->startAt = new DateTimeImmutable('2026-05-16');
@@ -212,7 +212,7 @@ final class DuplicateEventFinderTest extends TestCase
         return $dto;
     }
 
-    private static function event(string $name, string $placeName, float $latitude, float $longitude): Event
+    private function event(string $name, string $placeName, float $latitude, float $longitude): Event
     {
         return new Event()
             ->setName($name)

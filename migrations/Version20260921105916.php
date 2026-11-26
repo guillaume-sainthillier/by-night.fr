@@ -23,7 +23,7 @@ final class Version20260921105916 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Backfill first: the importer skips re-uploading an unchanged image by comparing image_system_hash.
-        // ImageSubscriber normally set it too, so this only catches rows where that failed.
+        // ImageListener normally set it too, so this only catches rows where that failed.
         $this->addSql('UPDATE event SET image_system_hash = image_hash WHERE image_system_hash IS NULL AND image_hash IS NOT NULL AND image_system_name IS NOT NULL');
 
         // Then drop the copies: without a user image, an image_hash equal to the system one can only come from the bug

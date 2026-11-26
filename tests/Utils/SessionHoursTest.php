@@ -22,7 +22,7 @@ final class SessionHoursTest extends TestCase
     #[DataProvider('slots')]
     public function testASlotIsWrittenFromItsTimes(?string $start, ?string $end, ?string $expected): void
     {
-        self::assertSame($expected, SessionHours::format(self::time($start), self::time($end)));
+        self::assertSame($expected, SessionHours::format($this->time($start), $this->time($end)));
     }
 
     /**
@@ -44,14 +44,14 @@ final class SessionHoursTest extends TestCase
 
     public function testASessionStartIsWrittenShortForAList(): void
     {
-        self::assertSame('20h30', SessionHours::start(self::session('20:30', '23:00', null)));
-        self::assertSame('minuit', SessionHours::start(self::session('00:00', null, null)));
-        self::assertNull(SessionHours::start(self::session(null, '23:00', 'À 20h')), 'Only a start time says when it starts');
+        self::assertSame('20h30', SessionHours::start($this->session('20:30', '23:00', null)));
+        self::assertSame('minuit', SessionHours::start($this->session('00:00', null, null)));
+        self::assertNull(SessionHours::start($this->session(null, '23:00', 'À 20h')), 'Only a start time says when it starts');
     }
 
     public function testASessionShowsItsTimesThenWhatTheyCannotSay(): void
     {
-        $session = self::session('20:00', '23:00', 'Ouverture des portes à 19h');
+        $session = $this->session('20:00', '23:00', 'Ouverture des portes à 19h');
 
         self::assertSame('De 20h à 23h, Ouverture des portes à 19h', SessionHours::ofSession($session));
     }
@@ -59,8 +59,8 @@ final class SessionHoursTest extends TestCase
     public function testASessionWithoutHoursShowsTheDefaultOfItsEvent(): void
     {
         $event = new Event()->setHours('À 20h, de 21h à minuit');
-        $default = self::session(null, null, null);
-        $own = self::session('19:00', null, null);
+        $default = $this->session(null, null, null);
+        $own = $this->session('19:00', null, null);
         $event->addTimesheet($default);
         $event->addTimesheet($own);
 
@@ -71,12 +71,12 @@ final class SessionHoursTest extends TestCase
     public function testAnEventShowsTheHoursEverySessionShares(): void
     {
         $event = new Event()->setStartDate(new DateTimeImmutable('2026-10-01'));
-        $event->addTimesheet(self::session('20:00', '23:00', null, '2026-10-01'));
-        $event->addTimesheet(self::session('20:00', '23:00', null, '2026-10-02'));
+        $event->addTimesheet($this->session('20:00', '23:00', null, '2026-10-01'));
+        $event->addTimesheet($this->session('20:00', '23:00', null, '2026-10-02'));
 
         self::assertSame('De 20h à 23h', SessionHours::ofEvent($event));
 
-        $event->addTimesheet(self::session('15:00', null, null, '2026-10-03'));
+        $event->addTimesheet($this->session('15:00', null, null, '2026-10-03'));
         self::assertNull(SessionHours::ofEvent($event), 'Each date shows its own');
     }
 
@@ -90,17 +90,17 @@ final class SessionHoursTest extends TestCase
         self::assertNull(SessionHours::ofEvent(new Event()->setStartDate(new DateTimeImmutable('2026-10-01'))));
     }
 
-    private static function session(?string $start, ?string $end, ?string $hours, string $day = '2026-10-01'): EventTimesheet
+    private function session(?string $start, ?string $end, ?string $hours, string $day = '2026-10-01'): EventTimesheet
     {
         return new EventTimesheet()
             ->setStartAt(new DateTimeImmutable($day))
             ->setEndAt(new DateTimeImmutable($day))
-            ->setStartTime(self::time($start))
-            ->setEndTime(self::time($end))
+            ->setStartTime($this->time($start))
+            ->setEndTime($this->time($end))
             ->setHours($hours);
     }
 
-    private static function time(?string $time): ?DateTimeImmutable
+    private function time(?string $time): ?DateTimeImmutable
     {
         return null === $time ? null : (DateTimeImmutable::createFromFormat('!H:i', $time) ?: null);
     }

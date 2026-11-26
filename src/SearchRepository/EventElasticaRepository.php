@@ -168,7 +168,7 @@ final class EventElasticaRepository extends Repository
         // session in a window: the ones over before the earliest window, most of the index, are left out before
         // counting (for France, the dates and venues took ~60 ms instead of ~10)
         $from = min([$search->getDateRange()->from, ...array_map(static fn (DateRange $range): DateTimeImmutable => $range->from, array_values($dates))]);
-        $filter = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from, null))));
+        $filter = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from))));
         $area = $this->createAreaFilter($search);
         if (null !== $area) {
             $filter->addFilter($area);
@@ -234,7 +234,7 @@ final class EventElasticaRepository extends Repository
      */
     public function createAgendaTypesQuery(DateTimeImmutable $from): Query
     {
-        $bool = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from, null))));
+        $bool = new BoolQuery()->addFilter(new Nested()->setPath('sessions')->setQuery($this->createSessionFilter(new DateRange($from))));
         foreach (AgendaType::cases() as $type) {
             $bool->addShould($this->createTypeQuery($type)->setParam('_name', $type->value));
         }

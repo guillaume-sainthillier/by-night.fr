@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Controller\Location\AgendaController;
 use App\Enum\AgendaType;
@@ -27,7 +27,7 @@ use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
 use Psr\Clock\ClockInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -36,7 +36,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Google ignores <priority> and <changefreq>, so being listed here is the actual signal; not
  * being listed does not remove a page from the index.
  */
-final class SitemapSuscriber implements EventSubscriberInterface
+final class SitemapListener
 {
     /**
      * A city needs a full agenda page of upcoming events before its per-category pages are
@@ -66,16 +66,7 @@ final class SitemapSuscriber implements EventSubscriberInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            SitemapPopulateEvent::class => 'registerRoutes',
-        ];
-    }
-
+    #[AsEventListener(event: SitemapPopulateEvent::class)]
     public function registerRoutes(SitemapPopulateEvent $event): void
     {
         $this->urlContainer = $event->getUrlContainer();

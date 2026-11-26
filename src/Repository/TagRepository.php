@@ -70,7 +70,7 @@ class TagRepository extends ServiceEntityRepository implements DtoFindableReposi
             }
 
             $names[mb_strtolower(trim($dto->name))] = true;
-            $slugs[self::slugify(trim($dto->name))] = true;
+            $slugs[$this->slugify(trim($dto->name))] = true;
         }
 
         if ([] === $names) {
@@ -94,7 +94,7 @@ class TagRepository extends ServiceEntityRepository implements DtoFindableReposi
      * The slug Gedmo gives a tag of this name (SluggableListener's default transliterator
      * and urlizer).
      */
-    private static function slugify(string $name): string
+    private function slugify(string $name): string
     {
         return new AsciiSlugger()->slug(u($name)->ascii()->toString(), '-')->lower()->toString();
     }

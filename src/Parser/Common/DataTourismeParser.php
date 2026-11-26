@@ -263,7 +263,7 @@ final class DataTourismeParser extends AbstractParser
         $cityName = $this->string($address['addressLocality'] ?? null) ?? $this->text($address['hasAddressCity']['label'] ?? null);
         $postalCode = $this->string($address['postalCode'] ?? null);
 
-        ['name' => $venueName, 'street' => $street] = self::venue($streetLines, $cityName);
+        ['name' => $venueName, 'street' => $street] = $this->venue($streetLines, $cityName);
 
         // The flux identified an address with a uuid the API dropped, so the normalised
         // address itself is now the venue identity: same lines at the same postal code,
@@ -272,16 +272,19 @@ final class DataTourismeParser extends AbstractParser
         $place->name = $venueName ?? $cityName;
         $place->street = $street;
         $place->externalId = \sprintf('DT-%s', md5(mb_strtolower(preg_replace('/\s+/', ' ', implode('|', [...$streetLines, $postalCode ?? '', $cityName ?? ''])))));
+
         $event->place = $place;
 
         $city = new CityDto();
         $city->name = $cityName;
         $city->postalCode = $postalCode;
         $city->officialCode = $this->string($address['hasAddressCity']['insee'] ?? null);
+
         $place->city = $city;
 
         $country = new CountryDto();
         $country->name = $this->text($address['hasAddressCity']['isPartOfDepartment']['isPartOfRegion']['isPartOfCountry']['label'] ?? null);
+
         $city->country = $country;
         $place->country = $country;
 
@@ -425,7 +428,7 @@ final class DataTourismeParser extends AbstractParser
      *
      * @return array{name: ?string, street: ?string}
      */
-    private static function venue(array $lines, ?string $town): array
+    private function venue(array $lines, ?string $town): array
     {
         $venues = [];
         $streets = [];
@@ -488,7 +491,7 @@ final class DataTourismeParser extends AbstractParser
     private function text(mixed $value): ?string
     {
         if (\is_array($value)) {
-            $value = $value['@fr'] ?? (array_values($value)[0] ?? null);
+            $value = $value['@fr'] ?? (array_first($value) ?? null);
         }
 
         return $this->first($value);

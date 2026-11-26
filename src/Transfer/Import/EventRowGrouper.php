@@ -46,7 +46,7 @@ final class EventRowGrouper
 
         // One reference names one event: given to two (two IDs, or an ID and new rows), the later ones are turned down
         $owners = [];
-        foreach ($byKey as $key => $groupRows) {
+        foreach ($byKey as $groupRows) {
             $group = new EventRowGroup($groupRows);
             $reference = null === $group->reference() ? null : mb_strtolower($group->reference());
             if (null !== $reference && isset($owners[$reference])) {

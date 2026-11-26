@@ -8,17 +8,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Utils\Monitor;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-final class ConsoleSubscriber implements EventSubscriberInterface
+final class ConsoleListener
 {
     /** @var array<Stopwatch|null> */
     private array $stopwatches = [];
@@ -30,17 +30,7 @@ final class ConsoleSubscriber implements EventSubscriberInterface
     ) {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            ConsoleEvents::COMMAND => 'onConsoleCommand',
-            ConsoleEvents::TERMINATE => 'onConsoleTerminate',
-        ];
-    }
-
+    #[AsEventListener(event: ConsoleEvents::COMMAND)]
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
         Monitor::$output = $event->getOutput();
@@ -51,6 +41,7 @@ final class ConsoleSubscriber implements EventSubscriberInterface
         Monitor::$stopwatch = $this->stopwatch;
     }
 
+    #[AsEventListener(event: ConsoleEvents::TERMINATE)]
     public function onConsoleTerminate(ConsoleTerminateEvent $event): void
     {
         Monitor::stop($event->getCommand()->getName(), $this->stopwatches[$event->getCommand()->getName()]);

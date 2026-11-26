@@ -159,7 +159,7 @@ final class IndexMappingTest extends AppKernelTestCase
      */
     private function indexOf(string $index): array
     {
-        $configManager = self::getContainer()->get('fos_elastica.config_manager');
+        $configManager = self::getContainer()->get(ConfigManager::class);
         self::assertInstanceOf(ConfigManager::class, $configManager);
         $mappingBuilder = self::getContainer()->get('fos_elastica.mapping_builder');
         self::assertInstanceOf(MappingBuilder::class, $mappingBuilder);

@@ -8,13 +8,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\App\PublisherContext;
 use App\Repository\PublisherRepository;
 use App\Security\Voter\PublisherVoter;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -28,7 +28,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
  *
  * After the firewall (priority 8), which has authenticated the member by then.
  */
-final readonly class PublisherContextSubscriber implements EventSubscriberInterface
+final readonly class PublisherContextListener
 {
     public const string ROUTE_PARAMETER = 'publisher';
 
@@ -40,13 +40,7 @@ final readonly class PublisherContextSubscriber implements EventSubscriberInterf
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            KernelEvents::REQUEST => ['onKernelRequest', 7],
-        ];
-    }
-
+    #[AsEventListener(event: KernelEvents::REQUEST, priority: 7)]
     public function onKernelRequest(RequestEvent $event): void
     {
         if (!$event->isMainRequest()) {

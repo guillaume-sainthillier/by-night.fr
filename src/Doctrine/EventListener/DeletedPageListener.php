@@ -62,7 +62,7 @@ final readonly class DeletedPageListener
         $metadata = $entityManager->getClassMetadata(DeletedPage::class);
         foreach ($pages as $kind => $pagesOfKind) {
             // A slug taken again, then deleted again: one query a kind, a cleanup deletes thousands of events at once
-            $recorded = array_flip($this->deletedPageRepository->findRecordedIdentifiers(DeletedPageKind::from($kind), array_map('strval', array_keys($pagesOfKind))));
+            $recorded = array_flip($this->deletedPageRepository->findRecordedIdentifiers(DeletedPageKind::from($kind), array_map(strval(...), array_keys($pagesOfKind))));
             foreach ($pagesOfKind as $identifier => $page) {
                 if (isset($recorded[$identifier])) {
                     continue;

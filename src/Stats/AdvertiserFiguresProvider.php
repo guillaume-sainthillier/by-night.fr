@@ -64,7 +64,7 @@ final readonly class AdvertiserFiguresProvider
             }));
         } catch (Throwable $exception) {
             // Nothing is cached when the count throws: the next visitor counts again
-            $this->logger->warning('The advertisers\' figures could not be counted: {message}', ['message' => $exception->getMessage(), 'exception' => $exception]);
+            $this->logger->warning("The advertisers' figures could not be counted: {message}", ['message' => $exception->getMessage(), 'exception' => $exception]);
 
             return null;
         }

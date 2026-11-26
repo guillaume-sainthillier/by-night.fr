@@ -8,10 +8,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventSubscriber;
+namespace App\EventListener;
 
 use App\Exception\CityMovedException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,20 +25,16 @@ use Throwable;
  * current one ("/suisse/geneve/agenda/sortir/concert"), with its query string, in one redirect: the former agenda goes
  * straight to the city's page, and a URL the router was about to strip of its trailing slash takes no extra step.
  */
-final readonly class MovedCitySubscriber implements EventSubscriberInterface
+final readonly class MovedCityListener
 {
     public function __construct(private RouterInterface $router)
     {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [KernelEvents::EXCEPTION => 'onKernelException'];
-    }
-
+    #[AsEventListener(event: KernelEvents::EXCEPTION)]
     public function onKernelException(ExceptionEvent $event): void
     {
-        $moved = self::find($event->getThrowable());
+        $moved = $this->find($event->getThrowable());
         $request = $event->getRequest();
         $route = $request->attributes->getString('_route');
         if (null === $moved || '' === $route) {
@@ -53,7 +49,7 @@ final readonly class MovedCitySubscriber implements EventSubscriberInterface
     /**
      * The exception, also when the template that first read the city wrapped it.
      */
-    private static function find(?Throwable $throwable): ?CityMovedException
+    private function find(?Throwable $throwable): ?CityMovedException
     {
         for (; null !== $throwable; $throwable = $throwable->getPrevious()) {
             if ($throwable instanceof CityMovedException) {

@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Tests\EventSubscriber;
+namespace App\Tests\EventListener;
 
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * The URLs of the countries carried a "c--" prefix: each former one reaches the new one in a single redirect.
  */
-final class LegacyCountryUrlSubscriberTest extends AppWebTestCase
+final class LegacyCountryUrlListenerTest extends AppWebTestCase
 {
     /**
      * @return iterable<string, array{string, string}>

@@ -19,7 +19,7 @@ handle @thumbs {
 		handle_response @miss {
 			# An unsigned URL can never be served: the signature is what carries the
 			# transformation params. But one whose path still looks like a real upload is a
-			# link someone stripped the query string from, and PicassoOriginRedirectSubscriber
+			# link someone stripped the query string from, and PicassoOriginRedirectListener
 			# can send it to the origin file — so it has to reach PHP.
 			#
 			# Everything else unsigned is scanner noise (/p/image/glide/vich/.env and friends)

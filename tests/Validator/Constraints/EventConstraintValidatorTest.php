@@ -47,7 +47,7 @@ final class EventConstraintValidatorTest extends AppKernelTestCase
             'place' => $constraint->noPlaceProvided,
             'place.name' => $constraint->badPlaceName,
             'place.city.postalCode' => $constraint->badPlacePostalCode,
-        ], self::byPath($violations));
+        ], $this->byPath($violations));
     }
 
     /**
@@ -64,7 +64,7 @@ final class EventConstraintValidatorTest extends AppKernelTestCase
             ->addReason(Reject::EVENT_DELETED)
             ->addReason(Reject::BAD_EVENT_NAME));
 
-        self::assertSame(['' => new EventConstraint()->eventDeleted], self::byPath($violations));
+        self::assertSame(['' => new EventConstraint()->eventDeleted], $this->byPath($violations));
     }
 
     public function testAReasonWithoutAMessageStillRefusesTheEvent(): void
@@ -86,7 +86,7 @@ final class EventConstraintValidatorTest extends AppKernelTestCase
     /**
      * @return array<string, string>
      */
-    private static function byPath(ConstraintViolationListInterface $violations): array
+    private function byPath(ConstraintViolationListInterface $violations): array
     {
         $messages = [];
         foreach ($violations as $violation) {

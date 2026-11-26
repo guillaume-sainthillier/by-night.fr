@@ -40,7 +40,7 @@ final class PurgeCdnCacheTagsHandler implements BatchHandlerInterface
     public function __invoke(PurgeCdnCacheTags $message, ?Acknowledger $ack = null): mixed
     {
         // A message is acked as a whole, so its tags never straddle two requests: send the pending ones first
-        if (null !== $ack && \count(self::distinctTags([...$this->jobs, [$message, $ack]])) > CloudflareCdnPurger::MAX_FILES_PER_REQUEST) {
+        if (null !== $ack && \count($this->distinctTags([...$this->jobs, [$message, $ack]])) > CloudflareCdnPurger::MAX_FILES_PER_REQUEST) {
             $this->flush(true);
         }
 
@@ -50,7 +50,7 @@ final class PurgeCdnCacheTagsHandler implements BatchHandlerInterface
     /** @phpstan-ignore method.unused (called by BatchHandlerTrait) */
     private function process(array $jobs): void
     {
-        $tags = self::distinctTags($jobs);
+        $tags = $this->distinctTags($jobs);
 
         try {
             $this->cdnPurger->purgeTags($tags);
@@ -78,7 +78,7 @@ final class PurgeCdnCacheTagsHandler implements BatchHandlerInterface
      *
      * @return list<string>
      */
-    private static function distinctTags(array $jobs): array
+    private function distinctTags(array $jobs): array
     {
         $tags = [];
         foreach ($jobs as [$message]) {

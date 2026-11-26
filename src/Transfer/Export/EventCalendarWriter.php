@@ -64,7 +64,8 @@ final readonly class EventCalendarWriter
     public function render(iterable $events, string $name, array $tentative = [], ?DateInterval $ttl = null): string
     {
         $entries = [];
-        $first = $last = null;
+        $first = null;
+        $last = null;
         foreach ($events as $event) {
             foreach ($this->entries($event, \in_array($event->getId(), $tentative, true)) as [$entry, $start, $end]) {
                 $entries[] = $entry;

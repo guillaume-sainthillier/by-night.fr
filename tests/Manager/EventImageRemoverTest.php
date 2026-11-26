@@ -56,6 +56,7 @@ final class EventImageRemoverTest extends AppKernelTestCase
         $event = new Event();
         $event->setUrl('https://example.test/affiche.png');
         $event->setImageRemovedAt(new DateTimeImmutable());
+
         $scheduler = self::getContainer()->get(EventImageDownloadScheduler::class);
 
         $scheduler->schedule($event);

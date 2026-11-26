@@ -203,7 +203,7 @@ final class CDiscountAwinParser extends AbstractAwinParser
             $event->place->longitude = $show->longitude;
         }
 
-        $performances = self::heldPerformances($show);
+        $performances = $this->heldPerformances($show);
         if ([] === $performances) {
             // Cancelled on every date: CDiscount may still list it
             if ([] !== $show->performances) {
@@ -233,7 +233,7 @@ final class CDiscountAwinParser extends AbstractAwinParser
      *
      * @return list<TicketmasterPerformance> in chronological order
      */
-    private static function heldPerformances(TicketmasterShow $show): array
+    private function heldPerformances(TicketmasterShow $show): array
     {
         return array_values(array_filter(
             $show->performances,

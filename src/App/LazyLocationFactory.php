@@ -94,7 +94,7 @@ final readonly class LazyLocationFactory
     }
 
     /**
-     * A city named by a former slug redirects to its current one (MovedCitySubscriber), else it is not found.
+     * A city named by a former slug redirects to its current one (MovedCityListener), else it is not found.
      */
     private function createMovedOrNotFound(string $slug): CityMovedException|NotFoundHttpException
     {

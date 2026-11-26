@@ -291,7 +291,7 @@ final class PublisherControllerTest extends AppWebTestCase
 
         $client->request('GET', '/espace-perso/organisateurs/le-ramier/page');
         self::assertSelectorNotExists('form[name="publisher_delete"]');
-        self::assertSelectorTextContains('#supprimer', 'C\'est votre seule page organisateur');
+        self::assertSelectorTextContains('#supprimer', "C'est votre seule page organisateur");
 
         $client->request('POST', '/espace-perso/organisateurs/le-ramier/supprimer', ['publisher_delete' => ['name' => 'Le Ramier']]);
         self::assertResponseStatusCodeSame(403);
