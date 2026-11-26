@@ -12,40 +12,32 @@ namespace App\Api\ApiResource;
 
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Api\Model\ContentRemovalRequestInput;
 use App\Api\Model\ContentRemovalRequestOutput;
-use App\Api\Model\EventActionOutput;
-use App\Api\Model\EventCancelInput;
-use App\Api\Model\EventDraftInput;
 use App\Api\Model\EventParticipateInput;
 use App\Api\Model\EventParticipationOutput;
+use App\Api\Model\EventStateInput;
+use App\Api\Model\EventStateOutput;
 use App\Api\Processor\ContentRemovalRequestProcessor;
-use App\Api\Processor\EventCancelProcessor;
-use App\Api\Processor\EventDraftProcessor;
 use App\Api\Processor\EventParticipateProcessor;
+use App\Api\Processor\EventStateProcessor;
 use App\Entity\Event;
 use App\Security\Voter\EventVoter;
 
 #[ApiResource(shortName: 'Event', operations: [
-    new Put(
-        uriTemplate: '/events/{id}/cancel',
+    new Patch(
+        uriTemplate: '/events/{id}',
+        // A merge of the fields sent: as JSON Merge Patch, or as plain JSON, which the site's AJAX helper sends
+        inputFormats: ['json' => ['application/json', 'application/merge-patch+json']],
         security: "is_granted('" . EventVoter::EDIT . "', object)",
         securityMessage: 'You are not allowed to edit this event.',
-        input: EventCancelInput::class,
-        output: EventActionOutput::class,
-        name: 'api_event_cancel',
-        processor: EventCancelProcessor::class,
-    ),
-    new Put(
-        uriTemplate: '/events/{id}/draft',
-        security: "is_granted('" . EventVoter::EDIT . "', object)",
-        securityMessage: 'You are not allowed to edit this event.',
-        input: EventDraftInput::class,
-        output: EventActionOutput::class,
-        name: 'api_event_draft',
-        processor: EventDraftProcessor::class,
+        input: EventStateInput::class,
+        output: EventStateOutput::class,
+        name: 'api_event_update',
+        processor: EventStateProcessor::class,
     ),
     new Put(
         uriTemplate: '/events/{id}/participer',

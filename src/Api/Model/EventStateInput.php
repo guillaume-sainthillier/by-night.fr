@@ -10,10 +10,15 @@
 
 namespace App\Api\Model;
 
-final readonly class EventCancelInput
+/**
+ * What a PATCH of an event changes: whether it is a draft (off the agenda) and whether it is cancelled. A field left
+ * out is left as it is.
+ */
+final readonly class EventStateInput
 {
     public function __construct(
-        public bool $cancel = true,
+        public ?bool $draft = null,
+        public ?bool $cancelled = null,
     ) {
     }
 }

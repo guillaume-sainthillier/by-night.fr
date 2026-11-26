@@ -12,7 +12,11 @@ import { confirmPublication } from '@/js/utils/duplicates'
 
 vi.mock('@/js/utils/duplicates', () => ({ confirmPublication: vi.fn() }))
 
-const URL = '/api/events/42/draft'
+const { sendJson } = vi.hoisted(() => ({ sendJson: vi.fn() }))
+
+vi.mock('@silarhi/app-js/http', () => ({ sendJson }))
+
+const URL = '/api/events/42'
 
 const DUPLICATES_URL = '/espace-perso/42/doublons'
 
@@ -46,10 +50,8 @@ const connect = (dataset: Record<string, string> = {}) => {
     return { button, notice, toastManager, modalManager, cleanup, click: () => listeners.click?.() }
 }
 
-const json = (body: object, ok = true) => ({ ok, json: () => Promise.resolve(body) })
-
 afterEach(() => {
-    vi.unstubAllGlobals()
+    sendJson.mockReset()
     vi.mocked(confirmPublication).mockReset()
 })
 
@@ -59,27 +61,24 @@ describe('event-publish listener', () => {
     })
 
     test('takes the event out of draft, then drops the preview notice', async () => {
-        const fetch = vi.fn(() => Promise.resolve(json({ success: true })))
-        vi.stubGlobal('fetch', fetch)
+        sendJson.mockResolvedValue({ draft: false, cancelled: false })
         const { button, notice, toastManager, click } = connect()
 
         await click()
 
-        expect(fetch).toHaveBeenCalledWith(URL, expect.objectContaining({ method: 'PUT', body: '{"draft":false}' }))
+        expect(sendJson).toHaveBeenCalledWith('PATCH', URL, { draft: false })
         expect(toastManager.createToast).toHaveBeenCalledWith('success', expect.any(String))
         expect(notice.remove).toHaveBeenCalled()
         expect(button.disabled).toBe(true)
     })
 
     test.each([
-        ['a refusal', () => Promise.resolve(json({ title: 'Forbidden' }, false))],
-        [
-            'a lapsed session, redirected to the login page',
-            () => Promise.resolve({ ok: true, json: () => Promise.reject(new SyntaxError()) }),
-        ],
+        ['a refusal', () => Promise.reject(new Error('Forbidden'))],
+        // The login page's HTML is no JSON answer
+        ['a lapsed session, redirected to the login page', () => Promise.resolve(null)],
         ['a network failure', () => Promise.reject(new TypeError('Failed to fetch'))],
     ])('keeps the notice and lets the author retry after %s', async (_, response) => {
-        vi.stubGlobal('fetch', vi.fn(response))
+        sendJson.mockImplementation(response)
         const { button, notice, toastManager, click } = connect()
 
         await click()
@@ -91,39 +90,34 @@ describe('event-publish listener', () => {
 
     test('asks first for the events already online the draft likely repeats', async () => {
         vi.mocked(confirmPublication).mockResolvedValue(true)
-        const fetch = vi.fn(() => Promise.resolve(json({ success: true })))
-        vi.stubGlobal('fetch', fetch)
+        sendJson.mockResolvedValue({ draft: false, cancelled: false })
         const { modalManager, notice, click } = connect({ duplicatesHref: DUPLICATES_URL })
 
         await click()
 
         expect(confirmPublication).toHaveBeenCalledWith(modalManager, DUPLICATES_URL)
-        expect(fetch).toHaveBeenCalledWith(URL, expect.objectContaining({ method: 'PUT' }))
+        expect(sendJson).toHaveBeenCalledWith('PATCH', URL, { draft: false })
         expect(notice.remove).toHaveBeenCalled()
     })
 
     test('keeps the draft when the author cancels', async () => {
         vi.mocked(confirmPublication).mockResolvedValue(false)
-        const fetch = vi.fn()
-        vi.stubGlobal('fetch', fetch)
         const { button, notice, toastManager, click } = connect({ duplicatesHref: DUPLICATES_URL })
 
         await click()
 
-        expect(fetch).not.toHaveBeenCalled()
+        expect(sendJson).not.toHaveBeenCalled()
         expect(toastManager.createToast).not.toHaveBeenCalled()
         expect(notice.remove).not.toHaveBeenCalled()
         expect(button.disabled).toBe(false)
     })
 
     test('stops listening once disconnected', async () => {
-        const fetch = vi.fn()
-        vi.stubGlobal('fetch', fetch)
         const { cleanup, click } = connect()
 
         cleanup()
         await click()
 
-        expect(fetch).not.toHaveBeenCalled()
+        expect(sendJson).not.toHaveBeenCalled()
     })
 })
