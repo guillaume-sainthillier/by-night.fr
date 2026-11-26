@@ -13,9 +13,9 @@ namespace App\Api\Model;
 final readonly class EventParticipationOutput
 {
     public function __construct(
-        public bool $success,
-        public bool $like,
-        public int $likes,
+        public bool $going,
+        /** The members going or interested */
+        public int $participations,
     ) {
     }
 }

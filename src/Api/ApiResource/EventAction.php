@@ -17,12 +17,12 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Api\Model\ContentRemovalRequestInput;
 use App\Api\Model\ContentRemovalRequestOutput;
-use App\Api\Model\EventParticipateInput;
+use App\Api\Model\EventParticipationInput;
 use App\Api\Model\EventParticipationOutput;
 use App\Api\Model\EventStateInput;
 use App\Api\Model\EventStateOutput;
 use App\Api\Processor\ContentRemovalRequestProcessor;
-use App\Api\Processor\EventParticipateProcessor;
+use App\Api\Processor\EventParticipationProcessor;
 use App\Api\Processor\EventStateProcessor;
 use App\Entity\Event;
 use App\Security\Voter\EventVoter;
@@ -40,13 +40,13 @@ use App\Security\Voter\EventVoter;
         processor: EventStateProcessor::class,
     ),
     new Put(
-        uriTemplate: '/events/{id}/participer',
+        uriTemplate: '/events/{id}/participation',
         security: "is_granted('ROLE_USER')",
         securityMessage: 'You must be logged in to participate.',
-        input: EventParticipateInput::class,
+        input: EventParticipationInput::class,
         output: EventParticipationOutput::class,
-        name: 'api_event_participer',
-        processor: EventParticipateProcessor::class,
+        name: 'api_event_participation',
+        processor: EventParticipationProcessor::class,
     ),
     new Post(
         uriTemplate: '/events/{id}/removal-request',

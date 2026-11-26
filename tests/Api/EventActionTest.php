@@ -178,8 +178,8 @@ final class EventActionTest extends AppApiTestCase
     {
         $event = EventFactory::createOne();
 
-        self::createClient()->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
-            'json' => ['like' => true],
+        self::createClient()->request('PUT', \sprintf('/api/events/%d/participation', $event->getId()), [
+            'json' => ['going' => true],
         ]);
 
         self::assertResponseRedirects('/login');
@@ -191,14 +191,14 @@ final class EventActionTest extends AppApiTestCase
         $event = EventFactory::createOne(['participations' => 0]);
         $eventId = $event->getId();
 
-        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/participer', $eventId), [
+        $this->createAuthenticatedClient($user)->request('PUT', \sprintf('/api/events/%d/participation', $eventId), [
             'headers' => ['Accept' => 'application/json'],
-            'json' => ['like' => true],
+            'json' => ['going' => true],
         ]);
 
         self::assertResponseIsSuccessful();
         self::assertResponseFormatSame('json');
-        self::assertJsonContains(['success' => true, 'like' => true]);
+        self::assertJsonContains(['going' => true, 'participations' => 1]);
 
         $updatedEvent = refresh($event);
         self::assertSame(1, $updatedEvent->getParticipations());
@@ -213,25 +213,25 @@ final class EventActionTest extends AppApiTestCase
         $client = $this->createAuthenticatedClient($user);
 
         // First participate
-        $client->request('PUT', \sprintf('/api/events/%d/participer', $eventId), [
-            'json' => ['like' => true],
+        $client->request('PUT', \sprintf('/api/events/%d/participation', $eventId), [
+            'json' => ['going' => true],
         ]);
 
         // Then unparticipate
-        $client->request('PUT', \sprintf('/api/events/%d/participer', $eventId), [
-            'json' => ['like' => false],
+        $client->request('PUT', \sprintf('/api/events/%d/participation', $eventId), [
+            'json' => ['going' => false],
         ]);
 
         self::assertResponseIsSuccessful();
-        self::assertJsonContains(['success' => true, 'like' => false]);
+        self::assertJsonContains(['going' => false]);
     }
 
     public function testNoOneTakesPartInADraftTheyCannotSee(): void
     {
         $event = EventFactory::createOne(['draft' => true, 'participations' => 0]);
 
-        $this->createAuthenticatedClient(UserFactory::createOne())->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
-            'json' => ['like' => true],
+        $this->createAuthenticatedClient(UserFactory::createOne())->request('PUT', \sprintf('/api/events/%d/participation', $event->getId()), [
+            'json' => ['going' => true],
         ]);
 
         self::assertResponseStatusCodeSame(404);
@@ -242,8 +242,8 @@ final class EventActionTest extends AppApiTestCase
     {
         $event = EventFactory::createOne(['draft' => true, 'participations' => 0]);
 
-        $this->createAuthenticatedClient($event->getUser())->request('PUT', \sprintf('/api/events/%d/participer', $event->getId()), [
-            'json' => ['like' => true],
+        $this->createAuthenticatedClient($event->getUser())->request('PUT', \sprintf('/api/events/%d/participation', $event->getId()), [
+            'json' => ['going' => true],
         ]);
 
         self::assertResponseIsSuccessful();
