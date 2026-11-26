@@ -124,8 +124,8 @@
         "symfony/yaml": "~8.1.11",
         "symfonycasts/reset-password-bundle": "^1.26.1",
         "symfonycasts/verify-email-bundle": "^1.18",
-        "twig/extra-bundle": "^3.29.0",
-        "twig/intl-extra": "^3.30.0",
+        "twig/extra-bundle": "^3.31.0",
+        "twig/intl-extra": "^3.31.0",
         "twig/string-extra": "^3.24",
         "vich/uploader-bundle": "^3.0.0",
         "web-auth/webauthn-symfony-bundle": "^5.3.17"
