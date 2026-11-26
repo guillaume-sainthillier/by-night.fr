@@ -2852,6 +2852,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type SilarhiUxIconsJsConfig = array{
  *     dump_directory?: scalar|Param|null, // The directory where the JavaScript module is dumped. // Default: "%kernel.project_dir%/var/icons"
  *     dump_typescript?: bool|Param, // Whether TypeScript types are dumped alongside the icons. Disable this if you do not use TypeScript (e.g. in production when using AssetMapper). // Default: true
+ *     dump_loaders?: bool|Param, // Whether "loaders.js" and one module per icon are dumped, to load an icon by a name known only at runtime ("loadIcon()", "UXLazyIcon", "<ux-icon>"). Disable this if you only import the icons by their export name. // Default: true
+ *     icons?: list<scalar|Param|null>,
  *     scan_directories?: list<scalar|Param|null>,
  * }
  * @psalm-type TfaWebauthnConfig = array{

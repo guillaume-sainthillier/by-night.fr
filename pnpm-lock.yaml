@@ -216,8 +216,8 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0
       '@silarhi/ux-icons-js':
-        specifier: ^0.3.2
-        version: 0.3.2(preact@11.2.0)
+        specifier: ^0.4.0
+        version: 0.4.0(preact@11.2.0)
       '@tabler/core':
         specifier: ^1.7.5
         version: 1.7.5(vanilla-calendar-pro@3.4.2)
@@ -1054,8 +1054,8 @@ packages:
       '@hotwired/stimulus':
         optional: true
 
-  '@silarhi/ux-icons-js@0.3.2':
-    resolution: {integrity: sha512-uE46x1zuEY8knhSLsh81BErEeWSEwMK6ERPcZysqlNyXiRYz6i9SdAE3IIZtYPscdAi09qZeAoupcbqynS+GmQ==}
+  '@silarhi/ux-icons-js@0.4.0':
+    resolution: {integrity: sha512-pE/ggQFHKmmJPCHqrr3WMaFhVUuk4mCcMmqCHk9vLXUcm9DnLQVNWWXyGxLZB4NRgEKk9Jpq1rPfRdejjT4rkQ==}
     peerDependencies:
       preact: ^10.0 || ^11.0
       react: ^18.0 || ^19.0
@@ -2533,7 +2533,7 @@ snapshots:
     optionalDependencies:
       '@hotwired/stimulus': 3.2.2
 
-  '@silarhi/ux-icons-js@0.3.2(preact@11.2.0)':
+  '@silarhi/ux-icons-js@0.4.0(preact@11.2.0)':
     optionalDependencies:
       preact: 11.2.0
 
