@@ -52,4 +52,5 @@ return [
     Symfony\AI\McpBundle\McpBundle::class => ['all' => true],
     Symfony\UX\Router\UXRouterBundle::class => ['all' => true],
     Silarhi\AppJsBundle\SilarhiAppJsBundle::class => ['all' => true],
+    Silarhi\VoterBundle\VoterBundle::class => ['all' => true],
 ];

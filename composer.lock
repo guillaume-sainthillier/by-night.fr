@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7ff82c2a8e9b5def85159e93ab3abdd",
+    "content-hash": "c00cd28013c469cf7879fb765c2dcf4b",
     "packages": [
         {
             "name": "api-platform/core",
@@ -7653,6 +7653,86 @@
             },
             "time": "2026-11-26T12:22:25+00:00",
             "published-time": "2026-11-26T12:23:02+00:00"
+        },
+        {
+            "name": "silarhi/voter-bundle",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silarhi/voter-bundle.git",
+                "reference": "4609a7c279b0ffe5fead15363bb05244835ed9da"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silarhi/voter-bundle/zipball/4609a7c279b0ffe5fead15363bb05244835ed9da",
+                "reference": "4609a7c279b0ffe5fead15363bb05244835ed9da",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/config": "^6.4 || ^7.0 || ^8.0",
+                "symfony/dependency-injection": "^6.4 || ^7.0 || ^8.0",
+                "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
+                "symfony/security-core": "^6.4 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.54.0",
+                "friendsofphp/php-cs-fixer": "^3.95.30",
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.3.2",
+                "phpstan/phpstan-phpunit": "^2.0.8",
+                "phpstan/phpstan-strict-rules": "^2.1.0",
+                "phpstan/phpstan-symfony": "^2.1.1",
+                "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
+                "rector/rector": "^2.8.4",
+                "shipmonk/dead-code-detector": "^1.4",
+                "symfony/framework-bundle": "^6.4 || ^7.0 || ^8.0",
+                "symfony/polyfill-php85": "^1.43",
+                "symfony/security-bundle": "^6.4 || ^7.0 || ^8.0"
+            },
+            "suggest": {
+                "phpstan/extension-installer": "Registers the PHPStan extension that keeps the #[Grants] methods from being reported as unused",
+                "rector/rector": "Runs the dead-code set without deleting the #[Grants] methods: add VoterSetList::DEAD_CODE to the sets",
+                "shipmonk/dead-code-detector": "Keep the #[Grants] methods from being reported as dead: include vendor/silarhi/voter-bundle/shipmonk.neon"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Silarhi\\VoterBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guillaume Sainthillier",
+                    "email": "guillaume@silarhi.fr"
+                }
+            ],
+            "description": "Declare Symfony voter rules with a #[Grants] attribute on the method that decides them: the subject comes from the parameter type, the rules are compiled with the container.",
+            "keywords": [
+                "attribute",
+                "authorization",
+                "security",
+                "symfony",
+                "symfony-bundle",
+                "voter"
+            ],
+            "support": {
+                "issues": "https://github.com/silarhi/voter-bundle/issues",
+                "source": "https://github.com/silarhi/voter-bundle"
+            },
+            "time": "2026-11-13T10:14:29+00:00",
+            "published-time": "2026-11-13T10:14:52+00:00"
         },
         {
             "name": "smolblog/oauth2-twitter",

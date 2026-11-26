@@ -12,18 +12,14 @@ namespace App\Security\Voter;
 
 use App\Entity\Publisher;
 use App\Entity\User;
+use Silarhi\VoterBundle\Attribute\Grants;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Vote;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
  * A publisher's organizer pages (its events, imports, exports, its page) are the members' who manage it
  * (Publisher::isManagedBy()), and the administrators', as its events are (EventVoter).
- *
- * @extends Voter<string, Publisher>
  */
-final class PublisherVoter extends Voter
+final class PublisherVoter extends AbstractMemberVoter
 {
     public const string EDIT = 'publisher.edit';
 
@@ -31,15 +27,9 @@ final class PublisherVoter extends Voter
     {
     }
 
-    protected function supports(string $attribute, mixed $subject): bool
+    #[Grants(self::EDIT)]
+    private function canEdit(Publisher $subject, User $user): bool
     {
-        return self::EDIT === $attribute && $subject instanceof Publisher;
-    }
-
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
-    {
-        $user = $token->getUser();
-
-        return $user instanceof User && ($subject->isManagedBy($user) || $this->security->isGranted('ROLE_ADMIN'));
+        return $subject->isManagedBy($user) || $this->security->isGranted('ROLE_ADMIN');
     }
 }

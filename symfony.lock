@@ -442,6 +442,9 @@
     "silarhi/ux-icons-js-bundle": {
         "version": "v0.3.2"
     },
+    "silarhi/voter-bundle": {
+        "version": "v0.1.0"
+    },
     "stof/doctrine-extensions-bundle": {
         "version": "1.15",
         "recipe": {
