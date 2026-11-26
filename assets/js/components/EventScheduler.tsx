@@ -1,6 +1,7 @@
-import { findAll, findOne } from '@silarhi/app-js'
-import type { CollectionManager } from '@silarhi/app-js/form'
+import { findOne } from '@silarhi/app-js'
+import type { CollectionManager, Field, FormView } from '@silarhi/app-js/form'
 import { useEffect, useMemo, useState } from 'preact/hooks'
+import type { EventForm } from '@/js/forms/EventForm'
 import { plural } from '@/js/utils/plural'
 import TimesheetGenerator, { type Timesheet } from '@/js/utils/TimesheetGenerator'
 import { detectPattern } from '@/js/utils/timesheetPatternDetector'
@@ -23,11 +24,11 @@ interface DateRange {
 }
 
 export interface EventSchedulerProps {
-    /** The ids of the event's start and end date fields, which the period follows */
-    startDateFieldId: string
-    endDateFieldId: string
-    /** The id of the timesheets collection the dates are generated into */
-    timesheetsCollectionId: string
+    /** The event's start and end date fields, which the period follows */
+    startDateField: Field<HTMLInputElement, string>
+    endDateField: Field<HTMLInputElement, string>
+    /** The timesheets collection the dates are generated into */
+    timesheets: FormView<EventForm['timesheets']>
     /** The id of the "Générer les dates" button, outside this component */
     generateButtonId: string
     collectionManager: CollectionManager
@@ -36,9 +37,9 @@ export interface EventSchedulerProps {
 }
 
 export default function EventScheduler({
-    startDateFieldId,
-    endDateFieldId,
-    timesheetsCollectionId,
+    startDateField,
+    endDateField,
+    timesheets,
     generateButtonId,
     collectionManager,
     detectExisting,
@@ -74,19 +75,12 @@ export default function EventScheduler({
     useEffect(() => {
         if (!detectExisting) return
 
-        const collection = findOne(`#${timesheetsCollectionId}`)
-        if (!collection) return
-
         const existingTimesheets: Timesheet[] = []
-        for (const item of findAll('.collection-item', collection)) {
-            const startAtInput = item.querySelector<HTMLInputElement>('input[id*="from"]')
-            const endAtInput = item.querySelector<HTMLInputElement>('input[id*="to"]')
-
-            if (startAtInput?.value && endAtInput?.value) {
-                existingTimesheets.push({
-                    startAt: startAtInput.value,
-                    endAt: endAtInput.value,
-                })
+        for (const item of timesheets.children) {
+            const startAt = item.field('dateRange.from').value
+            const endAt = item.field('dateRange.to').value
+            if (startAt && endAt) {
+                existingTimesheets.push({ startAt, endAt })
             }
         }
 
@@ -103,15 +97,10 @@ export default function EventScheduler({
         } catch (error) {
             console.error('Failed to detect pattern:', error)
         }
-    }, [detectExisting, timesheetsCollectionId])
+    }, [detectExisting, timesheets])
 
     // Listen to main event startDate/endDate field changes
     useEffect(() => {
-        const startDateField = findOne<HTMLInputElement>(`#${startDateFieldId}`)
-        const endDateField = findOne<HTMLInputElement>(`#${endDateFieldId}`)
-
-        if (!startDateField || !endDateField) return
-
         const syncDateRange = () => {
             setDateRange({
                 startDate: startDateField.value || null,
@@ -123,18 +112,15 @@ export default function EventScheduler({
         syncDateRange()
 
         // Listen for changes (both 'change' for date picker and 'input' for manual typing)
-        startDateField.addEventListener('change', syncDateRange)
-        endDateField.addEventListener('change', syncDateRange)
-        startDateField.addEventListener('input', syncDateRange)
-        endDateField.addEventListener('input', syncDateRange)
+        const stops = [startDateField, endDateField].flatMap((field) => [
+            field.on('change', syncDateRange),
+            field.on('input', syncDateRange),
+        ])
 
         return () => {
-            startDateField.removeEventListener('change', syncDateRange)
-            endDateField.removeEventListener('change', syncDateRange)
-            startDateField.removeEventListener('input', syncDateRange)
-            endDateField.removeEventListener('input', syncDateRange)
+            for (const stop of stops) stop()
         }
-    }, [startDateFieldId, endDateFieldId])
+    }, [startDateField, endDateField])
 
     // Validate and generate
     const handleGenerate = async (e: Event) => {
@@ -159,26 +145,23 @@ export default function EventScheduler({
 
         // Generate timesheets
         try {
-            const timesheets =
+            const generated =
                 pattern === 'weekdays' && isMultiDay
                     ? generator.generateWeekdays(startDate, endDate, Array.from(selectedWeekdays))
                     : generator.generateDaily(startDate, endDate)
 
-            const collection = findOne(`#${timesheetsCollectionId}`)
-            if (!collection) throw new Error('Collection not found')
+            await collectionManager.clear(timesheets)
 
-            await collectionManager.clear(collection)
-
-            for (const timesheet of timesheets) {
+            for (const timesheet of generated) {
                 // Keyed by the item's field paths: the dates sit in its dateRange (timesheets_0_dateRange_from)
-                collectionManager.add(collection, {
+                collectionManager.add(timesheets, {
                     dateRange: { from: timesheet.startAt, to: timesheet.endAt },
                 })
             }
 
             window.App.get('toastManager').createToast(
                 'success',
-                plural(timesheets.length, { one: '# date générée', other: '# dates générées' })
+                plural(generated.length, { one: '# date générée', other: '# dates générées' })
             )
         } catch (error) {
             console.error('Failed to generate timesheets:', error)

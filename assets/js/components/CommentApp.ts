@@ -1,6 +1,8 @@
+import { formView } from '@silarhi/app-js/form'
 import { getHtml, postForm } from '@silarhi/app-js/http'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import type { SweetAlertIcon } from 'sweetalert2'
+import type { CommentForm } from '@/js/forms/CommentForm'
 import { LucideLoader2Icon } from '@/js/icons'
 import { path } from '@/js/router'
 import type ToastManager from '@/js/services/modals/ToastManager'
@@ -18,6 +20,10 @@ type CommentResponse =
  * What ReplyController::new answers to a reply posted: the reply rendered, or the form with its errors
  */
 type ReplyResponse = { success: true; comment: string; reply_count: number } | { success: false; post: string }
+
+/** The comment of a comment or reply form (CommentType), read through its form view */
+const commentField = (form: HTMLFormElement | null) =>
+    form ? formView<CommentForm>(form).field('comment').element : null
 
 export default class CommentApp {
     options = {
@@ -180,7 +186,7 @@ export default class CommentApp {
                 postAnswerContainer.classList.add('is-visible')
                 // Focus on textarea after animation starts
                 setTimeout(() => {
-                    postAnswerContainer.querySelector('textarea')?.focus()
+                    commentField(postAnswerContainer.querySelector('form'))?.focus()
                 }, 150)
             })
         })
@@ -213,7 +219,7 @@ export default class CommentApp {
         const form = answerPostContainer.querySelector('form')
         form?.addEventListener('submit', async (event) => {
             event.preventDefault()
-            const textarea = form.querySelector('textarea')
+            const textarea = commentField(form)
             const mainAnswerContainer = answerPostContainer.closest<HTMLElement>(this.options.css_main_reply_block)
             if (!mainAnswerContainer) {
                 return
@@ -282,7 +288,7 @@ export default class CommentApp {
 
     init_new_comment(comment: HTMLElement) {
         for (const form of comment.querySelectorAll('form')) {
-            const textarea = form.querySelector('textarea')
+            const textarea = commentField(form)
 
             form.addEventListener('submit', async (event) => {
                 event.preventDefault()

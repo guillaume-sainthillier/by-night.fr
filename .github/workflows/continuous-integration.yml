@@ -54,14 +54,15 @@ jobs:
                   extensions: amqp, redis
             - name: Install Composer dependencies
               run: composer install --no-interaction --no-progress --prefer-dist
-            # The routes, enums and constants the scripts read are dumped by PHP and committed, so the frontend builds
-            # without it
+            # The routes, enums, constants and form shapes the scripts read are dumped by PHP and committed, so the frontend
+            # builds without it
             - name: Check the JavaScript dumps are up to date
               run: |
                   bin/console ux:router:warm-cache
                   git diff --exit-code -- assets/js/routes
                   bin/console app-js:dump-enums --check
                   bin/console app-js:dump-constants --check
+                  bin/console app-js:dump-forms --check --strict
             - name: Setup pnpm
               uses: pnpm/action-setup@v6
             - name: Setup Node.js

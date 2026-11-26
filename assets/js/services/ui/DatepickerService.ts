@@ -22,20 +22,14 @@ interface DateRangeSelection {
 }
 
 export interface DatepickerOptions {
-    element: string | HTMLInputElement
-    fromInput?: string | HTMLInputElement | null
-    toInput?: string | HTMLInputElement | null
+    /** The fields of a DateRangeType, from its form view: `dateRange.field('range').element`… */
+    element: HTMLInputElement
+    fromInput?: HTMLInputElement | null
+    toInput?: HTMLInputElement | null
     singleDate?: boolean
     onApply?: ((selection: DateRangeSelection) => void) | null
     /** YYYY-MM-DD: no day after it can be picked (a period looking back), and its month is shown last */
     maxDate?: string | null
-}
-
-function resolveElement(element: string | HTMLInputElement | null | undefined): HTMLInputElement | null {
-    if (typeof element === 'string') {
-        return document.querySelector<HTMLInputElement>(element)
-    }
-    return element ?? null
 }
 
 /**
@@ -122,12 +116,9 @@ export function create({
 }: DatepickerOptions): {
     destroy: () => void
 } {
-    const input = resolveElement(element)
-    if (!input) {
-        throw new Error(`Datepicker: no input matches ${String(element)}`)
-    }
-    const from = resolveElement(fromInput)
-    const to = resolveElement(toInput)
+    const input = element
+    const from = fromInput ?? null
+    const to = toInput ?? null
 
     // Remove name attribute to prevent double form submission
     input.removeAttribute('name')

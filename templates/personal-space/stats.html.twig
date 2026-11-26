@@ -61,7 +61,7 @@
                     {{ form_widget(form.period) }}
                     <div class="d-flex align-items-center gap-2">
                         <twig:InputIcon class="flex-grow-1" iconPrepend="lucide:calendar-range">
-                            {# Its own attributes kept: the picker finds it by "shorcuts_date" and its data-from/data-to (DateRangeType) #}
+                            {# Its own attributes kept ("shorcuts_date" styles it); the picker reads the dates through the form's view (pages/event_stats.ts) #}
                             {{ form_widget(form.dateRange.range, {attr: form.dateRange.range.vars.attr|merge({class: 'form-control form-control-sm shorcuts_date' ~ (query.preset ? '' : ' border-primary'), 'aria-label': 'Choisir des dates'})}) }}
                         </twig:InputIcon>
                         {{ form_widget(form.dateRange.from) }}

@@ -13,6 +13,7 @@ namespace App\Form\Type;
 use App\Analytics\AudienceQuery;
 use App\Enum\AudiencePeriod;
 use Override;
+use Silarhi\AppJsBundle\Attribute\FormToJs;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -22,6 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * The period of an event's statistics (personal-space/stats.html.twig): its shortcut chips, or dates picked, which win.
  */
+#[FormToJs]
 final class AudienceQueryType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

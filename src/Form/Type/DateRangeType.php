@@ -81,12 +81,6 @@ final class DateRangeType extends AbstractType
             $view->children['to']->vars['type'] = 'hidden';
         }
 
-        // Inject JS data attributes for the date picker
-        $view->children['range']->vars['attr']['data-from'] = $view->children['from']->vars['id'];
-        if (isset($view->children['to'])) {
-            $view->children['range']->vars['attr']['data-to'] = $view->children['to']->vars['id'];
-        }
-
         // The label of the dates picked, as the date picker writes it
         /** @var DateTimeInterface|null $from */
         $from = $form->get('from')->getData();

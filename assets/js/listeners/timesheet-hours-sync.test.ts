@@ -3,70 +3,79 @@
  * Run: pnpm test
  */
 
+import type { App } from '@silarhi/app-js'
+import type { FormView } from '@silarhi/app-js/form'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import type { EventForm } from '@/js/forms/EventForm'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 import { fake } from '@/js/test/fake'
 
-// The Node environment has no DOM: the fields are plain objects the dom helpers look up by id or id suffix
-const { page } = vi.hoisted(() => {
-    interface Field {
-        id: string
-        value: string
-        placeholder: string
-        listeners: Record<string, ((event: { target: Field }) => void)[]>
-    }
-    const page: { fields: Record<string, Field>; rows: Field[] } = { fields: {}, rows: [] }
-    return { page }
-})
+// The Node environment has no DOM: the form view and its fields are plain objects
+interface FakeField {
+    value: string
+    placeholder: string
+    listeners: Record<string, (() => void)[]>
+    on: (type: string, handler: () => void) => () => void
+    setPlaceholder: (placeholder: string) => void
+}
 
-type Field = (typeof page.rows)[number]
+const { collectionListeners } = vi.hoisted(() => ({ collectionListeners: {} as Record<string, (() => void)[]> }))
 
 vi.mock('@silarhi/app-js', () => ({
-    findOne: (selector: string) => page.fields[selector] ?? null,
-    findAll: (selector: string) => {
-        const suffix = /\$="([^"]+)"/.exec(selector)?.[1]
-        return suffix ? page.rows.filter((field) => field.id.endsWith(suffix)) : []
-    },
-    on: (element: Field, type: string, handler: (event: { target: Field }) => void) => {
-        element.listeners[type] = [...(element.listeners[type] ?? []), handler]
+    on: (_element: unknown, type: string, handler: () => void) => {
+        collectionListeners[type] = [...(collectionListeners[type] ?? []), handler]
     },
 }))
 
-function field(id: string, value = ''): Field {
-    return { id, value, placeholder: '', listeners: {} }
+function field(value = ''): FakeField {
+    const self: FakeField = {
+        value,
+        placeholder: '',
+        listeners: {},
+        on: (type, handler) => {
+            self.listeners[type] = [...(self.listeners[type] ?? []), handler]
+            return () => {}
+        },
+        setPlaceholder: (placeholder) => {
+            self.placeholder = placeholder
+        },
+    }
+    return self
 }
 
-const fire = (element: Field, type: string) =>
-    element.listeners[type]?.forEach((handler) => handler({ target: element }))
+const fire = (target: FakeField, type: string) => target.listeners[type]?.forEach((handler) => handler())
 
-const container = fake<HTMLElement>({})
+function row() {
+    const fields: Record<string, FakeField> = { startTime: field(), endTime: field(), hours: field() }
+    return { fields, field: (path: string) => fields[path] }
+}
 
 describe('timesheet-hours-sync', () => {
-    let start: Field, end: Field, collection: Field & { dataset: Record<string, string> }
+    let start: FakeField, end: FakeField, rows: ReturnType<typeof row>[], form: FormView<EventForm>
+    const app = fake<App>({ get: () => ({ each: () => () => {} }) })
 
     beforeEach(() => {
-        start = field('app_event_startTime', '20:30')
-        end = field('app_event_endTime')
-        collection = { ...field('app_event_timesheets'), dataset: {} }
-        page.fields = {
-            '#app_event_hours': field('app_event_hours'),
-            '#app_event_startTime': start,
-            '#app_event_endTime': end,
-            '#app_event_timesheets': collection,
-        }
-        page.rows = [field('app_event_timesheets_0_startTime'), field('app_event_timesheets_0_endTime')]
+        for (const type of Object.keys(collectionListeners)) delete collectionListeners[type]
+        start = field('20:30')
+        end = field()
+        rows = [row()]
+        const fields: Record<string, FakeField> = { hours: field(), startTime: start, endTime: end }
+        form = fake<FormView<EventForm>>({
+            field: (path: string) => fields[path],
+            get: () => ({ element: { dataset: {} }, children: rows }),
+        })
     })
 
-    const placeholders = () => page.rows.map((row) => row.placeholder)
+    const placeholders = () => rows.flatMap((r) => [r.fields.startTime.placeholder, r.fields.endTime.placeholder])
 
     test('shows the default times in the rows', () => {
-        initTimesheetHoursSync(container)
+        initTimesheetHoursSync(form, app)
 
         expect(placeholders()).toEqual(['20:30', 'hh:mm'])
     })
 
     test('follows the default times as they are typed, once complete', () => {
-        initTimesheetHoursSync(container)
+        initTimesheetHoursSync(form, app)
 
         end.value = '23:'
         fire(end, 'input')
@@ -80,10 +89,10 @@ describe('timesheet-hours-sync', () => {
     })
 
     test('gives the default times to the rows added', () => {
-        initTimesheetHoursSync(container)
+        initTimesheetHoursSync(form, app)
 
-        page.rows.push(field('app_event_timesheets_1_startTime'), field('app_event_timesheets_1_endTime'))
-        fire(collection, 'collection.added')
+        rows.push(row())
+        for (const handler of collectionListeners['collection.add'] ?? []) handler()
 
         expect(placeholders()).toEqual(['20:30', 'hh:mm', '20:30', 'hh:mm'])
     })

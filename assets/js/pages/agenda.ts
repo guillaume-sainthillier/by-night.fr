@@ -1,6 +1,8 @@
-import { byId, definePage } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
+import { type FormView, formView } from '@silarhi/app-js/form'
 import { Offcanvas } from '@tabler/core'
 import { DEFAULT_RANGE, MAX_RANGE } from '@/js/constants/SearchEvent'
+import type { SearchForm } from '@/js/forms/SearchForm'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createSlider } from '@/js/services/ui/SliderService'
 import { groupByVenue, type MapEvent } from '@/js/utils/venues'
@@ -40,22 +42,24 @@ function initFiltersBar(): () => void {
     return markDirty
 }
 
-function initDatepickers(markDirty: () => void, container: ParentNode = document) {
-    container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
-        createDatepicker({
-            element: el,
-            fromInput: byId(el.dataset.from ?? '', HTMLInputElement),
-            toInput: byId(el.dataset.to ?? '', HTMLInputElement),
-            singleDate: el.dataset.singleDate === 'true',
-            // The dates picked replace the shortcut of the chips (SearchType's "when"), which the form would send again
-            onApply: () => {
-                const when = el.form?.elements.namedItem('when')
-                if (when instanceof HTMLInputElement) {
-                    when.value = ''
-                }
-                markDirty()
-            },
-        })
+/** The dates of the filters (SearchType's dateRange, a DateRangeType), when the page shows them */
+function initDatepicker(form: FormView<SearchForm>, markDirty: () => void) {
+    const dateRange = form.find('dateRange')
+    const element = dateRange?.field('range').element
+    if (!dateRange || !element) {
+        return
+    }
+
+    createDatepicker({
+        element,
+        fromInput: dateRange.field('from').element,
+        toInput: dateRange.field('to').element,
+        singleDate: element.dataset.singleDate === 'true',
+        // The dates picked replace the shortcut of the chips (SearchType's "when"), which the form would send again
+        onApply: () => {
+            form.find('when')?.field().setValue('', { silent: true })
+            markDirty()
+        },
     })
 }
 
@@ -68,21 +72,32 @@ const RADIUS_SCALE = {
     snap: true,
 }
 
-function initSliders(markDirty: () => void, container: ParentNode = document) {
-    container.querySelectorAll<HTMLInputElement>('input[data-slider]').forEach((el) => {
-        createSlider({
-            element: el,
-            unit: el.dataset.slider,
-            onChange: markDirty,
-            ...RADIUS_SCALE,
-        })
+/** The radius of the filters (SearchType's "range"), when the page shows it */
+function initSlider(form: FormView<SearchForm>, markDirty: () => void) {
+    const element = form.find('range')?.field().element
+    if (!element) {
+        return
+    }
+
+    createSlider({
+        element,
+        unit: element.dataset.slider,
+        onChange: markDirty,
+        ...RADIUS_SCALE,
     })
 }
 
-export default definePage(() => {
+export default definePage(({ container }) => {
     const markDirty = initFiltersBar()
-    initDatepickers(markDirty)
-    initSliders(markDirty)
+    // The filters of the agenda (location/agenda/_filters.html.twig)
+    const element = container.querySelector<HTMLFormElement>('form#search-form')
+    if (!element) {
+        return
+    }
+
+    const form = formView<SearchForm>(element)
+    initDatepicker(form, markDirty)
+    initSlider(form, markDirty)
 })
 
 /** The hash of a page whose map is open: a link to it opens the map too, and no search engine reads it as a page */

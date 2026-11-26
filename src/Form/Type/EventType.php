@@ -19,6 +19,7 @@ use App\Handler\DoctrineEventHandler;
 use App\Picture\ImageFormats;
 use App\Utils\HoursLabel;
 use Override;
+use Silarhi\AppJsBundle\Attribute\FormToJs;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -33,6 +34,8 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
+// The comment is only asked for a new event
+#[FormToJs(optional: ['comment'])]
 final class EventType extends AbstractType
 {
     public function __construct(

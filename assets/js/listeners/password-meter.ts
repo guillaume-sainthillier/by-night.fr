@@ -1,4 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
+import { formView } from '@silarhi/app-js/form'
 
 /**
  * The rules a password meets, in order. The patterns are PasswordRequirements::RULES, read with the flags the server
@@ -33,7 +34,9 @@ const TONES = ['bg-danger', 'bg-warning', 'bg-success']
 export default defineListener<HTMLElement>({
     selector: '[data-password-meter]',
     connect(meter) {
-        const input = document.getElementById(meter.dataset.passwordMeter ?? '')
+        // The new password its row holds (form theme block "new_password_row"), read through the row's form view
+        const row = meter.closest('.form-group')
+        const input = row ? formView(row).field().element : null
         if (!(input instanceof HTMLInputElement)) {
             return undefined
         }
