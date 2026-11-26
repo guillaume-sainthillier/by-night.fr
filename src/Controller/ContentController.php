@@ -77,6 +77,14 @@ final class ContentController extends BaseController
         ]);
     }
 
+    /** A day in Cloudflare: the page only changes with a release */
+    #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
+    #[Route(path: '/assistants-ia', name: 'app_assistants', options: ['llms_txt' => new LlmsTxtEntry(title: 'By Night dans votre assistant IA', description: "Brancher l'agenda de By Night sur Claude, ChatGPT, Le Chat ou tout client MCP : l'adresse du serveur, ce qu'il sait faire, comment l'ajouter, gratuit et sans compte.")], methods: ['GET'])]
+    public function assistants(): Response
+    {
+        return $this->render('content/assistants.html.twig');
+    }
+
     /** A day in Cloudflare, as long as its figures are kept (AdvertiserFiguresProvider) */
     #[Cache(maxage: 0, smaxage: 86400, public: true, staleWhileRevalidate: 86400, staleIfError: 86400)]
     #[Route(path: '/annonceurs', name: 'app_advertisers', options: ['llms_txt' => new LlmsTxtEntry(title: 'Annonceurs et partenaires', description: "Organisateurs, salles, billetteries et marques : les chiffres de By Night, les formats de partenariat proposés et leur signalement, les solutions gratuites (publication par un compte membre, import d'un agenda) et ce que By Night ne fait pas.")], methods: ['GET'])]
