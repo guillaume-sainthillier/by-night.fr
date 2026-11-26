@@ -60,9 +60,7 @@ jobs:
               run: |
                   bin/console ux:router:warm-cache
                   git diff --exit-code -- assets/js/routes
-                  bin/console app-js:dump-enums --check
-                  bin/console app-js:dump-constants --check
-                  bin/console app-js:dump-forms --check --strict
+                  bin/console app-js:dump --check --strict
             - name: Setup pnpm
               uses: pnpm/action-setup@v6
             - name: Setup Node.js

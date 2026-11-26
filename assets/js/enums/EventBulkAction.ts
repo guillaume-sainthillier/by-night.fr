@@ -8,3 +8,5 @@ const EventBulkAction = Object.freeze({
     Delete: 'delete',
 })
 export default EventBulkAction
+
+export type EventBulkActionValue = (typeof EventBulkAction)[keyof typeof EventBulkAction]

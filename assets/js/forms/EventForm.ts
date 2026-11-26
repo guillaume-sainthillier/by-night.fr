@@ -26,7 +26,10 @@ export interface EventForm {
         hours: FormField<HTMLInputElement, string>
     }>
     prices: FormField<HTMLInputElement, string>
-    status: FormField<HTMLSelectElement, string | null>
+    status: FormField<
+        HTMLSelectElement,
+        'postponed' | 'cancelled' | 'sold_out' | 'rescheduled' | 'moved_online' | '' | null
+    >
     statusMessage: FormField<HTMLInputElement, string>
     category: FormField<HTMLInputElement, string>
     themes: FormField<HTMLInputElement, string>

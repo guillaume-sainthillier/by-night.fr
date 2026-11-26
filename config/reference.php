@@ -2555,6 +2555,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
  *     preload?: bool|Param, // Preload priority images through a Link header (and 103 Early Hints when sent). Needs symfony/web-link, does nothing without it. // Default: true
+ *     placeholder_onload?: bool|Param, // Remove the placeholder of a loaded image with an inline onload handler. Turn off under a Content-Security-Policy forbidding inline handlers, and render picasso_placeholder_script() in the <head> instead. // Default: true
  *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
@@ -2569,6 +2570,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         components_y?: int|Param, // Vertical BlurHash components (1–9). // Default: 3
  *         driver?: scalar|Param|null, // Image processing driver for BlurHash (gd or imagick). // Default: "gd"
  *         service?: scalar|Param|null, // Service ID for custom placeholders (type: service). // Default: null
+ *     }>,
+ *     presets?: array<string, array{ // Default: []
+ *         width?: int|Param, // Display width. // Default: null
+ *         height?: int|Param, // Display height. // Default: null
+ *         sizes?: scalar|Param|null, // Responsive sizes attribute. // Default: null
+ *         quality?: int|Param, // Quality (1–100). // Default: null
+ *         fit?: scalar|Param|null, // Fit mode (contain, cover, crop, fill, crop-<x>-<y>…). // Default: null
+ *         placeholder?: scalar|Param|null, // true or false to enable or disable the placeholder, or a placeholder name. // Default: null
+ *         loader?: scalar|Param|null, // Loader name. // Default: null
+ *         transformer?: scalar|Param|null, // Transformer name. // Default: null
+ *         modifiers?: array<string, scalar|Param|null>,
  *     }>,
  *     loaders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2594,6 +2606,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         cache?: scalar|Param|null, // Glide cache target. Either a local path or a Flysystem storage name (resolved via FlysystemRegistry). // Default: null
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
+ *         watermarks?: scalar|Param|null, // Glide: directory or Flysystem storage name holding the watermark images the "mark" modifier names. // Default: null
  *         base_url?: scalar|Param|null, // Imgix: source domain (e.g. https://my-source.imgix.net). Glide: optional scheme and host prepended to generated image URLs, e.g. a CDN (https://img.example.com). // Default: null
  *         api_key?: scalar|Param|null, // Imgix API key for cache purge operations. // Default: null
  *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for imgix purge. // Default: null
@@ -3274,7 +3287,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     endpoint?: scalar|Param|null, // The API endpoint of the site key, as the browser reaches it: https://<your-instance>/<site-key>/ // Default: "%env(CAP_ENDPOINT)%"
  *     secret_key?: scalar|Param|null, // The secret key of the site key (not the ADMIN_KEY of the dashboard). // Default: "%env(CAP_SECRET_KEY)%"
  *     verify_url?: scalar|Param|null, // The /siteverify URL, as the server reaches it (e.g. http://cap:3000/<site-key>/siteverify in Docker). Defaults to <endpoint>siteverify. // Default: null
+ *     site_keys?: array<string, array{ // Default: []
+ *         endpoint?: scalar|Param|null,
+ *         secret_key?: scalar|Param|null,
+ *         verify_url?: scalar|Param|null, // Default: null
+ *     }>,
  *     enabled?: bool|Param, // false renders no widget and accepts every submission: for the test environment. // Default: true
+ *     test_tokens?: list<scalar|Param|null>,
+ *     profiler?: bool|Param, // Adds a Cap panel to the Symfony profiler: the tokens verified during the request and the answer of the Cap server. // Default: false
  *     http_client?: scalar|Param|null, // PSR-18 HTTP client service ID calling /siteverify. Defaults to Symfony's psr18.http_client. // Default: null
  *     request_factory?: scalar|Param|null, // PSR-17 request factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
  *     stream_factory?: scalar|Param|null, // PSR-17 stream factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
