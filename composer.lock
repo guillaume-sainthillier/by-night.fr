@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd7295f3c325bf789d3d48b41fc5d955",
+    "content-hash": "748a5554643bbb846c3ac5a48400fd1e",
     "packages": [
         {
             "name": "api-platform/core",
@@ -7508,16 +7508,16 @@
         },
         {
             "name": "silarhi/llms-txt-bundle",
-            "version": "v1.5.0",
+            "version": "v1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silarhi/llms-txt-bundle.git",
-                "reference": "0f4070aacf057140bf5a9557f8c2d3fa10fc6eff"
+                "reference": "b36ab292fb3b46d682bd7de58e92dc7e785f7170"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silarhi/llms-txt-bundle/zipball/0f4070aacf057140bf5a9557f8c2d3fa10fc6eff",
-                "reference": "0f4070aacf057140bf5a9557f8c2d3fa10fc6eff",
+                "url": "https://api.github.com/repos/silarhi/llms-txt-bundle/zipball/b36ab292fb3b46d682bd7de58e92dc7e785f7170",
+                "reference": "b36ab292fb3b46d682bd7de58e92dc7e785f7170",
                 "shasum": ""
             },
             "require": {
@@ -7527,12 +7527,14 @@
             "require-dev": {
                 "ergebnis/composer-normalize": "^2.58.0",
                 "friendsofphp/php-cs-fixer": "^3.95.32",
+                "nikic/php-parser": "^5.9.0",
                 "phpstan/extension-installer": "^1.4.3",
                 "phpstan/phpstan": "^2.3.7",
-                "phpstan/phpstan-strict-rules": "^2.1.1",
+                "phpstan/phpstan-strict-rules": "^2.1.2",
                 "phpstan/phpstan-symfony": "^2.1.1",
                 "phpunit/phpunit": "^11.5.57 || ^12.5.38 || ^13.4.1",
                 "rector/rector": "^2.9.2",
+                "shipmonk/dead-code-detector": "^1.4.2",
                 "symfony/browser-kit": "^6.4 || ^7.0 || ^8.0",
                 "symfony/console": "^6.4 || ^7.0 || ^8.0",
                 "symfony/css-selector": "^6.4 || ^7.0 || ^8.0",
@@ -7540,6 +7542,7 @@
                 "symfony/web-link": "^6.4 || ^7.0 || ^8.0"
             },
             "suggest": {
+                "shipmonk/dead-code-detector": "Keep the #[AsLlmsTxtLinkProvider] methods from being reported as dead: include vendor/silarhi/llms-txt-bundle/shipmonk.neon",
                 "silarhi/cursor-pagination": "Reads the large Doctrine result sets of LlmsTxtPopulateEvent listeners by keyset pages, with a flat memory",
                 "symfony/console": "Required for the llms-txt:dump command",
                 "symfony/twig-bundle": "Required for the llms_txt_url() and llms_txt_link() Twig functions",
@@ -7578,8 +7581,8 @@
                 "issues": "https://github.com/silarhi/llms-txt-bundle/issues",
                 "source": "https://github.com/silarhi/llms-txt-bundle"
             },
-            "time": "2026-11-26T16:15:18+00:00",
-            "published-time": "2026-11-26T16:15:37+00:00"
+            "time": "2026-11-26T21:00:41+00:00",
+            "published-time": "2026-11-26T21:01:09+00:00"
         },
         {
             "name": "silarhi/picasso-bundle",
