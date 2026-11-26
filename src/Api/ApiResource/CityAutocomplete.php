@@ -22,6 +22,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/cities',
+            // The same for every visitor: never opens a session
+            stateless: true,
             cacheHeaders: [
                 'max_age' => 31536000,
                 'shared_max_age' => 31536000,
