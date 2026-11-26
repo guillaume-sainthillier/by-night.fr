@@ -36,11 +36,13 @@ final readonly class PlaceRedirectManager
     }
 
     /**
+     * @param string $route the route of the URL, which the redirect to the venue's own keeps (its agenda, its calendar)
+     *
      * @throws RedirectException when the URL has to change: to the venue's own (301, its filters kept), or to the
      *                           location's page when no venue answers to it
      * @throws GoneHttpException when the venue of the location was deleted
      */
-    public function getPlace(?string $placeSlug, Location $location): Place
+    public function getPlace(?string $placeSlug, Location $location, string $route = 'app_agenda_by_place'): Place
     {
         $query = $this->requestStack->getCurrentRequest()?->query;
 
@@ -66,7 +68,7 @@ final readonly class PlaceRedirectManager
 
         // Another location, or the slug of a place merged into this one
         if ($location->getSlug() !== $place->getLocationSlug() || $placeSlug !== $place->getSlug()) {
-            throw new RedirectException($this->router->generate('app_agenda_by_place', [...$query?->all() ?? [], 'location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()]));
+            throw new RedirectException($this->router->generate($route, [...$query?->all() ?? [], 'location' => $place->getLocationSlug(), 'placeSlug' => $place->getSlug()]));
         }
 
         return $place;
