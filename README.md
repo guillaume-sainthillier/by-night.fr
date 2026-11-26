@@ -196,6 +196,18 @@ docker compose exec -T worker /app/bin/console app:digest:send -vv
 Run again the same week, it queues only the members not sent it yet: the week sent is kept on the member. A city with
 fewer than three events that weekend sends nothing.
 
+### Follow alerts
+
+The members who follow a publisher or a venue hear of its new events by e-mail. A host cron queues them once a day at
+17:00 UTC (`0 17 * * *`), one message per member on the `async` transport, sent by the worker:
+
+```bash
+docker compose exec -T worker /app/bin/console app:follows:send-alerts -vv
+```
+
+Run again the same day, it queues no one: until when a member heard is kept on them. A member without news gets no
+e-mail. They share Mailjet's daily cap with the other e-mails (see the publishers' news).
+
 ### Publishers' news
 
 The owners of an organizer page get the news of the site, an edition at a time (`App\Enum\PublisherNewsEdition`). A

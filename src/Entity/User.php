@@ -221,6 +221,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
     private bool $publisherNews = true;
 
+    /** Whether the member hears by e-mail of the new events of the publishers and the venues they follow */
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $followAlerts = true;
+
+    /** Until when the member heard of the new events they follow: the next e-mail tells what went online since */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $followAlertsSentAt = null;
+
     private bool $sendToElasticsearch = false;
 
     public function __construct()
@@ -521,6 +529,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     public function setPublisherNews(bool $publisherNews): self
     {
         $this->publisherNews = $publisherNews;
+
+        return $this;
+    }
+
+    public function isFollowAlerts(): bool
+    {
+        return $this->followAlerts;
+    }
+
+    public function setFollowAlerts(bool $followAlerts): self
+    {
+        $this->followAlerts = $followAlerts;
+
+        return $this;
+    }
+
+    public function getFollowAlertsSentAt(): ?DateTimeImmutable
+    {
+        return $this->followAlertsSentAt;
+    }
+
+    public function setFollowAlertsSentAt(?DateTimeImmutable $followAlertsSentAt): self
+    {
+        $this->followAlertsSentAt = $followAlertsSentAt;
 
         return $this;
     }

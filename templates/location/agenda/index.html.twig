@@ -180,6 +180,10 @@
                             <h1 class="text-start mb-2">{{ block('page_title') }}</h1>
                         {% endif %}
                         {# The title says it on a phone, where the date shortcuts must come into sight #}
+                        {# A venue's page: the visitor follows it, to hear of its new events #}
+                        {% if place %}
+                            <twig:FollowButton target="{{ place }}" class="mb-3" />
+                        {% endif %}
                         {% if datePage %}
                             {# Said on a phone too: it is what the page is about, the days it lists #}
                             <p class="text-secondary mb-0">

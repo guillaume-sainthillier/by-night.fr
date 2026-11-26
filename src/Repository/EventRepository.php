@@ -1190,6 +1190,50 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The events of these publishers and venues that went online in ($since, $until] and are still to come, online,
+     * not folded into another one's page: what their followers hear of (App\Follow\FollowAlertSender). One query per
+     * kind, each on its own index.
+     *
+     * @param list<int> $publisherIds
+     * @param list<int> $placeIds
+     *
+     * @return list<Event> the soonest first
+     */
+    public function findPublishedForFollowers(array $publisherIds, array $placeIds, DateTimeImmutable $since, DateTimeImmutable $until): array
+    {
+        $events = [];
+        foreach (['publisher' => $publisherIds, 'place' => $placeIds] as $field => $ids) {
+            if ([] === $ids) {
+                continue;
+            }
+
+            /** @var list<Event> $found */
+            $found = $this
+                ->createQueryBuilder('e')
+                ->where(\sprintf('e.%s IN (:ids)', $field))
+                ->andWhere('e.publishedAt > :since')
+                ->andWhere('e.publishedAt <= :until')
+                ->andWhere('e.endDate >= :today')
+                ->andWhere('e.draft = false')
+                ->andWhere('e.duplicateOf IS NULL')
+                ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+                ->setParameter('since', $since)
+                ->setParameter('until', $until)
+                ->setParameter('today', $until->format('Y-m-d'))
+                ->getQuery()
+                ->getResult();
+            foreach ($found as $event) {
+                $events[$event->getId()] = $event;
+            }
+        }
+
+        $events = array_values($events);
+        usort($events, static fn (Event $a, Event $b): int => [$a->getStartDate(), $a->getId()] <=> [$b->getStartDate(), $b->getId()]);
+
+        return $events;
+    }
+
+    /**
      * @return int the number of published events of a member's calendar: the ones their profile lists
      */
     public function getUserFavoriteEventsCount(User $user): int

@@ -269,6 +269,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     private ?DateTimeImmutable $flaggedForAlertAt = null;
 
     /**
+     * When it first went online (imported, or published by its author): what its followers hear of
+     * (App\Follow\FollowAlertSender). Put back to a draft and online again, it keeps it. Null while never online (the
+     * events online before it was recorded were given their creation, Version20261126092535).
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?DateTimeImmutable $publishedAt = null;
+
+    /**
      * The member of its family whose picture its page shows, much larger than its own (a CDiscount poster in 2048px
      * beside Fnac's 222px): set by EventFamilyResolver, the file stays with the row it was downloaded for.
      */
@@ -585,6 +593,21 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function updateEndDate(): void
     {
         $this->endDate ??= $this->startDate;
+    }
+
+    /**
+     * An event saved online for the first time (an import, a member who publishes at once, a draft put online) is
+     * published then.
+     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function stampPublication(): void
+    {
+        if ($this->draft) {
+            return;
+        }
+
+        $this->publishedAt ??= new DateTimeImmutable();
     }
 
     public function getLocationSlug(): ?string
@@ -1504,6 +1527,18 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
     public function getFlaggedForAlertAt(): ?DateTimeImmutable
     {
         return $this->flaggedForAlertAt;
+    }
+
+    public function getPublishedAt(): ?DateTimeImmutable
+    {
+        return $this->publishedAt;
+    }
+
+    public function setPublishedAt(?DateTimeImmutable $publishedAt): self
+    {
+        $this->publishedAt = $publishedAt;
+
+        return $this;
     }
 
     public function setFlaggedForAlertAt(?DateTimeImmutable $flaggedForAlertAt): self

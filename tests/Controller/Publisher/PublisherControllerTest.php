@@ -14,6 +14,7 @@ use App\Entity\Event;
 use App\Entity\Publisher;
 use App\Enum\PublisherDistinction;
 use App\Factory\EventFactory;
+use App\Factory\FollowFactory;
 use App\Factory\PublisherFactory;
 use App\Factory\UserFactory;
 use App\Tests\AppWebTestCase;
@@ -42,6 +43,34 @@ final class PublisherControllerTest extends AppWebTestCase
         self::assertSame(['Concert de jazz'], $crawler->filter('#a-venir .card-body h3')->each(static fn ($title): string => trim($title->text())));
         self::assertSame(['Concert de rock'], $crawler->filter('#passes .card-body h3')->each(static fn ($title): string => trim($title->text())));
         self::assertSelectorNotExists('meta[name="robots"]');
+    }
+
+    public function testAVisitorFollowsThePublisherOnceLoggedIn(): void
+    {
+        $client = self::createClient();
+        PublisherFactory::createOne(['name' => 'Le Bikini']);
+
+        $client->request('GET', '/organisateurs/le-bikini');
+
+        self::assertSelectorExists('aside a[href="/login?_target_path=/organisateurs/le-bikini%23suivre"]');
+    }
+
+    public function testAMemberFollowsThePublisherButNotTheirOwn(): void
+    {
+        $client = self::createClient();
+        $member = UserFactory::createOne();
+        $publisher = PublisherFactory::createOne(['name' => 'Le Bikini']);
+        FollowFactory::createOne(['user' => $member, 'publisher' => $publisher]);
+        FollowFactory::createOne(['publisher' => $publisher]);
+        $client->loginUser($member);
+
+        $client->request('GET', '/organisateurs/le-bikini');
+        self::assertSelectorExists(\sprintf('aside .btn-follow.btn-primary[data-href="/api/publishers/%d/follow"][data-intent="suivre"]', $publisher->getId()));
+        self::assertSelectorTextContains('aside [data-followers]', '2 abonnés');
+
+        $client->loginUser($publisher->getOwner());
+        $client->request('GET', '/organisateurs/le-bikini');
+        self::assertSelectorNotExists('aside .btn-follow');
     }
 
     public function testThePageLeadsToTheMemberWhoRunsIt(): void

@@ -143,7 +143,8 @@
                         <div class="card form-panel mb-0">
                             <div class="card-body">
                                 {{ form_row(form.weekendDigest, {row_class: 'mb-3'}) }}
-                                {{ form_row(form.outingAlerts, {row_class: form.publisherNews is defined ? 'mb-3' : 'mb-0', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
+                                {{ form_row(form.outingAlerts, {row_class: 'mb-3', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
+                                {{ form_row(form.followAlerts, {row_class: form.publisherNews is defined ? 'mb-3' : 'mb-0', help: 'Les organisateurs et les lieux que vous suivez annoncent un événement : nous vous l\'écrivons, une fois par jour au plus.'}) }}
                                 {% if form.publisherNews is defined %}
                                     {{ form_row(form.publisherNews, {row_class: 'mb-0', help: 'Une fois par mois au plus, ce qui change sur By Night pour vos événements et votre page organisateur.'}) }}
                                 {% endif %}

@@ -1,0 +1,48 @@
+{% extends 'layouts/full.html.twig' %}
+
+{# @var user \App\Entity\User #}
+{# @var action string the signed link itself, which the confirmation posts to #}
+
+{% block title 'Mes abonnements' %}
+
+{% block breadcrumb -%}
+    {% do menu.addItem('Mes abonnements', action) %}
+{%- endblock %}
+
+{% block body %}
+    <div class="container-lg py-4 py-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+                <div class="card card-lg mb-0">
+                    <div class="card-body p-4 p-md-5 text-center">
+                        {% if user.followAlerts %}
+                            <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
+                                <twig:Icon name="lucide:mail-x" />
+                            </span>
+                            <h1 class="mb-2">Ne plus recevoir les nouveaux événements que vous suivez&nbsp;?</h1>
+                            <p class="text-secondary mb-4">
+                                Quand un organisateur ou un lieu que vous suivez annonce un événement, nous vous l'écrivons, une fois par jour au plus.
+                            </p>
+                            <form method="post" action="{{ action }}">
+                                <input type="hidden" name="List-Unsubscribe" value="One-Click" />
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <twig:Icon name="lucide:bell-off" />
+                                    Ne plus les recevoir
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="avatar avatar-lg rounded-circle bg-teal-lt mb-3">
+                                <twig:Icon name="lucide:check" />
+                            </span>
+                            <h1 class="mb-2">C'est noté</h1>
+                            <p class="text-secondary mb-0">
+                                Vous ne recevrez plus ces e-mails. Vous pouvez les réactiver depuis
+                                <a href="{{ path('app_user_edit') }}">votre compte</a>.
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'email/layout.txt.twig' %}
+
+{% block heading %}{{ '{count, plural, one {Un nouvel événement} other {# nouveaux événements}}'|trans({count: count}, 'messages+intl-icu') }}{% endblock %}
+
+{% block body %}
+Bonjour {{ user.firstname ?: user.username }},
+
+Voici ce que les organisateurs et les lieux que vous suivez viennent d'annoncer sur By Night.
+{% for event in events %}
+{% set session = event.sessionFor %}
+
+{{ event.name }}
+{% if session %}
+{{ session.startAt|format_date(pattern: 'EEEE d MMMM')|capitalize }}{{ session_hours(session) ? ' · ' ~ session_hours(session) }}
+{% endif %}
+{% if event.placeName %}
+{{ event.placeName }}{{ event.placeCity ? ', ' ~ event.placeCity }}
+{% endif %}
+{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})|utm('event') }}
+{% endfor %}
+{% if count > events|length %}
+
+{{ '{count, plural, one {Et un autre} other {Et # autres}}'|trans({count: count - events|length}, 'messages+intl-icu') }} sur leurs pages.
+{% endif %}
+
+Mes abonnements : {{ url('app_follow_list')|utm('follows') }}
+{% endblock %}
+
+{% block footer %}Vous recevez cet e-mail car vous suivez des organisateurs ou des lieux sur By Night.
+Ne plus recevoir ces e-mails : {{ unsubscribeUrl }}
+Gérer mes préférences : {{ url('app_user_edit')|utm('preferences') }}{% endblock %}
