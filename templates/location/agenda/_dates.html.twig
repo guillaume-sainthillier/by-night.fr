@@ -9,8 +9,7 @@
 {% set withFilters = withFilters ?? true %}
 <div class="d-flex flex-wrap align-items-center gap-2{{ withFilters ? ' chips-scroll-mobile' }}"{% if withFilters %} id="agenda-dates"{% endif %} role="group" aria-label="Dates">
     {% if withFilters %}
-        <twig:Tabler:Button variant="default" size="sm" pill type="button" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters" class="d-lg-none">
-            <twig:Tabler:Icon name="lucide:sliders-horizontal" />
+        <twig:Tabler:Button variant="default" size="sm" pill type="button" class="d-lg-none" icon="lucide:sliders-horizontal" offcanvas="agenda-filters">
             Filtres
         </twig:Tabler:Button>
     {% endif %}

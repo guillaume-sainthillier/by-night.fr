@@ -55,8 +55,7 @@
                 </twig:FormCard>
 
                 <div class="text-end mb-5">
-                    <twig:Tabler:Button variant="primary" size="lg" type="submit">
-                        <twig:Tabler:Icon name="lucide:save" />
+                    <twig:Tabler:Button variant="primary" size="lg" type="submit" icon="lucide:save">
                         Enregistrer
                     </twig:Tabler:Button>
                 </div>
@@ -72,8 +71,7 @@
                         <label class="form-label" for="widget-code">Collez ce code dans une page de votre site</label>
                         <div class="input-group mb-2">
                             <textarea class="form-control font-monospace small" id="widget-code" rows="3" readonly>{{ widgetCode }}</textarea>
-                            <twig:Tabler:Button variant="default" type="button" data-copy="{{ widgetCode }}" data-copy-message="Code copié !">
-                                <twig:Tabler:Icon name="lucide:copy" />
+                            <twig:Tabler:Button variant="default" type="button" data-copy="{{ widgetCode }}" data-copy-message="Code copié !" icon="lucide:copy">
                                 Copier
                             </twig:Tabler:Button>
                         </div>
@@ -115,8 +113,7 @@
                                 {{ form_row(deleteForm.heir) }}
                             {% endif %}
                             {{ form_row(deleteForm.name) }}
-                            <twig:Tabler:Button variant="danger" type="submit">
-                                <twig:Tabler:Icon name="lucide:trash-2" />
+                            <twig:Tabler:Button variant="danger" type="submit" icon="lucide:trash-2">
                                 Supprimer la page
                             </twig:Tabler:Button>
                         {{ form_end(deleteForm) }}

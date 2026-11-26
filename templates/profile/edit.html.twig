@@ -155,8 +155,7 @@
                                 Votre photo, votre nom d'utilisateur et votre présentation figurent sur
                                 <a href="{{ publicProfileUrl }}">votre profil public</a>.
                             </p>
-                            <twig:Tabler:Button variant="primary" type="submit" class="flex-shrink-0">
-                                <twig:Tabler:Icon name="lucide:save" />
+                            <twig:Tabler:Button variant="primary" type="submit" class="flex-shrink-0" icon="lucide:save">
                                 Enregistrer les modifications
                             </twig:Tabler:Button>
                         </div>
@@ -207,8 +206,7 @@
                         {{ form_row(formChangePassword.plainPassword) }}
 
                         <div class="text-center border-top pt-4 mt-4">
-                            <twig:Tabler:Button variant="primary" type="submit">
-                                <twig:Tabler:Icon name="lucide:rotate-ccw-key" />
+                            <twig:Tabler:Button variant="primary" type="submit" icon="lucide:rotate-ccw-key">
                                 Mettre à jour le mot de passe
                             </twig:Tabler:Button>
                         </div>
@@ -312,8 +310,7 @@
                         </twig:Tabler:Card>
 
                         <div class="d-flex flex-column flex-sm-row gap-2">
-                            <twig:Tabler:Button variant="danger" type="submit" data-delete-submit>
-                                <twig:Tabler:Icon name="lucide:trash-2" />
+                            <twig:Tabler:Button variant="danger" type="submit" data-delete-submit icon="lucide:trash-2">
                                 Supprimer mon compte
                             </twig:Tabler:Button>
                             <a href="#profile" class="btn" data-account-tab>

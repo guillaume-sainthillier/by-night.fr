@@ -59,8 +59,7 @@
             <div class="mb-2">{{ import.failureReason }}</div>
             <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
-                <twig:Tabler:Button variant="warning" type="submit">
-                    <twig:Tabler:Icon name="lucide:rotate-cw" />
+                <twig:Tabler:Button variant="warning" type="submit" icon="lucide:rotate-cw">
                     Reprendre l’import
                 </twig:Tabler:Button>
             </form>
@@ -96,8 +95,7 @@
                 {% if import.validCount > 0 %}
                     <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}" id="import-run-form">
                         <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
-                        <twig:Tabler:Button variant="default" type="submit" class="btn-teal">
-                            <twig:Tabler:Icon name="lucide:upload" />
+                        <twig:Tabler:Button variant="default" type="submit" class="btn-teal" icon="lucide:upload">
                             {{ '{count, plural, one {Importer l’événement valide} other {Importer les {count, number} événements valides}}'|trans({count: import.validCount}, 'messages+intl-icu') }}
                         </twig:Tabler:Button>
                     </form>
@@ -176,16 +174,13 @@
                     <span class="fw-bold me-auto">
                         {{ '{count, plural, one {L’événement créé} other {Les {count, number} événements créés}}'|trans({count: created_ids|length}, 'messages+intl-icu') }}
                     </span>
-                    <twig:Tabler:Button variant="default" type="submit" name="action" value="publish" class="btn-teal">
-                        <twig:Tabler:Icon name="lucide:eye" />
+                    <twig:Tabler:Button variant="default" type="submit" name="action" value="publish" class="btn-teal" icon="lucide:eye">
                         Publier
                     </twig:Tabler:Button>
-                    <twig:Tabler:Button variant="default" type="submit" name="action" value="draft">
-                        <twig:Tabler:Icon name="lucide:eye-off" />
+                    <twig:Tabler:Button variant="default" type="submit" name="action" value="draft" icon="lucide:eye-off">
                         Passer en brouillon
                     </twig:Tabler:Button>
-                    <twig:Tabler:Button variant="danger" appearance="outline" type="submit" name="action" value="delete">
-                        <twig:Tabler:Icon name="lucide:trash-2" />
+                    <twig:Tabler:Button variant="danger" appearance="outline" type="submit" name="action" value="delete" icon="lucide:trash-2">
                         Supprimer
                     </twig:Tabler:Button>
                 </twig:Tabler:Card:Body>
@@ -216,7 +211,7 @@
             </twig:Tabler:Table>
             {% if outcomes|length > shown %}
                 <twig:Tabler:Card:Footer>
-                    <twig:Tabler:Button variant="default" size="sm" block type="button" data-bs-toggle="collapse" data-bs-target="#import-other-outcomes" aria-expanded="false" aria-controls="import-other-outcomes" class="btn-collapse-toggle collapsed">
+                    <twig:Tabler:Button variant="default" size="sm" block type="button" aria-expanded="false" class="btn-collapse-toggle collapsed" collapse="import-other-outcomes">
                         <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre événement} other {Voir les {count, number} autres événements}}'|trans({count: outcomes|length - shown}, 'messages+intl-icu') }}</span>
                         <span class="when-expanded">Masquer les autres événements</span>
                         <twig:Tabler:Icon name="lucide:chevron-down" class="ms-1" />

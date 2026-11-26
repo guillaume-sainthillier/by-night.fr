@@ -71,8 +71,7 @@
                     </a>
                     <form method="post" action="{{ path('app_user_security_passkey_delete', {uuid: key.uuid}) }}" data-confirm-message="La clé « {{ key.name }} » ne pourra plus confirmer vos connexions." data-confirm-button="Supprimer">
                         <input type="hidden" name="_token" value="{{ csrf_token('two-factor-passkey-delete') }}">
-                        <twig:Tabler:Button variant="danger" appearance="outline" size="sm" iconOnly type="submit" title="Supprimer">
-                            <twig:Tabler:Icon name="lucide:trash-2" /><span class="visually-hidden">Supprimer {{ key.name }}</span>
+                        <twig:Tabler:Button variant="danger" appearance="outline" size="sm" iconOnly type="submit" title="Supprimer" icon="lucide:trash-2"><span class="visually-hidden">Supprimer {{ key.name }}</span>
                         </twig:Tabler:Button>
                     </form>
                 </twig:Tabler:ListGroup:Item>

@@ -74,8 +74,7 @@
             <twig:Tabler:Card:Footer class="d-flex flex-wrap justify-content-between gap-2">
                 <form method="post" action="{{ path('app_two_factor_recovery_request') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token(constant('App\\Controller\\TwoFactorRecoveryController::CSRF_TOKEN_ID')) }}">
-                    <twig:Tabler:Button variant="default" appearance="link" type="submit" class="p-0 border-0 bg-transparent">
-                        <twig:Tabler:Icon name="lucide:life-buoy" />
+                    <twig:Tabler:Button variant="default" appearance="link" type="submit" class="p-0 border-0 bg-transparent" icon="lucide:life-buoy">
                         J’ai perdu l’accès à mes facteurs
                     </twig:Tabler:Button>
                 </form>

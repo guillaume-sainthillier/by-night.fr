@@ -15,8 +15,7 @@
         {% set following = is_following(target) %}
         <twig:Tabler:Button variant="{{ following ? 'primary' : 'default' }}" size="{{ small ? 'sm' : 'md' }}" class="btn-follow"
                 data-follow="{{ follow_kind(target) }}" data-follow-id="{{ target.id }}"
-                data-intent="suivre" aria-pressed="{{ following ? 'true' : 'false' }}">
-            <twig:Tabler:Icon name="lucide:bell" />
+                data-intent="suivre" aria-pressed="{{ following ? 'true' : 'false' }}" icon="lucide:bell">
             <span class="btn-follow-label">{{ following ? 'Suivi' : 'Suivre' }}</span>
         </twig:Tabler:Button>
     {% else %}

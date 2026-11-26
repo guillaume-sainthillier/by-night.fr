@@ -11,8 +11,7 @@
     {{ form_widget(form.file, {attr: {'aria-label': form.file.vars.label}}) }}
 </div>
 {{ form_errors(form.file) }}
-<twig:Tabler:Button variant="default" type="submit" class="btn-teal mt-2">
-    <twig:Tabler:Icon name="lucide:search-check" />
+<twig:Tabler:Button variant="default" type="submit" class="btn-teal mt-2" icon="lucide:search-check">
     Vérifier le fichier
 </twig:Tabler:Button>
 {{ form_end(form) }}

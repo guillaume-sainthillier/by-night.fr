@@ -75,8 +75,7 @@
                                     {{ form_row(form.dateRange, {label: '<span class="date-mode-single">Date</span><span class="date-mode-multiple">Période</span>', label_html: true, icon_prepend: 'lucide:calendar-days', row_class: 'mb-0'}) }}
                                 </div>
                                 <div class="col-md-auto date-mode-multiple">
-                                    <twig:Tabler:Button variant="primary" block type="button" id="event-scheduler-generate">
-                                        <twig:Tabler:Icon name="lucide:zap" />
+                                    <twig:Tabler:Button variant="primary" block type="button" id="event-scheduler-generate" icon="lucide:zap">
                                         Générer les dates
                                     </twig:Tabler:Button>
                                 </div>
@@ -192,13 +191,11 @@
                                 <div class="d-flex flex-row-reverse align-items-center gap-2 ms-auto">
                                     {% block form_actions_extra '' %}
                                     {% block form_submit %}
-                                        <twig:Tabler:Button variant="primary" size="lg" type="submit">
-                                            <twig:Tabler:Icon name="lucide:rocket" />
+                                        <twig:Tabler:Button variant="primary" size="lg" type="submit" icon="lucide:rocket">
                                             Publier<span class="d-none d-sm-inline ms-1"> l'événement</span>
                                         </twig:Tabler:Button>
                                     {% endblock %}
-                                    <twig:Tabler:Button variant="secondary" appearance="outline" type="submit" name="{{ form.saveDraft.vars.full_name }}" title="L'événement ne sera pas visible sur le site" data-skip-duplicates>
-                                        <twig:Tabler:Icon name="lucide:eye-off" />
+                                    <twig:Tabler:Button variant="secondary" appearance="outline" type="submit" name="{{ form.saveDraft.vars.full_name }}" title="L'événement ne sera pas visible sur le site" data-skip-duplicates icon="lucide:eye-off">
                                         <span class="form-actions-label">{{ form.saveDraft.vars.label }}</span>
                                     </twig:Tabler:Button>
                                     {% do form.saveDraft.setRendered %}

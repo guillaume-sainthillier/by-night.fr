@@ -20,9 +20,7 @@
 
 {% block form_actions_extra %}
     <twig:Tabler:Dropdown direction="up">
-        <twig:Tabler:Button variant="secondary" appearance="ghost" iconOnly type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Plus d'actions" title="Plus d'actions">
-            <twig:Tabler:Icon name="lucide:ellipsis-vertical" />
-        </twig:Tabler:Button>
+        <twig:Tabler:Button variant="secondary" appearance="ghost" iconOnly type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Plus d'actions" title="Plus d'actions" icon="lucide:ellipsis-vertical" />
         <twig:Tabler:Dropdown:Menu end>
             <twig:Tabler:Dropdown:Item icon="lucide:eye" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
                 Voir l'événement
@@ -47,8 +45,7 @@
     {% if event.draft %}
         {{ parent() }}
     {% else %}
-        <twig:Tabler:Button variant="primary" size="lg" type="submit">
-            <twig:Tabler:Icon name="lucide:save" />
+        <twig:Tabler:Button variant="primary" size="lg" type="submit" icon="lucide:save">
             Enregistrer
         </twig:Tabler:Button>
     {% endif %}

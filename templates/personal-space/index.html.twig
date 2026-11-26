@@ -98,16 +98,13 @@
                     <input type="hidden" name="_target_path" value="{{ app.request.requestUri }}">
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <span class="fw-bold me-auto" data-bulk-count aria-live="polite"></span>
-                        <twig:Tabler:Button variant="default" size="sm" type="submit" name="action" value="publish" class="btn-teal">
-                            <twig:Tabler:Icon name="lucide:eye" />
+                        <twig:Tabler:Button variant="default" size="sm" type="submit" name="action" value="publish" class="btn-teal" icon="lucide:eye">
                             Publier
                         </twig:Tabler:Button>
-                        <twig:Tabler:Button variant="default" size="sm" type="submit" name="action" value="draft">
-                            <twig:Tabler:Icon name="lucide:eye-off" />
+                        <twig:Tabler:Button variant="default" size="sm" type="submit" name="action" value="draft" icon="lucide:eye-off">
                             Passer en brouillon
                         </twig:Tabler:Button>
-                        <twig:Tabler:Button variant="danger" appearance="outline" size="sm" type="submit" name="action" value="delete">
-                            <twig:Tabler:Icon name="lucide:trash-2" />
+                        <twig:Tabler:Button variant="danger" appearance="outline" size="sm" type="submit" name="action" value="delete" icon="lucide:trash-2">
                             Supprimer
                         </twig:Tabler:Button>
                     </div>
@@ -192,7 +189,7 @@
                                     <a class="btn btn-icon d-inline-flex" href="{{ path('app_event_edit', {id: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement" aria-label="Modifier l'événement">
                                         <twig:Tabler:Icon name="lucide:pencil" class="text-teal" />
                                     </a>
-                                    <twig:Tabler:Button variant="default" iconOnly type="button" data-target=".form-delete-{{ event.id }}" data-bs-toggle="tooltip" title="Supprimer l'événement" aria-label="Supprimer l'événement" class="d-inline-flex">
+                                    <twig:Tabler:Button variant="default" iconOnly type="button" data-target=".form-delete-{{ event.id }}" aria-label="Supprimer l'événement" class="d-inline-flex" tooltip="Supprimer l'événement">
                                         <twig:Tabler:Icon name="lucide:trash-2" class="text-danger" />
                                     </twig:Tabler:Button>
                                 </div>

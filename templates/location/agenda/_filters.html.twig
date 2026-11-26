@@ -59,8 +59,7 @@
                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                 {% endfor %}
                 {# Below lg, the button of the bottom bar sends the form #}
-                <twig:Tabler:Button variant="primary" block type="submit" class="d-none d-lg-inline-flex">
-                    <twig:Tabler:Icon name="lucide:search" />
+                <twig:Tabler:Button variant="primary" block type="submit" class="d-none d-lg-inline-flex" icon="lucide:search">
                     Rechercher
                 </twig:Tabler:Button>
                 {{ form_end(form) }}

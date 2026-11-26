@@ -230,8 +230,7 @@
                         <twig:Tabler:Card:Footer id="event-actions" data-share class="d-flex flex-wrap align-items-center gap-2">
                             {{ include('location/event/_going.html.twig') }}
                             {# A phone's own share sheet (share.ts), in place of the menu and the copy #}
-                            <twig:Tabler:Button variant="default" type="button" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" data-share-native-only hidden>
-                                <twig:Tabler:Icon name="lucide:share-2" />
+                            <twig:Tabler:Button variant="default" type="button" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" data-share-native-only hidden icon="lucide:share-2">
                                 Partager
                             </twig:Tabler:Button>
                             <twig:Tabler:Dropdown data-share-fallback>
@@ -249,8 +248,7 @@
                                         Par e-mail
                                     </twig:Tabler:Dropdown:Item>
                                 </twig:Tabler:Dropdown:Menu>
-                                <twig:Tabler:Button variant="default" type="button" data-copy="{{ eventUrl }}">
-                                    <twig:Tabler:Icon name="lucide:link" />
+                                <twig:Tabler:Button variant="default" type="button" data-copy="{{ eventUrl }}" icon="lucide:link">
                                     Copier le lien
                                 </twig:Tabler:Button>
                             </twig:Tabler:Dropdown>
@@ -539,12 +537,8 @@
                                 </div>
                             {% endif %}
                             <twig:Tabler:Button variant="default" size="sm" type="button"
-
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalContentRemovalRequest"
                                     data-event-id="{{ event.id }}"
-                                    data-event-url="{{ eventUrl }}" class="ms-auto">
-                                <twig:Tabler:Icon name="lucide:flag" />
+                                    data-event-url="{{ eventUrl }}" class="ms-auto" icon="lucide:flag" modal="modalContentRemovalRequest">
                                 Signaler ce contenu
                             </twig:Tabler:Button>
                         </twig:Tabler:Card:Footer>
@@ -576,8 +570,7 @@
                             {%- if bestOffer.priceLabel %} · {{ bestOffer.priceLabel.label }}{% endif %}
                         </a>
                     {% else %}
-                        <twig:Tabler:Button variant="default" type="button" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" class="flex-fill">
-                            <twig:Tabler:Icon name="lucide:share-2" />
+                        <twig:Tabler:Button variant="default" type="button" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" class="flex-fill" icon="lucide:share-2">
                             Partager
                         </twig:Tabler:Button>
                     {% endif %}

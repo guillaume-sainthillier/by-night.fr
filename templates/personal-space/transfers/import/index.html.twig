@@ -61,7 +61,7 @@
                             {% endfor %}
                         </div>
                     </dl>
-                    <twig:Tabler:Button variant="default" size="sm" block type="button" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns" class="mt-2 btn-collapse-toggle collapsed">
+                    <twig:Tabler:Button variant="default" size="sm" block type="button" aria-expanded="false" class="mt-2 btn-collapse-toggle collapsed" collapse="import-other-columns">
                         <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre colonne} other {Voir les {count, number} autres colonnes}}'|trans({count: other_columns|length}, 'messages+intl-icu') }}</span>
                         <span class="when-expanded">Masquer les autres colonnes</span>
                         <twig:Tabler:Icon name="lucide:chevron-down" class="ms-1" />

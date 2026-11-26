@@ -27,8 +27,7 @@
     <div class="mb-4" {{ load_page('agenda_map', {events: mapEvents}) }}>
         {# Shown from the start, so that the list does not move when the script comes #}
         <div class="d-flex justify-content-end">
-            <twig:Tabler:Button variant="default" size="sm" type="button" data-map-toggle aria-expanded="false" aria-controls="carte" data-open-label="Voir sur la carte" data-close-label="Masquer la carte">
-                <twig:Tabler:Icon name="lucide:map" />
+            <twig:Tabler:Button variant="default" size="sm" type="button" data-map-toggle aria-expanded="false" aria-controls="carte" data-open-label="Voir sur la carte" data-close-label="Masquer la carte" icon="lucide:map">
                 <span data-map-label>Voir sur la carte</span>
             </twig:Tabler:Button>
         </div>
