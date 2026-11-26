@@ -2657,6 +2657,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     dump_directory?: scalar|Param|null, // Where llms-txt:dump writes the file, and where the controller looks for it before building it on the fly. // Default: "%kernel.project_dir%/public"
  *     content_type?: scalar|Param|null, // The Content-Type served by the controller. "text/markdown" is more accurate, but browsers download it instead of showing it. // Default: "text/plain; charset=UTF-8"
  *     max_age?: int|Param, // The Cache-Control max-age of the controller responses, in seconds. // Default: 3600
+ *     full?: bool|array{ // llms-full.txt: the Markdown of the pages whose links have a "content", served at /llms-full.txt and dumped with llms.txt.
+ *         enabled?: bool|Param, // Default: false
+ *     },
+ *     markdown_versions?: bool|array{ // The Markdown versions of the pages: the routes whose "_format" requirement lists "md" answer Markdown to an Accept header preferring it, and link to it. Registers the "md" format, and stops Twig from escaping HTML in *.md.twig.
+ *         enabled?: bool|Param, // Default: false
+ *     },
  *     discovery?: array{
  *         link_header?: bool|Param, // Adds the file to the Link header of the HTML pages, through WebLink: needs symfony/web-link and "framework.web_link". // Default: false
  *         rel?: scalar|Param|null, // The relation of the Link header and of the llms_txt_link() tag. // Default: "llms-txt"
