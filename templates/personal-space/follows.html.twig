@@ -1,0 +1,61 @@
+{% extends 'layouts/default.html.twig' %}
+
+{# @var follows \App\Entity\Follow[] #}
+{# @var alerts bool whether the member hears of their new events by e-mail #}
+
+{% block title 'Mes abonnements' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Mes abonnements', url('app_follow_list')) %}
+{% endblock %}
+
+{% block body -%}
+    <p class="lead text-secondary mb-4">
+        Les organisateurs et les lieux que vous suivez&nbsp;: leurs nouveaux événements vous sont envoyés par e-mail, une fois par jour au plus.
+    </p>
+
+    {% if not alerts %}
+        <div class="alert alert-info">
+            <twig:Icon name="lucide:bell-off" />
+            <div>Vous avez désactivé ces e-mails. <a href="{{ path('app_user_edit') }}">Les réactiver depuis votre compte</a>.</div>
+        </div>
+    {% endif %}
+
+    {% if follows %}
+        <div class="card">
+            <div class="list-group list-group-flush" id="follows">
+                {% for follow in follows %}
+                    {% set publisher = follow.publisher %}
+                    {% set place = follow.place %}
+                    <div class="list-group-item d-flex flex-wrap align-items-center gap-3">
+                        {% if publisher %}
+                            <twig:Publisher:Avatar publisher="{{ publisher }}" size="{{ 40 }}" class="avatar rounded flex-shrink-0" />
+                        {% else %}
+                            <span class="avatar bg-teal-lt flex-shrink-0"><twig:Icon name="lucide:landmark" /></span>
+                        {% endif %}
+                        <div class="flex-fill min-w-0">
+                            {% if publisher %}
+                                <a class="fw-bold d-block text-truncate" href="{{ path('app_publisher_index', {slug: publisher.slug}) }}">{{ publisher.name }}</a>
+                                <div class="small text-secondary">Organisateur</div>
+                            {% else %}
+                                <a class="fw-bold d-block text-truncate" href="{{ path('app_agenda_by_place', {location: place.locationSlug, placeSlug: place.slug}) }}">{{ place.name }}</a>
+                                <div class="small text-secondary text-truncate">Lieu{% if place.cityName %} · {{ place.cityName }}{% endif %}</div>
+                            {% endif %}
+                        </div>
+                        <twig:FollowButton target="{{ follow.target }}" small="{{ true }}" />
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="empty">
+                <div class="empty-icon"><twig:Icon name="lucide:bell" /></div>
+                <p class="empty-title">Vous ne suivez personne pour l'instant</p>
+                <p class="empty-subtitle text-secondary">
+                    Sur la page d'un organisateur ou d'un lieu, «&nbsp;Suivre&nbsp;» vous prévient de ses nouveaux événements.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+{%- endblock %}

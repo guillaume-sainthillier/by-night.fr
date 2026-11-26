@@ -235,4 +235,32 @@ class EventTest extends TestCase
         self::assertNull($duplicate->getDuplicateOf());
         self::assertFalse($duplicate->isDuplicate());
     }
+
+    public function testAnEventCreatedOnlineIsPublishedAsItIsSaved(): void
+    {
+        $event = new Event();
+        $event->stampPublication();
+
+        self::assertNotNull($event->getPublishedAt());
+    }
+
+    public function testADraftIsNotPublished(): void
+    {
+        $event = new Event()->setDraft(true);
+        $event->stampPublication();
+
+        self::assertNull($event->getPublishedAt());
+    }
+
+    public function testAPublishedEventKeepsItsDateWhenSavedAgain(): void
+    {
+        $event = new Event();
+        $event->stampPublication();
+        $published = $event->getPublishedAt();
+
+        $event->setDraft(true)->setDraft(false);
+        $event->stampPublication();
+
+        self::assertSame($published, $event->getPublishedAt());
+    }
 }

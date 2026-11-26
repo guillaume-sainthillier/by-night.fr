@@ -103,6 +103,37 @@ final readonly class MailerManager
     }
 
     /**
+     * The new events of the publishers and the venues a member follows (FollowAlertSender), which a mailbox offers to
+     * stop in one click (RFC 8058).
+     *
+     * @param list<Event> $events the first ones
+     * @param int         $count  how many there are in all
+     */
+    public function sendFollowAlertEmail(User $user, array $events, int $count, string $unsubscribeUrl): void
+    {
+        $email = $this->createEmail('email/follow-alert')
+            ->to($user->getEmail())
+            ->subject($this->translator->trans(
+                '{count, plural, one {Un nouvel événement} other {# nouveaux événements}} chez ceux que vous suivez',
+                ['count' => $count],
+                'messages+intl-icu',
+            ))
+            ->context([
+                'user' => $user,
+                'events' => $events,
+                'count' => $count,
+                'unsubscribeUrl' => $unsubscribeUrl,
+                'utm' => EmailUtm::campaign('follow-alert', $user->getFollowAlertsSentAt()?->format('Y-m-d') ?? 'first'),
+            ]);
+
+        $email->getHeaders()
+            ->addTextHeader('List-Unsubscribe', '<' . $unsubscribeUrl . '>')
+            ->addTextHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+
+        $this->sendMail($email);
+    }
+
+    /**
      * Tells a member going to an event what changed in it (OutingChangeNotifier). It can be turned off in one click,
      * from the e-mail or the mail app (RFC 8058).
      *
