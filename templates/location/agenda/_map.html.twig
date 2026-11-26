@@ -27,15 +27,15 @@
     <div class="mb-4" {{ load_page('agenda_map', {events: mapEvents}) }}>
         {# Shown from the start, so that the list does not move when the script comes #}
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-sm" data-map-toggle aria-expanded="false" aria-controls="carte" data-open-label="Voir sur la carte" data-close-label="Masquer la carte">
-                <twig:Icon name="lucide:map" />
+            <twig:Tabler:Button variant="default" size="sm" type="button" data-map-toggle aria-expanded="false" aria-controls="carte" data-open-label="Voir sur la carte" data-close-label="Masquer la carte">
+                <twig:Tabler:Icon name="lucide:map" />
                 <span data-map-label>Voir sur la carte</span>
-            </button>
+            </twig:Tabler:Button>
         </div>
-        <div class="card mt-3" id="carte" data-map hidden>
+        <twig:Tabler:Card id="carte" data-map hidden class="mt-3">
             {# MapLibre needs a box with a height; its controls and markers stay below the header and the menus of the
                page. Its corners follow the card's #}
             <div data-map-canvas style="height: min(60vh, 480px); isolation: isolate; border-radius: var(--bs-card-inner-border-radius)"></div>
-        </div>
+        </twig:Tabler:Card>
     </div>
 {% endif %}

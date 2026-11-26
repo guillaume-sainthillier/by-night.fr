@@ -3,7 +3,7 @@
 {# @var to \DateTimeInterface|null the day the listing ends, when a window was searched #}
 {% props event, from = null, to = null %}
 
-<div class="card card-event card-layout scroll-item mb-0">
+<twig:Tabler:Card class="card-event card-layout scroll-item mb-0">
     {% if event.status or event.statusMessage %}
         <twig:Event:StatusAlert event="{{ event }}" />
     {% endif %}
@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="card-content">
-        <div class="card-body">
+        <twig:Tabler:Card:Body>
             <h3 class="h4 line-clamp-2">
                 <a title="Tous les détails de {{ event.name }}"
                    href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
@@ -28,7 +28,7 @@
             {% set otherDates = event.countUpcomingSessions(from) - 1 %}
             {% if session %}
                 <div class="detail-item">
-                    <twig:Icon name="lucide:calendar-days" />
+                    <twig:Tabler:Icon name="lucide:calendar-days" />
                     <div>
                         {% if session.endAt == null or session.startAt|date('Y-m-d') == session.endAt|date('Y-m-d') %}
                             <time datetime="{{ session.startAt|date('Y-m-d') }}">
@@ -58,7 +58,7 @@
             {% endif %}
             {% if event.placeName %}
                 <div class="detail-item">
-                    <twig:Icon name="lucide:map-pin" />
+                    <twig:Tabler:Icon name="lucide:map-pin" />
                     <div>
                         <span title="Sortir {{ event.placeName|at_place }}">
                             <strong class="font-weight-normal">{{ event.placeName }}</strong>
@@ -73,13 +73,13 @@
             {% endif %}
             {% if event.prices %}
                 <div class="detail-item">
-                    <twig:Icon name="lucide:ticket" />
+                    <twig:Tabler:Icon name="lucide:ticket" />
                     <div>{{ event.prices|prices_text }}</div>
                 </div>
             {% endif %}
             {% if event.publisher %}
                 <div class="detail-item">
-                    <twig:Icon name="lucide:megaphone" />
+                    <twig:Tabler:Icon name="lucide:megaphone" />
                     <div>
                         Par
                         <a class="one-line"
@@ -91,7 +91,7 @@
                 </div>
             {% elseif event.user %}
                 <div class="detail-item">
-                    <twig:Icon name="lucide:user" />
+                    <twig:Tabler:Icon name="lucide:user" />
                     <div>
                         Par
                         <a class="one-line"
@@ -102,6 +102,6 @@
                     </div>
                 </div>
             {% endif %}
-        </div>
+        </twig:Tabler:Card:Body>
     </div>
-</div>
+</twig:Tabler:Card>

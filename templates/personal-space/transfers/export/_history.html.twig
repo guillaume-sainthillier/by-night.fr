@@ -1,16 +1,16 @@
 {# The member's latest exports (ExportController::history()), read again when one of them changes #}
 {# @var exports \App\Entity\EventExport[] #}
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Vos derniers exports</h3>
-    </div>
+<twig:Tabler:Card>
+    <twig:Tabler:Card:Header>
+        <twig:Tabler:Card:Title>Vos derniers exports</twig:Tabler:Card:Title>
+    </twig:Tabler:Card:Header>
     {% if exports is empty %}
-        <div class="card-body text-secondary">Aucun export pour l’instant&nbsp;: vos fichiers apparaîtront ici, prêts à télécharger.</div>
+        <twig:Tabler:Card:Body class="text-secondary">Aucun export pour l’instant&nbsp;: vos fichiers apparaîtront ici, prêts à télécharger.</twig:Tabler:Card:Body>
     {% else %}
-        <div class="list-group list-group-flush">
+        <twig:Tabler:ListGroup flush>
             {% for export in exports %}
                 {{ include('personal-space/transfers/export/_row.html.twig') }}
             {% endfor %}
-        </div>
+        </twig:Tabler:ListGroup>
     {% endif %}
-</div>
+</twig:Tabler:Card>

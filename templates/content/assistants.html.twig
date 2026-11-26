@@ -29,7 +29,7 @@
                     <div class="input-group input-group-lg" id="adresse">
                         <input class="form-control font-monospace" id="mcp-url" type="text" value="{{ mcp_url }}" readonly>
                         <button class="btn btn-primary" type="button" data-copy-url="{{ mcp_url }}" data-copy-message="Adresse copiée !">
-                            <twig:Icon name="lucide:copy" />
+                            <twig:Tabler:Icon name="lucide:copy" />
                             Copier
                         </button>
                     </div>
@@ -43,7 +43,7 @@
                     ] %}
                         <div class="card card-sm shadow-sm mb-0">
                             <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar bg-primary-lt flex-shrink-0"><twig:Icon name="lucide:message-square" /></span>
+                                <span class="avatar bg-primary-lt flex-shrink-0"><twig:Tabler:Icon name="lucide:message-square" /></span>
                                 <div class="fw-semibold">«&nbsp;{{ question }}&nbsp;»</div>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                 <div class="col-md-4">
                     <div class="card card-layout mb-0">
                         <div class="card-body">
-                            <span class="avatar bg-{{ tool.tone }}-lt mb-3"><twig:Icon name="{{ tool.icon }}" /></span>
+                            <span class="avatar bg-{{ tool.tone }}-lt mb-3"><twig:Tabler:Icon name="{{ tool.icon }}" /></span>
                             <h3 class="h4 mb-1">{{ tool.title }}</h3>
                             <p class="text-secondary mb-2">{{ tool.text }}</p>
                             <code class="small">{{ tool.name }}</code>
@@ -117,7 +117,7 @@
                 <div class="col-md-6">
                     <div class="card card-sm mb-0">
                         <div class="card-body d-flex gap-3">
-                            <span class="avatar bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Icon name="{{ fact.icon }}" /></span>
+                            <span class="avatar bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Tabler:Icon name="{{ fact.icon }}" /></span>
                             <div>
                                 <div class="fw-semibold mb-1">{{ fact.title }}</div>
                                 <div class="text-secondary">{{ fact.text }}</div>

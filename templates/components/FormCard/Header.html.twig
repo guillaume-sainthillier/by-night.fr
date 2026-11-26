@@ -5,9 +5,9 @@
 {% props icon = null, tone = 'primary', title = null, description = null, badge = null, badgeTone = 'secondary' %}
 <div {{ attributes.defaults({class: 'd-flex align-items-start gap-3 mb-4'}) }}>
     {% if icon %}
-        <span class="avatar avatar-sm bg-{{ tone }}-lt flex-shrink-0">
-            <twig:Icon name="{{ icon }}" />
-        </span>
+        <twig:Tabler:Avatar size="sm" class="bg-{{ tone }}-lt flex-shrink-0">
+            <twig:Tabler:Icon name="{{ icon }}" />
+        </twig:Tabler:Avatar>
     {% endif %}
     <div class="flex-fill min-w-0">
         <h2 class="card-title text-start mb-0">{% block title %}{{ title }}{% endblock %}</h2>
@@ -17,7 +17,9 @@
     </div>
     {% block aside %}
         {% if badge %}
-            <span class="badge bg-{{ badgeTone }}-lt flex-shrink-0 d-none d-sm-inline-block">{{ badge }}</span>
+            {# Its content reads the props of the badge first, whose own `badge` is its classes #}
+            {% set label = badge %}
+            <twig:Tabler:Badge variant="" class="bg-{{ badgeTone }}-lt flex-shrink-0 d-none d-sm-inline-block">{{ label }}</twig:Tabler:Badge>
         {% endif %}
     {% endblock %}
 </div>

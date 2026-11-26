@@ -37,7 +37,7 @@
 
             <div class="dropzone-placeholder">
                 <div class="dropzone-icon">
-                    <twig:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
+                    <twig:Tabler:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
                 </div>
                 <div class="dropzone-text">
                     {% if has_existing_image %}
@@ -100,7 +100,7 @@
         {% if not disabled and allow_delete %}
             <div class="col-auto">
                 <button class="btn btn-icon btn-ghost-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
-                    <twig:Icon name="lucide:trash-2" />
+                    <twig:Tabler:Icon name="lucide:trash-2" />
                 </button>
             </div>
         {% endif %}
@@ -115,7 +115,7 @@
             </button>
             {% if not disabled and allow_delete %}
                 <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
-                    <twig:Icon name="lucide:x" />
+                    <twig:Tabler:Icon name="lucide:x" />
                 </button>
             {% endif %}
         </div>
@@ -153,7 +153,7 @@
         </div>
         {% if not disabled and allow_add %}
             <button type="button" class="add-collection btn btn-with-icon mt-2">
-                <span><twig:Icon name="lucide:plus" /></span>
+                <span><twig:Tabler:Icon name="lucide:plus" /></span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>
         {% endif %}
@@ -209,8 +209,8 @@
                 <ul class="list-inline mb-0 text-secondary" id="{{ rules_id }}">
                     {%- for rule in password_rules %}
                         <li class="list-inline-item me-2" data-password-meter-rule="{{ rule.pattern }}">
-                            <span class="text-secondary" data-password-meter-rule-icon="unmet"><twig:Icon name="lucide:circle" class="icon-inline" /></span>
-                            <span class="text-success d-none" data-password-meter-rule-icon="met"><twig:Icon name="lucide:circle-check" class="icon-inline" /></span>
+                            <span class="text-secondary" data-password-meter-rule-icon="unmet"><twig:Tabler:Icon name="lucide:circle" class="icon-inline" /></span>
+                            <span class="text-success d-none" data-password-meter-rule-icon="met"><twig:Tabler:Icon name="lucide:circle-check" class="icon-inline" /></span>
                             {{ rule.label }}
                         </li>
                     {%- endfor %}

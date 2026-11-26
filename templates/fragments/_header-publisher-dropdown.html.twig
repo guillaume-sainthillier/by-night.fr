@@ -16,13 +16,13 @@
                 <span class="d-none d-xl-block ps-2">{{ currentPublisher.name }}</span>
             {% endif %}
         </a>
-        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
+        <twig:Tabler:Dropdown:Menu end arrow data-bs-theme="light">
             {# Who it is, in its own case: Tabler's .dropdown-header is small capitals #}
             <div class="publisher-switcher-identity px-3 pt-2 pb-1">
                 <div class="fw-bold">{{ currentPublisher.name }}</div>
                 <div class="small text-secondary">Page organisateur</div>
             </div>
-            <div class="dropdown-divider"></div>
+            <twig:Tabler:Dropdown:Divider />
             {% for link in [
                 {route: 'app_event_list', label: 'Événements', icon: 'lucide:list-checks', routes: ['app_event_list', 'app_event_new', 'app_event_edit']},
                 {route: 'app_event_imports', label: 'Importer', icon: 'lucide:upload', routes: ['app_event_imports', 'app_event_import_show']},
@@ -30,29 +30,26 @@
                 {route: 'app_publisher_edit', label: 'Modifier la page', icon: 'lucide:pencil', routes: ['app_publisher_edit']},
             ] %}
                 {% set isCurrent = route in link.routes %}
-                <a class="dropdown-item{{ isCurrent ? ' active' }}" href="{{ path(link.route) }}"{% if isCurrent %} aria-current="page"{% endif %}>
-                    <twig:Icon name="{{ link.icon }}" />
+                <twig:Tabler:Dropdown:Item active="{{ isCurrent }}" icon="{{ link.icon }}" href="{{ path(link.route) }}" aria-current="{{ isCurrent ? 'page' : null }}">
                     {{ link.label }}
-                </a>
+                </twig:Tabler:Dropdown:Item>
             {% endfor %}
-            <a class="dropdown-item" href="{{ path('app_publisher_index', {slug: currentPublisher.slug}) }}">
-                <twig:Icon name="lucide:external-link" />
+            <twig:Tabler:Dropdown:Item icon="lucide:external-link" href="{{ path('app_publisher_index', {slug: currentPublisher.slug}) }}">
                 Voir la page publique
-            </a>
-            <div class="dropdown-divider"></div>
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Divider />
             {% if others %}
-                <span class="dropdown-header">Changer de page organisateur</span>
+                <twig:Tabler:Dropdown:Header>Changer de page organisateur</twig:Tabler:Dropdown:Header>
                 {% for publisher in others %}
-                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ publisher_switch_url(publisher) }}">
+                    <twig:Tabler:Dropdown:Item href="{{ publisher_switch_url(publisher) }}" class="d-flex align-items-center gap-2">
                         <twig:Publisher:Avatar publisher="{{ publisher }}" size="{{ 24 }}" class="avatar-xs" />
                         {{ publisher.name }}
-                    </a>
+                    </twig:Tabler:Dropdown:Item>
                 {% endfor %}
             {% endif %}
-            <a class="dropdown-item" href="{{ path('app_publisher_new', {suite: 'evenements'}) }}">
-                <twig:Icon name="lucide:plus" />
+            <twig:Tabler:Dropdown:Item icon="lucide:plus" href="{{ path('app_publisher_new', {suite: 'evenements'}) }}">
                 Créer une page organisateur
-            </a>
-        </div>
+            </twig:Tabler:Dropdown:Item>
+        </twig:Tabler:Dropdown:Menu>
     </li>
 {% endif %}

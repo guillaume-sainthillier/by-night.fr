@@ -33,31 +33,33 @@
                 <twig:FormCard icon="lucide:download" tone="blue" title="Nouvel export" description="Prêt en quelques instants, ci-contre.">
                     {{ form_start(form) }}
                     {% if query or filter %}
-                        <div class="alert alert-info" id="export-list-filter">
-                            Les événements de votre liste
-                            {%- if query %}, recherche «&nbsp;{{ query }}&nbsp;»{% endif %}
-                            {%- if filter %}, {{ filter.label|lower }}{% endif %}.
-                            <a class="alert-link" href="{{ path('app_event_exports') }}">Tout exporter</a>
-                        </div>
+                        <twig:Tabler:Alert variant="info" id="export-list-filter">
+                            <twig:block name="description">
+                                Les événements de votre liste
+                                {%- if query %}, recherche «&nbsp;{{ query }}&nbsp;»{% endif %}
+                                {%- if filter %}, {{ filter.label|lower }}{% endif %}.
+                                <twig:Tabler:Alert:Link href="{{ path('app_event_exports') }}">Tout exporter</twig:Tabler:Alert:Link>
+                            </twig:block>
+                        </twig:Tabler:Alert>
                     {% endif %}
                     {{ form_row(form.scope) }}
                     {{ form_row(form.format) }}
-                    <button type="submit" class="btn btn-primary">
-                        <twig:Icon name="lucide:download" />
+                    <twig:Tabler:Button variant="primary" type="submit">
+                        <twig:Tabler:Icon name="lucide:download" />
                         Exporter
-                    </button>
+                    </twig:Tabler:Button>
                     {{ form_end(form) }}
                 </twig:FormCard>
 
-                <div class="card mt-3">
-                    <div class="card-body d-flex align-items-start gap-3">
-                        <span class="avatar bg-teal-lt flex-shrink-0"><twig:Icon name="lucide:repeat" /></span>
+                <twig:Tabler:Card class="mt-3">
+                    <twig:Tabler:Card:Body class="d-flex align-items-start gap-3">
+                        <twig:Tabler:Avatar class="bg-teal-lt flex-shrink-0"><twig:Tabler:Icon name="lucide:repeat" /></twig:Tabler:Avatar>
                         <div class="text-secondary small">
                             Un export Excel ou CSV a les colonnes de l’import&nbsp;: changez-y vos événements, puis
                             <a href="{{ path('app_event_imports') }}">importez le fichier</a>. Le calendrier (ICS) s’ajoute à votre agenda, il ne s’importe pas.
                         </div>
-                    </div>
-                </div>
+                    </twig:Tabler:Card:Body>
+                </twig:Tabler:Card>
             </div>
 
             <div class="col-lg-7" id="historique" data-transfer-refresh>

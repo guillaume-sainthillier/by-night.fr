@@ -15,7 +15,7 @@
                 <p class="text-secondary small mb-3">{{ help }}</p>
                 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-sm-start gap-3">
                     <label class="btn btn-sm mb-0" for="{{ form.file.vars.id }}">
-                        <twig:Icon name="lucide:upload" />
+                        <twig:Tabler:Icon name="lucide:upload" />
                         Changer la photo
                     </label>
                     {{ form_widget(form.file, {attr: {class: 'visually-hidden', accept: 'image/*'}}) }}

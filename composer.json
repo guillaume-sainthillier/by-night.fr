@@ -77,6 +77,7 @@
         "silarhi/cursor-pagination": "^2.4.0",
         "silarhi/llms-txt-bundle": "^1.4.0",
         "silarhi/picasso-bundle": "^2.7.0",
+        "silarhi/tabler-ux-components": "^0.9.0",
         "silarhi/ux-icons-js-bundle": "^0.4.0",
         "silarhi/voter-bundle": "^0.1.0",
         "smolblog/oauth2-twitter": "^1.2",

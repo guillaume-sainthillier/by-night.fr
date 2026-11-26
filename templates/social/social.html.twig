@@ -5,9 +5,9 @@
    name in .username; the CSS shows the connected or the disconnected texts from the switch's state. #}
 <div class="config-block card form-panel mb-0">
     <div class="card-body d-flex align-items-center gap-3">
-        <span class="avatar bg-white flex-shrink-0">
-            <twig:Icon name="{{ service|social_icon }}" class="text-body" />
-        </span>
+        <twig:Tabler:Avatar class="bg-white flex-shrink-0">
+            <twig:Tabler:Icon name="{{ service|social_icon }}" class="text-body" />
+        </twig:Tabler:Avatar>
         <div class="flex-fill min-w-0">
             <label class="fw-bold d-block" for="{{ inputId }}">{{ service|social_label }}</label>
             <div class="small text-secondary text-truncate">

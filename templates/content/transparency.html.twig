@@ -36,7 +36,7 @@
                         comment repérer un lien rémunéré. Sans petites lignes.
                     </p>
                     <p class="small text-secondary hstack gap-1 mb-0">
-                        <twig:Icon name="lucide:clock" />
+                        <twig:Tabler:Icon name="lucide:clock" />
                         Dernière mise à jour&nbsp;: <time datetime="{{ updated }}">{{ updated|format_date('long') }}</time>
                     </p>
                 </div>
@@ -46,15 +46,15 @@
                         {icon: 'lucide:list-ordered', tone: 'primary', label: 'Aucun classement acheté', text: 'dates, distance, mots cherchés et intérêt des membres'},
                         {icon: 'lucide:tag', tone: 'yellow', label: 'Chaque lien rémunéré signalé', text: '« Lien affilié » et rel="sponsored"'},
                     ] %}
-                        <div class="card card-sm shadow-sm mb-0">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Icon name="{{ fact.icon }}" /></span>
+                        <twig:Tabler:Card size="sm" class="shadow-sm mb-0">
+                            <twig:Tabler:Card:Body class="d-flex align-items-center gap-3">
+                                <twig:Tabler:Avatar class="bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Tabler:Icon name="{{ fact.icon }}" /></twig:Tabler:Avatar>
                                 <div>
                                     <div class="fw-semibold">{{ fact.label }}</div>
                                     <div class="text-secondary small">{{ fact.text }}</div>
                                 </div>
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
                     {% endfor %}
                 </div>
             </div>
@@ -78,7 +78,7 @@
                             </div>
                             <div class="col-sm-5">
                                 <div class="form-panel rounded-3 p-3 hstack gap-3">
-                                    <span class="avatar bg-white text-primary flex-shrink-0"><twig:Icon name="lucide:landmark" /></span>
+                                    <twig:Tabler:Avatar class="bg-white text-primary flex-shrink-0"><twig:Tabler:Icon name="lucide:landmark" /></twig:Tabler:Avatar>
                                     <div>
                                         <div class="subheader">Éditeur</div>
                                         <div class="fw-bold">ARNOVA</div>
@@ -97,10 +97,10 @@
                         <p>By Night est financé de deux façons&nbsp;:</p>
                         <div class="row row-cards row-deck mb-3">
                             <div class="col-md-6">
-                                <div class="card card-sm form-panel border-0 mb-0">
-                                    <div class="card-body">
+                                <twig:Tabler:Card size="sm" class="form-panel border-0 mb-0">
+                                    <twig:Tabler:Card:Body>
                                         <div class="hstack gap-2 mb-2">
-                                            <span class="avatar avatar-sm bg-primary-lt"><twig:Icon name="lucide:megaphone" /></span>
+                                            <twig:Tabler:Avatar size="sm" variant="primary"><twig:Tabler:Icon name="lucide:megaphone" /></twig:Tabler:Avatar>
                                             <h3 class="h4 mb-0">La publicité</h3>
                                         </div>
                                         <p class="small mb-0">
@@ -111,14 +111,14 @@
                                             pas répondu, tout est refusé, et la publicité personnalisée n'a lieu qu'avec
                                             votre accord (voir la <a href="{{ path('app_main_cookie') }}">politique de cookies</a>).
                                         </p>
-                                    </div>
-                                </div>
+                                    </twig:Tabler:Card:Body>
+                                </twig:Tabler:Card>
                             </div>
                             <div class="col-md-6">
-                                <div class="card card-sm form-panel border-0 mb-0">
-                                    <div class="card-body">
+                                <twig:Tabler:Card size="sm" class="form-panel border-0 mb-0">
+                                    <twig:Tabler:Card:Body>
                                         <div class="hstack gap-2 mb-2">
-                                            <span class="avatar avatar-sm bg-teal-lt"><twig:Icon name="lucide:ticket" /></span>
+                                            <twig:Tabler:Avatar size="sm" class="bg-teal-lt"><twig:Tabler:Icon name="lucide:ticket" /></twig:Tabler:Avatar>
                                             <h3 class="h4 mb-0">Les liens affiliés</h3>
                                         </div>
                                         <p class="small mb-0">
@@ -129,8 +129,8 @@
                                             après avoir suivi l'un d'eux, la billetterie verse une commission à ARNOVA. Le
                                             prix que vous payez est le même que sur le site de la billetterie.
                                         </p>
-                                    </div>
-                                </div>
+                                    </twig:Tabler:Card:Body>
+                                </twig:Tabler:Card>
                             </div>
                         </div>
                         <p>
@@ -139,9 +139,9 @@
                             Ticketmaster ne lui verse rien et aucun lien du site ne mène à Ticketmaster. Les liens du pied
                             de page vers nos autres sites sont expliqués <a href="#sites">plus bas</a>.
                         </p>
-                        <div class="alert alert-important bg-teal-lt border-0 mb-0" role="note">
+                        <twig:Tabler:Alert variant="" important class="bg-teal-lt border-0 mb-0" role="note">
                             <div class="hstack gap-3 align-items-start">
-                                <twig:Icon name="lucide:shield-check" class="icon-lg text-teal flex-shrink-0 d-none d-sm-inline-block" />
+                                <twig:Tabler:Icon name="lucide:shield-check" class="icon-lg text-teal flex-shrink-0 d-none d-sm-inline-block" />
                                 <p class="mb-0 text-body">
                                     <strong>Aucun organisateur, lieu ou billetterie ne paie pour qu'un événement figure sur
                                         By Night ou y soit mieux placé.</strong>
@@ -152,7 +152,7 @@
                                     jamais un emplacement payé, sauf s'il porte cette mention.
                                 </p>
                             </div>
-                        </div>
+                        </twig:Tabler:Alert>
                     </twig:Legal:Section>
 
                     <twig:Legal:Section id="classement" title="{{ sections[2].title }}" number="{{ 3 }}">
@@ -169,7 +169,7 @@
                                 {icon: 'lucide:map-pin', tone: 'purple', title: 'Événements du même lieu ou du même jour', text: ', sur une page d\'événement : par date pour les prochains événements du lieu, par ordre alphabétique pour les autres sorties du jour en ville.'},
                             ] %}
                                 <div class="d-flex gap-3">
-                                    <span class="avatar bg-{{ rule.tone }}-lt flex-shrink-0"><twig:Icon name="{{ rule.icon }}" /></span>
+                                    <twig:Tabler:Avatar class="bg-{{ rule.tone }}-lt flex-shrink-0"><twig:Tabler:Icon name="{{ rule.icon }}" /></twig:Tabler:Avatar>
                                     <p class="mb-0"><strong>{{ rule.title }}</strong> {{ rule.text }}</p>
                                 </div>
                             {% endfor %}
@@ -223,17 +223,17 @@
                                 {sample: 'Annonce', where: 'Les publicités', text: 'Elles sont signalées comme telles par Google, qui les affiche.'},
                             ] %}
                                 <div class="col-sm-6">
-                                    <div class="card card-sm mb-0">
-                                        <div class="card-body">
+                                    <twig:Tabler:Card size="sm" class="mb-0">
+                                        <twig:Tabler:Card:Body>
                                             {% if label.code ?? false %}
                                                 <code class="d-inline-block mb-2">{{ label.sample }}</code>
                                             {% else %}
-                                                <span class="badge bg-yellow-lt mb-2"><twig:Icon name="lucide:info" /> {{ label.sample }}</span>
+                                                <twig:Tabler:Badge variant="" class="bg-yellow-lt mb-2"><twig:Tabler:Icon name="lucide:info" /> {{ label.sample }}</twig:Tabler:Badge>
                                             {% endif %}
                                             <div class="fw-semibold">{{ label.where }}</div>
                                             <p class="small text-secondary mb-0">{{ label.text }}</p>
-                                        </div>
-                                    </div>
+                                        </twig:Tabler:Card:Body>
+                                    </twig:Tabler:Card>
                                 </div>
                             {% endfor %}
                         </div>
@@ -265,11 +265,11 @@
 
     <section class="pb-5">
         <div class="container-lg">
-            <div class="card card-lg card-night border-0 mb-0" data-bs-theme="dark" id="engagements">
-                <div class="card-body">
+            <twig:Tabler:Card size="lg" data-bs-theme="dark" id="engagements" class="card-night border-0 mb-0">
+                <twig:Tabler:Card:Body>
                     <div class="row g-4 g-lg-5 align-items-center">
                         <div class="col-lg-5">
-                            <span class="badge bg-primary-lt mb-3"><twig:Icon name="lucide:shield" /> Nos engagements</span>
+                            <twig:Tabler:Badge variant="primary" light class="mb-3"><twig:Tabler:Icon name="lucide:shield" /> Nos engagements</twig:Tabler:Badge>
                             <h2 class="h1 text-start mb-3">Ce qui n'est pas à vendre.</h2>
                             <p class="lead text-secondary mb-0">
                                 Organisateurs, billetteries et marques peuvent travailler avec By Night&nbsp;: voici ce
@@ -279,13 +279,13 @@
                         <div class="col-lg-7">
                             <twig:Commitments />
                             <a class="btn mt-4" href="{{ path('app_advertisers') }}">
-                                <twig:Icon name="lucide:handshake" />
+                                <twig:Tabler:Icon name="lucide:handshake" />
                                 Annonceurs et partenaires
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
+                </twig:Tabler:Card:Body>
+            </twig:Tabler:Card>
         </div>
     </section>
 {% endblock %}

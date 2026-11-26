@@ -2,13 +2,13 @@
 <div {{ attributes.defaults({class: 'input-icon'}) }}>
     {% if iconPrepend %}
         <span class="input-icon-addon">
-            <twig:Icon name="{{ iconPrepend }}" />
+            <twig:Tabler:Icon name="{{ iconPrepend }}" />
         </span>
     {% endif %}
     {% block content %}{% endblock %}
     {% if iconAppend %}
         <span class="input-icon-addon">
-            <twig:Icon name="{{ iconAppend }}" />
+            <twig:Tabler:Icon name="{{ iconAppend }}" />
         </span>
     {% endif %}
 </div>

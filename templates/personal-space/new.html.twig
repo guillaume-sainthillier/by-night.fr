@@ -57,17 +57,17 @@
                     <div class="nav nav-segmented w-100 mb-4" role="group" aria-label="Nombre de dates">
                         {% for mode, choice in {single: {label: 'Une date', icon: 'lucide:calendar'}, multiple: {label: 'Plusieurs dates', icon: 'lucide:calendar-range'}} %}
                             <button type="button" class="nav-link{{ mode == date_mode ? ' active' }}" data-date-mode-choice="{{ mode }}" aria-pressed="{{ mode == date_mode ? 'true' : 'false' }}">
-                                <twig:Icon name="{{ choice.icon }}" class="nav-link-icon" />
+                                <twig:Tabler:Icon name="{{ choice.icon }}" class="nav-link-icon" />
                                 {{ choice.label }}
                             </button>
                         {% endfor %}
                     </div>
 
                     {# The event's period and default hours, which every date without its own hours shows #}
-                    <div class="card form-panel mb-4">
-                        <div class="card-body">
+                    <twig:Tabler:Card class="form-panel mb-4">
+                        <twig:Tabler:Card:Body>
                             <div class="subheader d-flex align-items-center gap-1 mb-3 date-mode-multiple">
-                                <twig:Icon name="lucide:calendar-clock" class="text-primary" />
+                                <twig:Tabler:Icon name="lucide:calendar-clock" class="text-primary" />
                                 Générateur de dates
                             </div>
                             <div class="row g-3 align-items-end">
@@ -75,10 +75,10 @@
                                     {{ form_row(form.dateRange, {label: '<span class="date-mode-single">Date</span><span class="date-mode-multiple">Période</span>', label_html: true, icon_prepend: 'lucide:calendar-days', row_class: 'mb-0'}) }}
                                 </div>
                                 <div class="col-md-auto date-mode-multiple">
-                                    <button type="button" class="btn btn-primary w-100" id="event-scheduler-generate">
-                                        <twig:Icon name="lucide:zap" />
+                                    <twig:Tabler:Button variant="primary" block type="button" id="event-scheduler-generate">
+                                        <twig:Tabler:Icon name="lucide:zap" />
                                         Générer les dates
-                                    </button>
+                                    </twig:Tabler:Button>
                                 </div>
                             </div>
                             <div class="form-hint mt-2 date-mode-single">Sur plusieurs jours (exposition, festival…)&nbsp;? Choisissez le premier et le dernier.</div>
@@ -92,7 +92,7 @@
                             <hr class="my-3">
                             {# The default hours: a slot, and precisions for what it cannot say #}
                             <div class="subheader d-flex align-items-center gap-1 mb-3">
-                                <twig:Icon name="lucide:clock" class="text-primary" />
+                                <twig:Tabler:Icon name="lucide:clock" class="text-primary" />
                                 <span class="date-mode-single">Horaires</span>
                                 <span class="date-mode-multiple">Horaires par défaut</span>
                             </div>
@@ -102,16 +102,16 @@
                                 <div class="col-md-6">{{ form_row(form.hours, {row_class: 'mb-0'}) }}</div>
                             </div>
                             <div class="form-hint mt-2 date-mode-multiple">Ils valent pour chaque date qui n'a pas ses propres horaires. Les précisions ne servent qu'à ce que les heures ne disent pas.</div>
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
 
                     {# The dates: the header's button adds one, the collection manager finds it through the wrapper #}
                     <div class="collection-wrapper date-mode-multiple">
                         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                             <h3 class="h4 mb-0">Dates de l'événement</h3>
-                            <span class="badge bg-primary-lt" data-timesheets-count>{{ '{count, plural, one {# date} other {# dates}}'|trans({count: form.timesheets|length}, 'messages+intl-icu') }}</span>
+                            <twig:Tabler:Badge variant="primary" light data-timesheets-count>{{ '{count, plural, one {# date} other {# dates}}'|trans({count: form.timesheets|length}, 'messages+intl-icu') }}</twig:Tabler:Badge>
                             <button type="button" class="add-collection btn btn-sm btn-ghost-teal ms-auto">
-                                <twig:Icon name="lucide:circle-plus" />
+                                <twig:Tabler:Icon name="lucide:circle-plus" />
                                 {{ form.timesheets.vars.add_entry_label }}
                             </button>
                         </div>
@@ -119,7 +119,7 @@
                         <p class="timesheets-empty text-secondary small mb-0">Aucune date pour l'instant&nbsp;: générez-les depuis la période, ou ajoutez-les une à une.</p>
                     </div>
                     <p class="text-secondary small d-flex align-items-center gap-1 mt-3 mb-0 date-mode-multiple">
-                        <twig:Icon name="lucide:info" />
+                        <twig:Tabler:Icon name="lucide:info" />
                         Chaque date s'affiche dans l'agenda avec ses horaires.
                     </p>
                 </twig:FormCard>
@@ -139,7 +139,7 @@
                     </div>
                     <div id="map" class="rounded-3 border" data-map-id="{{ googleMapId }}" data-api-key="{{ googleMapKey }}"></div>
                     <p class="text-secondary small d-flex align-items-center gap-1 mt-2 mb-0">
-                        <twig:Icon name="lucide:info" />
+                        <twig:Tabler:Icon name="lucide:info" />
                         Déplacez le repère pour ajuster la position du lieu.
                     </p>
                 </twig:FormCard>
@@ -147,7 +147,7 @@
                 <twig:FormCard icon="lucide:image" tone="pink" title="4. Affiche" badge="Format 16:9">
                     {{ form_row(form.imageFile, {label_attr: {class: 'visually-hidden'}, layout: 'horizontal'}) }}
                     <p class="text-secondary small d-flex align-items-center gap-1 mt-2 mb-0">
-                        <twig:Icon name="lucide:info" />
+                        <twig:Tabler:Icon name="lucide:info" />
                         Pour un meilleur rendu, préférez une image au format 16:9 (ex.&nbsp;: 1920&nbsp;×&nbsp;1080).
                     </p>
                 </twig:FormCard>
@@ -170,10 +170,10 @@
                     {% for contact in contacts %}
                         <div class="collection-wrapper border-top pt-3 mt-3">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <twig:Icon name="{{ contact.icon }}" class="text-teal" />
+                                <twig:Tabler:Icon name="{{ contact.icon }}" class="text-teal" />
                                 <h3 class="h4 mb-0 me-auto">{{ contact.field.vars.label }}</h3>
                                 <button type="button" class="add-collection btn btn-sm btn-ghost-teal">
-                                    <twig:Icon name="lucide:plus" />
+                                    <twig:Tabler:Icon name="lucide:plus" />
                                     {{ contact.field.vars.add_entry_label }}
                                 </button>
                             </div>
@@ -187,7 +187,7 @@
                         <div class="row justify-content-center">
                             <div class="col-lg-10 col-xl-8 d-flex align-items-center gap-2">
                                 <a class="btn btn-ghost-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes événements">
-                                    <twig:Icon name="lucide:chevron-left" />
+                                    <twig:Tabler:Icon name="lucide:chevron-left" />
                                     <span class="form-actions-label">Retour</span>
                                 </a>
                                 {# Written right to left (flex-row-reverse): the publish button comes before the draft one,
@@ -195,15 +195,15 @@
                                 <div class="d-flex flex-row-reverse align-items-center gap-2 ms-auto">
                                     {% block form_actions_extra '' %}
                                     {% block form_submit %}
-                                        <button type="submit" class="btn btn-lg btn-primary">
-                                            <twig:Icon name="lucide:rocket" />
+                                        <twig:Tabler:Button variant="primary" size="lg" type="submit">
+                                            <twig:Tabler:Icon name="lucide:rocket" />
                                             Publier<span class="d-none d-sm-inline ms-1"> l'événement</span>
-                                        </button>
+                                        </twig:Tabler:Button>
                                     {% endblock %}
-                                    <button type="submit" name="{{ form.saveDraft.vars.full_name }}" class="btn btn-outline-secondary" title="L'événement ne sera pas visible sur le site" data-skip-duplicates>
-                                        <twig:Icon name="lucide:eye-off" />
+                                    <twig:Tabler:Button variant="secondary" appearance="outline" type="submit" name="{{ form.saveDraft.vars.full_name }}" title="L'événement ne sera pas visible sur le site" data-skip-duplicates>
+                                        <twig:Tabler:Icon name="lucide:eye-off" />
                                         <span class="form-actions-label">{{ form.saveDraft.vars.label }}</span>
-                                    </button>
+                                    </twig:Tabler:Button>
                                     {% do form.saveDraft.setRendered %}
                                 </div>
                             </div>

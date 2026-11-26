@@ -1,18 +1,18 @@
 <section class="card card-layout mb-0 comments-container" id="comments" data-event-id="{{ event.id }}">
-    <div class="card-body">
+    <twig:Tabler:Card:Body>
         {{ include('comment/header.html.twig') }}
         <p class="text-secondary mb-0">Une question sur les horaires, l'accès ou le programme&nbsp;? Envie de partager vos impressions&nbsp;? Échangez avec la communauté By Night.</p>
-    </div>
+    </twig:Tabler:Card:Body>
     {% if comments.nbResults > 0 %}
-        <div class="card-body scrollable" style="max-height: 600px">
+        <twig:Tabler:Card:Body style="max-height: 600px" class="scrollable">
             <div class="chat">
                 <div class="chat-bubbles">
                     {{ include('comment/list.html.twig') }}
                 </div>
             </div>
-        </div>
+        </twig:Tabler:Card:Body>
     {% endif %}
-    <div class="card-body card-body-form">
+    <twig:Tabler:Card:Body class="card-body-form">
         {{ include('comment/form.html.twig') }}
-    </div>
+    </twig:Tabler:Card:Body>
 </section>

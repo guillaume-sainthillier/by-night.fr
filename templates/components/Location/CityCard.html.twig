@@ -6,9 +6,9 @@
     <div class="img-cover">
         <twig:Location:Picture location="{{ city }}" width="{{ 480 }}" height="{{ 480 }}" sizes="(min-width: 992px) 25vw, (min-width: 768px) 50vw, 100vw" />
     </div>
-    <div class="card-img-overlay card-img-overlay-dark d-flex flex-column justify-content-between">
+    <twig:Tabler:Card:ImgOverlay dark class="d-flex flex-column justify-content-between">
         <div>
-            {% if city.parent %}<span class="badge bg-white text-body">{{ city|department }}</span>{% endif %}
+            {% if city.parent %}<twig:Tabler:Badge variant="" class="bg-white text-body">{{ city|department }}</twig:Tabler:Badge>{% endif %}
         </div>
         <div>
             <h3 class="h2 mb-1">{{ city.name }}</h3>
@@ -21,8 +21,8 @@
                         Voir l'agenda
                     {%- endif -%}
                 </span>
-                <span class="avatar avatar-sm rounded-circle bg-white text-body"><twig:Icon name="lucide:arrow-up-right" /></span>
+                <twig:Tabler:Avatar size="sm" rounded class="bg-white text-body"><twig:Tabler:Icon name="lucide:arrow-up-right" /></twig:Tabler:Avatar>
             </div>
         </div>
-    </div>
+    </twig:Tabler:Card:ImgOverlay>
 </a>

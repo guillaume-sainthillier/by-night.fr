@@ -439,6 +439,9 @@
     "silarhi/picasso-bundle": {
         "version": "v2.7.0"
     },
+    "silarhi/tabler-ux-components": {
+        "version": "v0.9.0"
+    },
     "silarhi/ux-icons-js-bundle": {
         "version": "v0.3.2"
     },

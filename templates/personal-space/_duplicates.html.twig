@@ -6,14 +6,14 @@
 <p class="text-secondary">
     {{ '{count, plural, one {Un événement déjà en ligne a lieu} other {Des événements déjà en ligne ont lieu}} aux mêmes dates, au même endroit, sous un nom proche. S’il s’agit du vôtre, inutile de le publier une seconde fois.'|trans({count: duplicates|length}, 'messages+intl-icu') }}
 </p>
-<div class="list-group text-start">
+<twig:Tabler:ListGroup class="text-start">
     {% for event in duplicates %}
-        <a class="list-group-item list-group-item-action" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" target="_blank" rel="noopener">
+        <twig:Tabler:ListGroup:Item href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" target="_blank" rel="noopener">
             <div class="row g-3 align-items-center">
                 <div class="col-auto">
-                    <span class="avatar avatar-lg">
+                    <twig:Tabler:Avatar size="lg">
                         <twig:Event:Thumb event="{{ event }}" width="{{ 96 }}" />
-                    </span>
+                    </twig:Tabler:Avatar>
                 </div>
                 <div class="col text-truncate">
                     <div class="fw-bold text-truncate">{{ event.name }}</div>
@@ -34,6 +34,6 @@
                     </div>
                 </div>
             </div>
-        </a>
+        </twig:Tabler:ListGroup:Item>
     {% endfor %}
-</div>
+</twig:Tabler:ListGroup>

@@ -53,4 +53,5 @@ return [
     Symfony\UX\Router\UXRouterBundle::class => ['all' => true],
     Silarhi\AppJsBundle\SilarhiAppJsBundle::class => ['all' => true],
     Silarhi\VoterBundle\VoterBundle::class => ['all' => true],
+    Silarhi\TablerUxComponents\TablerUxComponentsBundle::class => ['all' => true],
 ];

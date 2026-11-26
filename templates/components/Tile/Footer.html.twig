@@ -3,5 +3,5 @@
 {% props tone = 'primary' %}
 <div {{ attributes.defaults({class: 'd-flex align-items-center justify-content-between mt-auto pt-3 small fw-bold'}) }}>
     <span>{% block content %}{% endblock %}</span>
-    <twig:Icon name="lucide:arrow-right" class="text-{{ tone }}" />
+    <twig:Tabler:Icon name="lucide:arrow-right" class="text-{{ tone }}" />
 </div>

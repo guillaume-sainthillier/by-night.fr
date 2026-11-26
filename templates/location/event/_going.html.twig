@@ -4,12 +4,12 @@
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     <button type="button" class="btn participate btn-like-event {{ trendsData.participate ? 'btn-primary' }}{{ (class ?? null) ? ' ' ~ class }}"
             data-event-id="{{ event.id }}"{% if intent ?? true %} data-intent="participer"{% endif %}>
-        <twig:Icon name="lucide:heart" />
+        <twig:Tabler:Icon name="lucide:heart" />
         J'y vais&nbsp;!
     </button>
 {% else %}
     <a class="btn participate{{ (class ?? null) ? ' ' ~ class }}" rel="nofollow" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" data-bs-toggle="modal" data-bs-target="#login-dialog" title="Connectez-vous pour indiquer que vous y allez">
-        <twig:Icon name="lucide:heart" />
+        <twig:Tabler:Icon name="lucide:heart" />
         J'y vais&nbsp;!
     </a>
 {% endif %}

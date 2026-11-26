@@ -10,20 +10,20 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#agenda-filters" aria-label="Fermer"></button>
     </div>
     <div class="offcanvas-body d-block p-3 p-lg-0">
-        <div class="card agenda-filters-card mb-lg-4">
+        <twig:Tabler:Card class="agenda-filters-card mb-lg-4">
             {# The panel's own title says it below lg #}
-            <div class="card-header d-none d-lg-flex">
+            <twig:Tabler:Card:Header class="d-none d-lg-flex">
                 <h2 class="card-title d-flex align-items-center gap-2">
-                    <twig:Icon name="lucide:sliders-horizontal" class="text-primary" />
+                    <twig:Tabler:Icon name="lucide:sliders-horizontal" class="text-primary" />
                     Filtres & recherche
                 </h2>
                 {% if hasFilters %}
-                    <div class="card-actions">
+                    <twig:Tabler:Card:Actions>
                         <a class="small fw-bold" href="{{ path('app_location_index', {location: location.slug}) }}">Réinitialiser</a>
-                    </div>
+                    </twig:Tabler:Card:Actions>
                 {% endif %}
-            </div>
-            <div class="card-body">
+            </twig:Tabler:Card:Header>
+            <twig:Tabler:Card:Body>
                 {{ form_start(form, {attr: {id: 'search-form', role: 'search'}}) }}
                 {{ form_errors(form) }}
                 {{ form_row(form.term, {icon_prepend: 'lucide:search'}) }}
@@ -59,15 +59,15 @@
                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                 {% endfor %}
                 {# Below lg, the button of the bottom bar sends the form #}
-                <button type="submit" class="btn btn-primary w-100 d-none d-lg-inline-flex">
-                    <twig:Icon name="lucide:search" />
+                <twig:Tabler:Button variant="primary" block type="submit" class="d-none d-lg-inline-flex">
+                    <twig:Tabler:Icon name="lucide:search" />
                     Rechercher
-                </button>
+                </twig:Tabler:Button>
                 {{ form_end(form) }}
-            </div>
+            </twig:Tabler:Card:Body>
 
             {% set current = type ? type.value : 'all' %}
-            <div class="card-body border-top">
+            <twig:Tabler:Card:Body class="border-top">
                 <div class="filter-section-header">
                     <div class="subheader mb-0">Univers & thématiques</div>
                     <span class="small fw-bold text-teal">{{ enum_cases('App\\Enum\\AgendaType')|length }} univers</span>
@@ -92,9 +92,9 @@
 
                 <div class="d-flex flex-column gap-2">
                     {% for group in groups %}
-                        {% set title = group.key == 'all' ? null : group.label ~ ' ' ~ location.atName %}
+                        {% set groupTitle = group.key == 'all' ? null : group.label ~ ' ' ~ location.atName %}
                         {# Each type unfolds to its busiest categories within the search; the whole agenda has none #}
-                        <twig:FilterGroup id="univers-{{ group.key }}" href="{{ group.href }}" filteredHref="{{ group.filteredHref }}" icon="{{ group.icon }}" tone="{{ group.tone }}" label="{{ group.label }}" count="{{ facets.types[group.key] ?? null }}" title="{{ title }}" active="{{ current == group.key }}" open="{{ current == group.key }}">
+                        <twig:FilterGroup id="univers-{{ group.key }}" href="{{ group.href }}" filteredHref="{{ group.filteredHref }}" icon="{{ group.icon }}" tone="{{ group.tone }}" label="{{ group.label }}" count="{{ facets.types[group.key] ?? null }}" title="{{ groupTitle }}" active="{{ current == group.key }}" open="{{ current == group.key }}">
                             {% if group.key != 'all' %}
                                 {% for row in facets.categoriesByType[group.key] ?? [] %}
                                     <twig:FilterGroup:Item
@@ -149,15 +149,15 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
-        </div>
+            </twig:Tabler:Card:Body>
+        </twig:Tabler:Card>
     </div>
     <div class="agenda-filters-bar d-lg-none">
         {% if hasFilters %}
             <a class="btn" href="{{ path('app_location_index', {location: location.slug}) }}">Réinitialiser</a>
         {% endif %}
-        <button type="submit" form="search-form" class="btn btn-primary flex-fill" data-filters-submit data-dirty-label="Rechercher">
+        <twig:Tabler:Button variant="primary" type="submit" form="search-form" data-filters-submit data-dirty-label="Rechercher" class="flex-fill">
             {{- '{count, plural, =0 {Voir les résultats} one {Voir la sortie} other {Voir les # sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') -}}
-        </button>
+        </twig:Tabler:Button>
     </div>
 </div>

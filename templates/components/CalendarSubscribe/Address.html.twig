@@ -4,9 +4,9 @@
     <label class="form-label" for="{{ id }}">{{ label }}</label>
     <div class="input-group">
         <input class="form-control" id="{{ id }}" type="text" value="{{ url }}" readonly>
-        <button type="button" class="btn" data-copy="{{ url }}">
-            <twig:Icon name="lucide:copy" />
+        <twig:Tabler:Button variant="default" type="button" data-copy="{{ url }}">
+            <twig:Tabler:Icon name="lucide:copy" />
             Copier
-        </button>
+        </twig:Tabler:Button>
     </div>
 </div>

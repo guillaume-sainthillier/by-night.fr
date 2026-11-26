@@ -35,16 +35,14 @@
                     <twig:FormCard icon="lucide:file-spreadsheet" tone="teal" title="Votre fichier" description="Une ligne par date ; les lignes d’une même référence forment un seul événement.">
                         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                             <span class="text-secondary small">Partez du modèle&nbsp;:</span>
-                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'xlsx'}) }}"><twig:Icon name="lucide:file-spreadsheet" /> Excel</a>
-                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'csv'}) }}"><twig:Icon name="lucide:file-text" /> CSV</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'xlsx'}) }}"><twig:Tabler:Icon name="lucide:file-spreadsheet" /> Excel</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_event_import_template', {format: 'csv'}) }}"><twig:Tabler:Icon name="lucide:file-text" /> CSV</a>
                         </div>
 
                         {{ include('personal-space/transfers/import/_upload_form.html.twig') }}
                     </twig:FormCard>
                 {% else %}
-                    <div class="alert alert-info mb-0">
-                        Vérifiez votre adresse e-mail pour publier des événements, et les importer.
-                    </div>
+                    <twig:Tabler:Alert variant="info" description="Vérifiez votre adresse e-mail pour publier des événements, et les importer." class="mb-0" />
                 {% endif %}
             </div>
 
@@ -63,11 +61,11 @@
                             {% endfor %}
                         </div>
                     </dl>
-                    <button type="button" class="btn btn-sm w-100 mt-2 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns">
+                    <twig:Tabler:Button variant="default" size="sm" block type="button" data-bs-toggle="collapse" data-bs-target="#import-other-columns" aria-expanded="false" aria-controls="import-other-columns" class="mt-2 btn-collapse-toggle collapsed">
                         <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre colonne} other {Voir les {count, number} autres colonnes}}'|trans({count: other_columns|length}, 'messages+intl-icu') }}</span>
                         <span class="when-expanded">Masquer les autres colonnes</span>
-                        <twig:Icon name="lucide:chevron-down" class="ms-1" />
-                    </button>
+                        <twig:Tabler:Icon name="lucide:chevron-down" class="ms-1" />
+                    </twig:Tabler:Button>
                 </twig:FormCard>
             </div>
         </div>

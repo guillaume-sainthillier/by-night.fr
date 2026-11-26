@@ -157,9 +157,9 @@ _______     __  _   _ _____ _____ _    _ _______
 {% block modals '' %}
 <!-- ./Modals -->
 
-<button type="button" id="toTop" class="btn btn-icon btn-primary">
-    <twig:Icon name="lucide:chevron-up" />
-</button>
+<twig:Tabler:Button variant="primary" iconOnly type="button" id="toTop">
+    <twig:Tabler:Icon name="lucide:chevron-up" />
+</twig:Tabler:Button>
 
 <!-- JS -->
 {# A classic script: it runs at once, before the app entry module (deferred), which reads it to boot (assets/js/app.ts) #}

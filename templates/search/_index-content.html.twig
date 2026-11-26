@@ -8,8 +8,8 @@
 {%- block search -%}
     <div class="row">
         <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
-            <div class="card">
-                <div class="card-body">
+            <twig:Tabler:Card>
+                <twig:Tabler:Card:Body>
                     <form method="GET" class="no-margin-form" action="{{ path('app_search_index') }}">
                         {# The city the search came from, whose events come first (SearchController) #}
                         {% if near %}
@@ -43,33 +43,33 @@
                             <input class="btn btn-primary" type="submit" value="Rechercher" />
                         </div>
                     </form>
-                </div>
-            </div>
+                </twig:Tabler:Card:Body>
+            </twig:Tabler:Card>
         </div>
     </div>
 
     {% if term and result.count == 0 %}
         {# Nothing found: other words, or the whole site when the search kept to events or members #}
-        <div class="empty">
-            <div class="empty-img"><twig:Illustration name="no-results" width="{{ 200 }}" /></div>
+        <twig:Tabler:Empty>
+            <twig:Tabler:Empty:Img><twig:Illustration name="no-results" width="{{ 200 }}" /></twig:Tabler:Empty:Img>
             <h2 class="empty-title">{{ result.message|trans({count: result.count}, 'messages+intl-icu') }}</h2>
-            <p class="empty-subtitle text-secondary">Vérifiez l'orthographe, ou essayez un mot plus court ou plus courant.</p>
+            <twig:Tabler:Empty:Subtitle>Vérifiez l'orthographe, ou essayez un mot plus court ou plus courant.</twig:Tabler:Empty:Subtitle>
             {% if currentType %}
-                <div class="empty-action">
+                <twig:Tabler:Empty:Action>
                     <a class="btn" href="{{ path('app_search_index', {q: term}) }}">
-                        <twig:Icon name="lucide:search" />
+                        <twig:Tabler:Icon name="lucide:search" />
                         Chercher sur tout le site
                     </a>
-                </div>
+                </twig:Tabler:Empty:Action>
             {% endif %}
-        </div>
+        </twig:Tabler:Empty>
     {% elseif term %}
         <h2>
             {{ result.message|trans({count: result.count}, 'messages+intl-icu') }}
         </h2>
         {% if events.nbResults > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
-                <h3>{{ '{count, plural, one {Événement} other {Événements}}'|trans({count: events.nbResults}, 'messages+intl-icu') }} <span class="badge text-bg-info number number-sm">{{ events.nbResults }}</span>
+                <h3>{{ '{count, plural, one {Événement} other {Événements}}'|trans({count: events.nbResults}, 'messages+intl-icu') }} <twig:Tabler:Badge variant="info" class="number number-sm">{{ events.nbResults }}</twig:Tabler:Badge>
                 </h3>
             {% endif %}
             {{ include('search/content-events.html.twig') }}
@@ -77,7 +77,7 @@
 
         {% if users.nbResults > 0 and (not type or type == 'membres') %}
             {% if type != 'membres' %}
-                <h3>{{ '{count, plural, one {Membre} other {Membres}}'|trans({count: users.nbResults}, 'messages+intl-icu') }} <span class="badge text-bg-info number number-sm">{{ users.nbResults }}</span></h3>
+                <h3>{{ '{count, plural, one {Membre} other {Membres}}'|trans({count: users.nbResults}, 'messages+intl-icu') }} <twig:Tabler:Badge variant="info" class="number number-sm">{{ users.nbResults }}</twig:Tabler:Badge></h3>
             {% endif %}
             {{ include('search/content-users.html.twig') }}
         {% endif %}

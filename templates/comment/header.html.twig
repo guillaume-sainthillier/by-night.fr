@@ -1,6 +1,6 @@
 {# The title of the comments card; CommentApp.js keeps .comments-count up to date after a new comment #}
 <div class="heading d-flex flex-wrap align-items-center gap-2 mb-2">
-    <span class="avatar avatar-sm bg-teal-lt"><twig:Icon name="lucide:message-square" /></span>
+    <twig:Tabler:Avatar size="sm" class="bg-teal-lt"><twig:Tabler:Icon name="lucide:message-square" /></twig:Tabler:Avatar>
     <h2 class="mb-0">Commentaires</h2>
-    <span class="badge bg-secondary-lt ms-auto comments-count">{{ '{count, plural, =0 {Aucun commentaire} one {# commentaire} other {# commentaires}}'|trans({count: comments.nbResults}, 'messages+intl-icu') }}</span>
+    <twig:Tabler:Badge variant="secondary" light class="ms-auto comments-count">{{ '{count, plural, =0 {Aucun commentaire} one {# commentaire} other {# commentaires}}'|trans({count: comments.nbResults}, 'messages+intl-icu') }}</twig:Tabler:Badge>
 </div>

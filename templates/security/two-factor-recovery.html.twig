@@ -8,8 +8,8 @@
 
 {% block body %}
     <div class="container-tight py-4 py-lg-5">
-        <div class="card card-md mb-0">
-            <div class="card-body">
+        <twig:Tabler:Card class="card-md mb-0">
+            <twig:Tabler:Card:Body>
                 <h1 class="text-start mb-3">Récupérer l’accès à votre compte</h1>
                 {% if isValid %}
                     <p>
@@ -18,16 +18,18 @@
                     </p>
                     <form method="post">
                         <input type="hidden" name="_token" value="{{ csrf_token(constant('App\\Controller\\TwoFactorRecoveryController::CSRF_TOKEN_ID')) }}">
-                        <button type="submit" class="btn btn-warning w-100">Désactiver la double authentification</button>
+                        <twig:Tabler:Button variant="warning" block type="submit">Désactiver la double authentification</twig:Tabler:Button>
                     </form>
                 {% else %}
-                    <div class="alert alert-danger mb-0" role="alert">
-                        Ce lien n’est plus valable&nbsp;: il a expiré, a déjà servi, ou votre compte a changé depuis.
-                        Connectez-vous pour en demander un nouveau.
-                    </div>
+                    <twig:Tabler:Alert variant="danger" class="mb-0">
+                        <twig:block name="description">
+                            Ce lien n’est plus valable&nbsp;: il a expiré, a déjà servi, ou votre compte a changé depuis.
+                            Connectez-vous pour en demander un nouveau.
+                        </twig:block>
+                    </twig:Tabler:Alert>
                 {% endif %}
-            </div>
-        </div>
+            </twig:Tabler:Card:Body>
+        </twig:Tabler:Card>
         <p class="text-center text-secondary mt-3">
             <a href="{{ path('app_login') }}">Retour à la connexion</a>
         </p>

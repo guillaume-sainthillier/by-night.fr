@@ -1,51 +1,43 @@
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     <li class="nav-item dropdown nav-avatar">
         <a href="#" class="nav-link d-flex align-items-center dropdown-toggle" data-bs-toggle="dropdown">
-            <div class="avatar avatar-sm">
+            <twig:Tabler:Avatar size="sm">
                 <twig:User:Thumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" placeholder="{{ false }}" />
-            </div>
+            </twig:Tabler:Avatar>
             {% if show_username %}
                 <span class="d-lg-none ms-2">{{ app.user.username }}</span>
             {% endif %}
         </a>
-        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
+        <twig:Tabler:Dropdown:Menu end arrow data-bs-theme="light">
             {% if is_granted('IS_IMPERSONATOR') %}
-                <a class="dropdown-item" href="{{ impersonation_exit_path(path('app_index')) }}">
-                    <twig:Icon name="lucide:power" />
+                <twig:Tabler:Dropdown:Item icon="lucide:power" href="{{ impersonation_exit_path(path('app_index')) }}">
                     Quitter l'impersonation
-                </a>
-                <div class="dropdown-divider"></div>
+                </twig:Tabler:Dropdown:Item>
+                <twig:Tabler:Dropdown:Divider />
             {% endif %}
             {# The member who goes out, then the organizer #}
-            <a class="dropdown-item" title="Les événements où je vais" href="{{ path('app_outing_list') }}">
-                <twig:Icon name="lucide:heart" />
+            <twig:Tabler:Dropdown:Item icon="lucide:heart" title="Les événements où je vais" href="{{ path('app_outing_list') }}">
                 Mes sorties
-            </a>
-            <a class="dropdown-item" title="Les organisateurs et les lieux que je suis" href="{{ path('app_follow_list') }}">
-                <twig:Icon name="lucide:bell" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Item icon="lucide:bell" title="Les organisateurs et les lieux que je suis" href="{{ path('app_follow_list') }}">
                 Mes abonnements
-            </a>
-            <a class="dropdown-item" title="Gérer les événements que j'ai publiés" href="{{ path('app_personal_space_events') }}">
-                <twig:Icon name="lucide:list-checks" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Item icon="lucide:list-checks" title="Gérer les événements que j'ai publiés" href="{{ path('app_personal_space_events') }}">
                 Mes événements publiés
-            </a>
-            <a class="dropdown-item" title="Présenter mon lieu, mon collectif ou moi-même aux visiteurs" href="{{ path('app_personal_space_publisher') }}">
-                <twig:Icon name="lucide:megaphone" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Item icon="lucide:megaphone" title="Présenter mon lieu, mon collectif ou moi-même aux visiteurs" href="{{ path('app_personal_space_publisher') }}">
                 Ma page organisateur
-            </a>
-            <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
-                <twig:Icon name="lucide:settings" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Item icon="lucide:settings" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
                 Mon compte
-            </a>
-            <a class="dropdown-item" title="Accéder à mon profil public" href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug}) }}">
-                <twig:Icon name="lucide:user" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Item icon="lucide:user" title="Accéder à mon profil public" href="{{ path('app_user_index', {id: app.user.id, slug: app.user.slug}) }}">
                 Profil public
-            </a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{{ path('_logout_main') }}">
-                <twig:Icon name="lucide:power" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Divider />
+            <twig:Tabler:Dropdown:Item icon="lucide:power" href="{{ path('_logout_main') }}">
                 Déconnexion
-            </a>
-        </div>
+            </twig:Tabler:Dropdown:Item>
+        </twig:Tabler:Dropdown:Menu>
     </li>
 {% endif %}

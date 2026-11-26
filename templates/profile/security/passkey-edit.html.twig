@@ -10,17 +10,17 @@
 {% block body %}
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-8">
-            <div class="card">
+            <twig:Tabler:Card>
                 {{ form_start(form) }}
-                <div class="card-body">
+                <twig:Tabler:Card:Body>
                     {{ form_widget(form) }}
-                </div>
-                <div class="card-footer d-flex justify-content-between">
+                </twig:Tabler:Card:Body>
+                <twig:Tabler:Card:Footer class="d-flex justify-content-between">
                     <a href="{{ path('app_user_edit', {_fragment: 'security'}) }}" class="btn btn-link">Annuler</a>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                </div>
+                    <twig:Tabler:Button variant="primary" type="submit">Enregistrer</twig:Tabler:Button>
+                </twig:Tabler:Card:Footer>
                 {{ form_end(form) }}
-            </div>
+            </twig:Tabler:Card>
         </div>
     </div>
 {% endblock %}

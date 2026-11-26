@@ -4,15 +4,15 @@
 {% set webcalUrl = 'webcal://' ~ url|split('://', 2)|last %}
 <div {{ attributes.defaults({class: 'btn-list'}) }}>
     <a class="btn btn-primary{{ small ? ' btn-sm' }}" href="https://calendar.google.com/calendar/render?cid={{ webcalUrl|url_encode }}" target="_blank" rel="noopener noreferrer">
-        <twig:Icon name="lucide:calendar-plus" />
+        <twig:Tabler:Icon name="lucide:calendar-plus" />
         Google Agenda
     </a>
     <a class="btn{{ small ? ' btn-sm' }}" href="{{ webcalUrl }}">
-        <twig:Icon name="lucide:calendar-plus" />
+        <twig:Tabler:Icon name="lucide:calendar-plus" />
         Apple Calendrier
     </a>
     <a class="btn{{ small ? ' btn-sm' }}" href="https://outlook.live.com/calendar/0/addfromweb?url={{ url|url_encode }}&amp;name={{ name|url_encode }}" target="_blank" rel="noopener noreferrer">
-        <twig:Icon name="lucide:calendar-plus" />
+        <twig:Tabler:Icon name="lucide:calendar-plus" />
         Outlook
     </a>
 </div>

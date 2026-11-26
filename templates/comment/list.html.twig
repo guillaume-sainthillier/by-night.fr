@@ -4,8 +4,8 @@
 
 {% if comments.hasNextPage %}
     <div class="load-more" data-page="{{ comments.nextPage }}">
-        <button type="button" class="btn btn-outline-primary">
+        <twig:Tabler:Button variant="primary" appearance="outline" type="button">
             Plus de commentaires
-        </button>
+        </twig:Tabler:Button>
     </div>
 {% endif %}

@@ -12,5 +12,5 @@
         {% endif %}
     </td>
     <td class="text-secondary">{{ outcome.reference }}</td>
-    <td class="text-end"><span class="badge bg-{{ tones[outcome.outcome] }}-lt">{{ labels[outcome.outcome] }}</span></td>
+    <td class="text-end"><twig:Tabler:Badge variant="" class="bg-{{ tones[outcome.outcome] }}-lt">{{ labels[outcome.outcome] }}</twig:Tabler:Badge></td>
 </tr>

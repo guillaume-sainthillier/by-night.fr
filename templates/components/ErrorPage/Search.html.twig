@@ -10,9 +10,9 @@
     {% if city %}<input type="hidden" name="city" value="{{ city }}">{% endif %}
     <div class="input-group input-group-flat shadow-sm">
         <span class="input-group-text">
-            <twig:Icon name="lucide:search" />
+            <twig:Tabler:Icon name="lucide:search" />
         </span>
         <input type="search" id="error-search" name="q" class="form-control" placeholder="{{ placeholder }}" autocomplete="off" enterkeyhint="search">
-        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <twig:Tabler:Button variant="primary" type="submit">Rechercher</twig:Tabler:Button>
     </div>
 </form>

@@ -29,36 +29,35 @@
         <div class="col-lg-10 col-xl-8">
             <header class="text-center my-4">
                 <div class="avatar-badged mb-3">
-                    <span class="avatar avatar-2xl avatar-rounded">
+                    <twig:Tabler:Avatar size="2xl" class="avatar-rounded">
                         <twig:User:Thumb user="{{ user }}" width="{{ 128 }}" height="{{ 128 }}" priority="{{ true }}" />
-                    </span>
+                    </twig:Tabler:Avatar>
                     {% if user.verified %}
                         <span class="avatar-badged-badge badge bg-teal text-white" title="Adresse e-mail vérifiée">
-                            <twig:Icon name="lucide:check" />
+                            <twig:Tabler:Icon name="lucide:check" />
                         </span>
                     {% endif %}
                 </div>
                 <h1 class="mb-2">{{ user.username }}</h1>
                 <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 small text-secondary">
-                    <span class="badge bg-teal-lt">Membre depuis {{ user.createdAt|format_date(pattern: 'LLLL yyyy') }}</span>
+                    <twig:Tabler:Badge variant="" class="bg-teal-lt">Membre depuis {{ user.createdAt|format_date(pattern: 'LLLL yyyy') }}</twig:Tabler:Badge>
                 </div>
             </header>
 
-            <nav class="nav nav-segmented nav-lg account-tabs w-100 mb-4" role="tablist">
+            <twig:Tabler:SegmentedControl size="lg" fullWidth class="account-tabs mb-4">
                 {% for id, tab in tabs %}
-                    <a class="nav-link{{ id == activeTab ? ' active' }}{{ id == 'delete' ? ' nav-link-danger' }}"
-                       id="{{ id }}-tab"
-                       href="#{{ id }}"
-                       data-bs-toggle="tab"
-                       role="tab"
-                       aria-controls="{{ id }}"
-                       aria-selected="{{ id == activeTab ? 'true' : 'false' }}"
-                       title="{{ tab.label }}">
-                        <twig:Icon name="{{ tab.icon }}" />
+                    <twig:Tabler:SegmentedControl:Item
+                        active="{{ id == activeTab }}"
+                        id="{{ id }}-tab"
+                        data-bs-target="#{{ id }}"
+                        aria-controls="{{ id }}"
+                        title="{{ tab.label }}"
+                        class="{{ id == 'delete' ? 'nav-link-danger' }}">
+                        <twig:Tabler:Icon name="{{ tab.icon }}" />
                         <span class="d-none d-md-inline">{{ tab.label }}</span>
-                    </a>
+                    </twig:Tabler:SegmentedControl:Item>
                 {% endfor %}
-            </nav>
+            </twig:Tabler:SegmentedControl>
 
             <div class="tab-content">
                 {# Profile #}
@@ -68,15 +67,15 @@
                         <twig:block name="header">
                             <twig:FormCard:Header icon="lucide:id-card" title="Informations personnelles" description="Ce que les membres voient de vous, et l'adresse où By Night vous écrit.">
                                 <twig:block name="aside">
-                                    <div class="card card-sm form-panel flex-shrink-0 mb-0 d-none d-sm-block">
-                                        <div class="card-body">
+                                    <twig:Tabler:Card size="sm" class="form-panel flex-shrink-0 mb-0 d-none d-sm-block">
+                                        <twig:Tabler:Card:Body>
                                             <div class="subheader mb-1">Profil complété</div>
                                             <div class="h3 mb-2">{{ profileCompletion }}&nbsp;%</div>
-                                            <div class="progress progress-sm account-completion">
-                                                <div class="progress-bar bg-teal" style="width: {{ profileCompletion }}%" role="progressbar" aria-valuenow="{{ profileCompletion }}" aria-valuemin="0" aria-valuemax="100" aria-label="Profil complété à {{ profileCompletion }}&nbsp;%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                            <twig:Tabler:Progress size="sm" class="account-completion">
+                                                <twig:Tabler:Progress:Bar value="{{ profileCompletion }}" variant="" class="bg-teal" aria-label="Profil complété à {{ profileCompletion }}&nbsp;%" />
+                                            </twig:Tabler:Progress>
+                                        </twig:Tabler:Card:Body>
+                                    </twig:Tabler:Card>
                                 </twig:block>
                             </twig:FormCard:Header>
                         </twig:block>
@@ -91,9 +90,9 @@
                                 <div class="form-group">
                                     {% set email_status %}
                                         {%- if user.verified -%}
-                                            <span class="form-label-description"><span class="badge bg-teal-lt">Vérifiée</span></span>
+                                            <span class="form-label-description"><twig:Tabler:Badge variant="" class="bg-teal-lt">Vérifiée</twig:Tabler:Badge></span>
                                         {%- else -%}
-                                            <span class="form-label-description"><span class="badge bg-yellow-lt">À vérifier</span></span>
+                                            <span class="form-label-description"><twig:Tabler:Badge variant="" class="bg-yellow-lt">À vérifier</twig:Tabler:Badge></span>
                                         {%- endif -%}
                                     {% endset %}
                                     {{ form_label(form.email, form.email.vars.label ~ email_status, {label_html: true}) }}
@@ -105,7 +104,7 @@
                                     {% else %}
                                         <div class="form-text">
                                             Vérifiez-la pour recevoir vos rappels et pouvoir réinitialiser votre mot de passe.
-                                            <button type="button" class="btn btn-link btn-sm p-0 align-baseline email-verify">Envoyer l'e-mail de vérification</button>
+                                            <twig:Tabler:Button variant="default" appearance="link" size="sm" type="button" class="p-0 align-baseline email-verify">Envoyer l'e-mail de vérification</twig:Tabler:Button>
                                         </div>
                                     {% endif %}
                                     {% if form.email.vars.disabled %}
@@ -132,34 +131,34 @@
                         {{ form_row(form.city) }}
 
                         <h3 class="h4 mt-4 mb-3">Visibilité</h3>
-                        <div class="card form-panel mb-0">
-                            <div class="card-body">
+                        <twig:Tabler:Card class="form-panel mb-0">
+                            <twig:Tabler:Card:Body>
                                 {{ form_row(form.showSocials, {row_class: 'mb-0', help: 'Des liens vers vos comptes Facebook et X connectés, sous votre photo.'}) }}
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
 
                         {# Every e-mail the member may turn on or off, in one place; the organizers' news for organizers only #}
                         <h3 class="h4 mt-4 mb-3">E-mails</h3>
-                        <div class="card form-panel mb-0">
-                            <div class="card-body">
+                        <twig:Tabler:Card class="form-panel mb-0">
+                            <twig:Tabler:Card:Body>
                                 {{ form_row(form.weekendDigest, {row_class: 'mb-3'}) }}
                                 {{ form_row(form.outingAlerts, {row_class: 'mb-3', help: 'Un événement où vous avez dit « J\'y vais ! » est annulé, change de dates ou de lieu : nous vous l\'écrivons.'}) }}
                                 {{ form_row(form.followAlerts, {row_class: form.publisherNews is defined ? 'mb-3' : 'mb-0', help: 'Les organisateurs et les lieux que vous suivez annoncent un événement : nous vous l\'écrivons, une fois par jour au plus.'}) }}
                                 {% if form.publisherNews is defined %}
                                     {{ form_row(form.publisherNews, {row_class: 'mb-0', help: 'Une fois par mois au plus, ce qui change sur By Night pour vos événements et votre page organisateur.'}) }}
                                 {% endif %}
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
 
                         <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-top pt-4 mt-4">
                             <p class="text-secondary small mb-0">
                                 Votre photo, votre nom d'utilisateur et votre présentation figurent sur
                                 <a href="{{ publicProfileUrl }}">votre profil public</a>.
                             </p>
-                            <button type="submit" class="btn btn-primary flex-shrink-0">
-                                <twig:Icon name="lucide:save" />
+                            <twig:Tabler:Button variant="primary" type="submit" class="flex-shrink-0">
+                                <twig:Tabler:Icon name="lucide:save" />
                                 Enregistrer les modifications
-                            </button>
+                            </twig:Tabler:Button>
                         </div>
                     </twig:FormCard>
                     {{ form_rest(form) }}
@@ -185,10 +184,9 @@
                                 {{ include('social/social.html.twig', {oAuth: user.oAuth, service: service}) }}
                             {% endfor %}
                         </div>
-                        <div class="alert alert-teal mt-4 mb-0">
-                            <twig:Icon name="lucide:lock" />
-                            <div>By Night ne publie jamais rien sur vos réseaux sociaux&nbsp;: ils servent seulement à vous connecter.</div>
-                        </div>
+                        <twig:Tabler:Alert variant="" icon="lucide:lock" class="alert-teal mt-4 mb-0">
+                            <twig:block name="description">By Night ne publie jamais rien sur vos réseaux sociaux&nbsp;: ils servent seulement à vous connecter.</twig:block>
+                        </twig:Tabler:Alert>
                     </twig:FormCard>
                 </div>
 
@@ -209,10 +207,10 @@
                         {{ form_row(formChangePassword.plainPassword) }}
 
                         <div class="text-center border-top pt-4 mt-4">
-                            <button type="submit" class="btn btn-primary">
-                                <twig:Icon name="lucide:rotate-ccw-key" />
+                            <twig:Tabler:Button variant="primary" type="submit">
+                                <twig:Tabler:Icon name="lucide:rotate-ccw-key" />
                                 Mettre à jour le mot de passe
-                            </button>
+                            </twig:Tabler:Button>
                         </div>
                     </twig:FormCard>
                     {{ form_rest(formChangePassword) }}
@@ -220,17 +218,17 @@
 
                     <div class="row row-cards row-deck">
                         <div class="col-md-6">
-                            <div class="card mb-0">
-                                <div class="card-body">
+                            <twig:Tabler:Card class="mb-0">
+                                <twig:Tabler:Card:Body>
                                     <twig:Tile:Icon icon="lucide:fingerprint" tone="teal" />
                                     <twig:Tile:Title>Un mot de passe unique</twig:Tile:Title>
                                     <p class="text-secondary small mb-0">Ne le réutilisez pas ailleurs&nbsp;: une fuite sur un autre site ne vous exposera pas ici.</p>
-                                </div>
-                            </div>
+                                </twig:Tabler:Card:Body>
+                            </twig:Tabler:Card>
                         </div>
                         <div class="col-md-6">
-                            <div class="card mb-0">
-                                <div class="card-body">
+                            <twig:Tabler:Card class="mb-0">
+                                <twig:Tabler:Card:Body>
                                     <twig:Tile:Icon icon="lucide:share-2" tone="purple" />
                                     <twig:Tile:Title>Sans mot de passe</twig:Tile:Title>
                                     <p class="text-secondary small mb-0">
@@ -238,8 +236,8 @@
                                         <a href="#socials" data-account-tab>Réseaux sociaux</a>
                                         pour vous identifier en un clic.
                                     </p>
-                                </div>
-                            </div>
+                                </twig:Tabler:Card:Body>
+                            </twig:Tabler:Card>
                         </div>
                     </div>
                 </div>
@@ -253,13 +251,12 @@
                 <div class="tab-pane fade" id="delete" role="tabpanel" aria-labelledby="delete-tab">
                     {{ form_start(formDelete, {action: path('app_user_delete')}) }}
                     <twig:FormCard icon="lucide:trash-2" tone="danger" title="Supprimer le compte" description="Votre compte et vos données personnelles, sans retour possible." badge="Action définitive" badgeTone="danger">
-                        <div class="alert alert-warning">
-                            <twig:Icon name="lucide:triangle-alert" />
-                            <div>
+                        <twig:Tabler:Alert variant="warning" icon="lucide:triangle-alert">
+                            <twig:block name="description">
                                 <strong>Attention&nbsp;:</strong> la suppression de votre compte est définitive et irréversible.
                                 Il est effacé dès votre confirmation et ne pourra pas être restauré.
-                            </div>
-                        </div>
+                            </twig:block>
+                        </twig:Tabler:Alert>
 
                         <p class="fw-bold mb-2">Si vous supprimez votre compte, les éléments suivants seront effacés&nbsp;:</p>
                         <ul class="mb-4">
@@ -277,19 +274,19 @@
                             ] %}
                             {% for stat in stats %}
                                 <div class="col-sm-4">
-                                    <div class="card card-sm form-panel mb-0">
-                                        <div class="card-body">
+                                    <twig:Tabler:Card size="sm" class="form-panel mb-0">
+                                        <twig:Tabler:Card:Body>
                                             <div class="subheader mb-1">{{ stat.label }}</div>
                                             <div class="h2 mb-1">{{ stat.count }}</div>
                                             <div class="text-secondary small">{{ stat.text }}</div>
-                                        </div>
-                                    </div>
+                                        </twig:Tabler:Card:Body>
+                                    </twig:Tabler:Card>
                                 </div>
                             {% endfor %}
                         </div>
 
-                        <div class="card form-panel mb-4">
-                            <div class="card-body">
+                        <twig:Tabler:Card class="form-panel mb-4">
+                            <twig:Tabler:Card:Body>
                                 <h3 class="h4 mb-3">Confirmation</h3>
                                 {% if eventsCount > 0 %}
                                     {{ form_row(formDelete.delete_events, {
@@ -311,16 +308,16 @@
                                         'data-delete-confirmation': constant('App\\Form\\Type\\DeleteAccountFormType::CONFIRMATION'),
                                     },
                                 }) }}
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
 
                         <div class="d-flex flex-column flex-sm-row gap-2">
-                            <button type="submit" class="btn btn-danger" data-delete-submit>
-                                <twig:Icon name="lucide:trash-2" />
+                            <twig:Tabler:Button variant="danger" type="submit" data-delete-submit>
+                                <twig:Tabler:Icon name="lucide:trash-2" />
                                 Supprimer mon compte
-                            </button>
+                            </twig:Tabler:Button>
                             <a href="#profile" class="btn" data-account-tab>
-                                <twig:Icon name="lucide:arrow-left" />
+                                <twig:Tabler:Icon name="lucide:arrow-left" />
                                 Annuler et revenir au profil
                             </a>
                         </div>
@@ -328,21 +325,21 @@
                     {{ form_rest(formDelete) }}
                     {{ form_end(formDelete) }}
 
-                    <div class="card form-panel mb-0">
-                        <div class="card-body d-flex align-items-start gap-3">
-                            <span class="avatar avatar-sm bg-teal-lt flex-shrink-0">
-                                <twig:Icon name="lucide:coffee" />
-                            </span>
+                    <twig:Tabler:Card class="form-panel mb-0">
+                        <twig:Tabler:Card:Body class="d-flex align-items-start gap-3">
+                            <twig:Tabler:Avatar size="sm" class="bg-teal-lt flex-shrink-0">
+                                <twig:Tabler:Icon name="lucide:coffee" />
+                            </twig:Tabler:Avatar>
                             <div>
                                 <div class="fw-bold">Besoin d'une pause plutôt que d'un départ&nbsp;?</div>
                                 <p class="text-secondary small mb-2">Déconnectez-vous simplement&nbsp;: vos favoris et vos événements vous attendront.</p>
                                 <a class="small fw-bold" href="{{ path('_logout_main') }}">
                                     Me déconnecter
-                                    <twig:Icon name="lucide:arrow-right" />
+                                    <twig:Tabler:Icon name="lucide:arrow-right" />
                                 </a>
                             </div>
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 </div>
             </div>
         </div>

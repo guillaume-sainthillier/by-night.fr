@@ -2,12 +2,12 @@
 <div class="chat-item reply-item">
     <div class="comment comment-reply{{ isCurrentUser ? ' comment-me' }}">
         <div class="d-flex align-items-center gap-2 mb-1">
-            <span class="avatar avatar-xs">
+            <twig:Tabler:Avatar size="xs">
                 <twig:User:Thumb user="{{ comment.user }}" width="{{ 24 }}" height="{{ 24 }}" />
-            </span>
+            </twig:Tabler:Avatar>
             <a class="fw-semibold text-reset text-truncate" href="{{ path('app_user_index', {id: comment.user.id, slug: comment.user.slug}) }}">{{ comment.user.username }}</a>
             {% if comment.user.verified %}
-                <twig:Icon name="lucide:badge-check" class="text-primary flex-shrink-0" title="Membre vérifié" />
+                <twig:Tabler:Icon name="lucide:badge-check" class="text-primary flex-shrink-0" title="Membre vérifié" />
             {% endif %}
             <span class="ms-auto small text-secondary text-nowrap" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">{{ comment.createdAt|diff_date }}</span>
         </div>

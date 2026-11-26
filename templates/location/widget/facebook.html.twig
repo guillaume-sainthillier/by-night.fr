@@ -7,20 +7,20 @@
          autoLogAppEvents: false,
      }|json_encode }}"
 >
-    <div class="card" data-facebook-page-placeholder>
-        <div class="card-body text-center">
-            <span class="avatar bg-blue-lt mb-2"><twig:Icon name="fa7-brands:facebook-f" /></span>
+    <twig:Tabler:Card data-facebook-page-placeholder>
+        <twig:Tabler:Card:Body class="text-center">
+            <twig:Tabler:Avatar class="bg-blue-lt mb-2"><twig:Tabler:Icon name="fa7-brands:facebook-f" /></twig:Tabler:Avatar>
             <h2 class="h3 mb-1">By Night sur Facebook</h2>
             <p class="small text-secondary mb-3">
                 Afficher la page charge le module de Facebook : Meta reçoit alors votre adresse IP et peut déposer ses
                 propres cookies.
             </p>
-            <button type="button" class="btn w-100" data-facebook-page-load>Afficher la page Facebook</button>
+            <twig:Tabler:Button variant="default" block type="button" data-facebook-page-load>Afficher la page Facebook</twig:Tabler:Button>
             <a class="d-inline-block small link-secondary mt-1 py-1" href="https://www.facebook.com/by.night.fr/" target="_blank" rel="noopener">
                 Ouvrir la page sur facebook.com
             </a>
-        </div>
-    </div>
+        </twig:Tabler:Card:Body>
+    </twig:Tabler:Card>
     <div class="fb-page"
          data-href="https://www.facebook.com/by.night.fr/"
          data-small-header="false"

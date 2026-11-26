@@ -5,12 +5,12 @@
 #}
 {% props href, name, eyebrow = null, events = null, tone = 'primary' %}
 <a href="{{ href }}" {{ attributes.defaults({class: 'card card-layout card-link-pop text-reset h-100 mb-0'}) }}>
-    <div class="card-body">
+    <twig:Tabler:Card:Body>
         {# Wraps: two cards share a phone's width, too narrow for "Pyrénées-Atlantiques (64)" #}
         {% if eyebrow %}<div class="subheader">{{ eyebrow }}</div>{% endif %}
-        <h3 class="card-title mb-0">{{ name }}</h3>
-    </div>
-    <div class="card-footer d-flex align-items-center justify-content-between gap-2 small fw-bold text-{{ tone }}">
+        <twig:Tabler:Card:Title class="mb-0">{{ name }}</twig:Tabler:Card:Title>
+    </twig:Tabler:Card:Body>
+    <twig:Tabler:Card:Footer class="d-flex align-items-center justify-content-between gap-2 small fw-bold text-{{ tone }}">
         <span class="text-truncate">
             {%- if events is not null -%}
                 {{ '{count, plural, one {# sortie} other {# sorties}}'|trans({count: events}, 'messages+intl-icu') }}
@@ -18,6 +18,6 @@
                 Voir l'agenda
             {%- endif -%}
         </span>
-        <twig:Icon name="lucide:arrow-right" />
-    </div>
+        <twig:Tabler:Icon name="lucide:arrow-right" />
+    </twig:Tabler:Card:Footer>
 </a>

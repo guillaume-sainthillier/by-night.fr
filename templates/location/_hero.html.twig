@@ -6,22 +6,22 @@
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         {% if location.isCity %}
                             {% if location.city.parent %}
-                                <span class="badge bg-primary-lt">
-                                    <twig:Icon name="lucide:map-pin" />
+                                <twig:Tabler:Badge variant="primary" light>
+                                    <twig:Tabler:Icon name="lucide:map-pin" />
                                     {{ location.city|department }}{% if location.city.parent.parent ?? null %} · {{ location.city.parent.parent.name }}{% endif %}
-                                </span>
+                                </twig:Tabler:Badge>
                             {% endif %}
                         {% else %}
-                            <span class="badge bg-secondary-lt">
+                            <twig:Tabler:Badge variant="secondary" light>
                                 <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
                                 Tout le pays
-                            </span>
+                            </twig:Tabler:Badge>
                         {% endif %}
                         {# The count of the nightly app:events:count-upcoming, not a COUNT of every event to come on each visit;
                            a zone whose first events came in today counts at least the ones the agenda lists #}
-                        <span class="badge bg-teal-lt" id="upcoming-count">
+                        <twig:Tabler:Badge variant="" id="upcoming-count" class="bg-teal-lt">
                             {{ '{count, plural, one {# sortie à venir} other {# sorties à venir}}'|trans({count: max(zone.upcomingEvents, events.nbResults)}, 'messages+intl-icu') }}
-                        </span>
+                        </twig:Tabler:Badge>
                     </div>
                     <h1 class="display-5 fw-bold text-start mt-3 mb-3">
                         Que faire {{ location.atName }}&nbsp;?

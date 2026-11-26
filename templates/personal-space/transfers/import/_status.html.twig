@@ -4,12 +4,13 @@
     each time the import tells it it changed.
 #}
 {# @var import \App\Entity\EventImport #}
-{% set status = import.status.value %}
+{# Not `status`: inside a Tabler:Card, that is the card's own prop #}
+{% set state = import.status.value %}
 {% set percent = import.eventCount > 0 ? (import.processedCount / import.eventCount * 100)|round : 0 %}
 
 {% if import.status.running %}
-    <div class="card mb-4">
-        <div class="card-body">
+    <twig:Tabler:Card class="mb-4">
+        <twig:Tabler:Card:Body>
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <div class="fw-bold">
                     <span class="spinner-border spinner-border-sm text-teal me-1" role="status"></span>
@@ -19,53 +20,57 @@
                     <div class="text-secondary">{{ import.processedCount|format_number() }} / {{ import.eventCount|format_number() }}</div>
                 {% endif %}
             </div>
-            <div class="progress mb-2">
-                <div class="progress-bar bg-teal {{ import.eventCount == 0 ? 'progress-bar-indeterminate' }}" style="width: {{ import.eventCount > 0 ? percent : 100 }}%" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ percent }}&nbsp;%"></div>
-            </div>
+            <twig:Tabler:Progress class="mb-2">
+                <twig:Tabler:Progress:Bar value="{{ import.eventCount > 0 ? percent : 100 }}" variant="" indeterminate="{{ import.eventCount == 0 }}" class="bg-teal" aria-label="{{ percent }}&nbsp;%" />
+            </twig:Tabler:Progress>
             <p class="text-secondary small mb-0">
-                {% if status == 'importing' %}
+                {% if state == 'importing' %}
                     Vous pouvez quitter la page&nbsp;: l’import continue, et son bilan vous attendra ici.
                 {% else %}
                     Rien n’est enregistré pendant la vérification. Vous pouvez quitter la page, elle continue sans vous.
                 {% endif %}
             </p>
-        </div>
-        {% if status in ['uploaded', 'checking'] %}
-            <div class="card-footer text-end">
+        </twig:Tabler:Card:Body>
+        {% if state in ['uploaded', 'checking'] %}
+            <twig:Tabler:Card:Footer class="text-end">
                 <form method="post" action="{{ path('app_event_import_cancel', {id: import.id}) }}" class="d-inline">
                     <input type="hidden" name="_token" value="{{ csrf_token('event-import-cancel-' ~ import.id) }}">
-                    <button type="submit" class="btn btn-outline-secondary btn-sm">Annuler la vérification</button>
+                    <twig:Tabler:Button variant="secondary" appearance="outline" size="sm" type="submit">Annuler la vérification</twig:Tabler:Button>
                 </form>
-            </div>
+            </twig:Tabler:Card:Footer>
         {% endif %}
-    </div>
+    </twig:Tabler:Card>
 {% endif %}
 
-{% if status == 'check_failed' %}
-    <div class="alert alert-danger">
-        <h4 class="alert-title">Le fichier n’a pas pu être vérifié</h4>
-        <div>{{ import.failureReason }}</div>
-        <a class="alert-link" href="{{ path('app_event_imports') }}">Envoyer un autre fichier</a>
-    </div>
-{% elseif status == 'cancelled' %}
-    <div class="alert alert-secondary">Cet import a été annulé&nbsp;: aucun événement n’a été enregistré.</div>
-{% elseif status == 'failed' %}
-    <div class="alert alert-warning">
-        <h4 class="alert-title">L’import s’est interrompu</h4>
-        <div class="mb-2">{{ import.failureReason }}</div>
-        <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
-            <button type="submit" class="btn btn-warning">
-                <twig:Icon name="lucide:rotate-cw" />
-                Reprendre l’import
-            </button>
-        </form>
-    </div>
+{% if state == 'check_failed' %}
+    <twig:Tabler:Alert variant="danger" title="Le fichier n’a pas pu être vérifié">
+        <twig:block name="description">
+            <div>{{ import.failureReason }}</div>
+            <twig:Tabler:Alert:Link href="{{ path('app_event_imports') }}">Envoyer un autre fichier</twig:Tabler:Alert:Link>
+        </twig:block>
+    </twig:Tabler:Alert>
+{% elseif state == 'cancelled' %}
+    <twig:Tabler:Alert variant="secondary">
+        <twig:block name="description">Cet import a été annulé&nbsp;: aucun événement n’a été enregistré.</twig:block>
+    </twig:Tabler:Alert>
+{% elseif state == 'failed' %}
+    <twig:Tabler:Alert variant="warning" title="L’import s’est interrompu">
+        <twig:block name="description">
+            <div class="mb-2">{{ import.failureReason }}</div>
+            <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
+                <twig:Tabler:Button variant="warning" type="submit">
+                    <twig:Tabler:Icon name="lucide:rotate-cw" />
+                    Reprendre l’import
+                </twig:Tabler:Button>
+            </form>
+        </twig:block>
+    </twig:Tabler:Alert>
 {% endif %}
 
 {# The check's report: shown once it is done, and kept under the import's outcome #}
-{% if status in ['checked', 'importing', 'completed', 'failed'] %}
-    {% if status == 'checked' %}
+{% if state in ['checked', 'importing', 'completed', 'failed'] %}
+    {% if state == 'checked' %}
         <div class="row row-cards mb-4">
             {% for tile in [
                 {label: 'Événements valides', count: import.validCount, icon: 'lucide:circle-check', tone: 'teal'},
@@ -73,56 +78,56 @@
                 {label: 'Avertissements', count: import.warningCount, icon: 'lucide:triangle-alert', tone: 'yellow'},
             ] %}
                 <div class="col-sm-4">
-                    <div class="card card-sm mb-0">
-                        <div class="card-body d-flex align-items-center justify-content-between gap-3">
+                    <twig:Tabler:Card size="sm" class="mb-0">
+                        <twig:Tabler:Card:Body class="d-flex align-items-center justify-content-between gap-3">
                             <div>
                                 <div class="subheader">{{ tile.label }}</div>
                                 <div class="h1 text-start mb-0">{{ tile.count|format_number() }}</div>
                             </div>
-                            <span class="avatar bg-{{ tile.tone }}-lt"><twig:Icon name="{{ tile.icon }}" /></span>
-                        </div>
-                    </div>
+                            <twig:Tabler:Avatar class="bg-{{ tile.tone }}-lt"><twig:Tabler:Icon name="{{ tile.icon }}" /></twig:Tabler:Avatar>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 </div>
             {% endfor %}
         </div>
 
-        <div class="card mb-4">
-            <div class="card-body d-flex flex-wrap align-items-center gap-2">
+        <twig:Tabler:Card class="mb-4">
+            <twig:Tabler:Card:Body class="d-flex flex-wrap align-items-center gap-2">
                 {% if import.validCount > 0 %}
                     <form method="post" action="{{ path('app_event_import_run', {id: import.id}) }}" id="import-run-form">
                         <input type="hidden" name="_token" value="{{ csrf_token('event-import-run-' ~ import.id) }}">
-                        <button type="submit" class="btn btn-teal">
-                            <twig:Icon name="lucide:upload" />
+                        <twig:Tabler:Button variant="default" type="submit" class="btn-teal">
+                            <twig:Tabler:Icon name="lucide:upload" />
                             {{ '{count, plural, one {Importer l’événement valide} other {Importer les {count, number} événements valides}}'|trans({count: import.validCount}, 'messages+intl-icu') }}
-                        </button>
+                        </twig:Tabler:Button>
                     </form>
                 {% endif %}
                 {% if import.errorFilePath %}
                     <a class="btn btn-outline-danger" href="{{ path('app_event_import_file', {id: import.id, kind: 'erreurs'}) }}">
-                        <twig:Icon name="lucide:file-x" />
+                        <twig:Tabler:Icon name="lucide:file-x" />
                         Les lignes en erreur
                     </a>
                 {% endif %}
                 {% if import.successFilePath and import.validCount > 0 %}
                     <a class="btn btn-outline-secondary" href="{{ path('app_event_import_file', {id: import.id, kind: 'valides'}) }}">
-                        <twig:Icon name="lucide:file-check" />
+                        <twig:Tabler:Icon name="lucide:file-check" />
                         Les lignes valides
                     </a>
                 {% endif %}
                 <form method="post" action="{{ path('app_event_import_cancel', {id: import.id}) }}" class="ms-auto">
                     <input type="hidden" name="_token" value="{{ csrf_token('event-import-cancel-' ~ import.id) }}">
-                    <button type="submit" class="btn btn-ghost-secondary">Abandonner cet import</button>
+                    <twig:Tabler:Button variant="secondary" appearance="ghost" type="submit">Abandonner cet import</twig:Tabler:Button>
                 </form>
-            </div>
-            <div class="card-footer text-secondary small">
+            </twig:Tabler:Card:Body>
+            <twig:Tabler:Card:Footer class="text-secondary small">
                 {% if import.validCount > 0 %}
                     Les événements valides seront importés en brouillon, sauf si la colonne «&nbsp;Brouillon&nbsp;» dit «&nbsp;non&nbsp;».
                 {% endif %}
                 {% if import.errorFilePath %}
                     Corrigez les lignes en erreur dans leur fichier (la colonne «&nbsp;Erreurs&nbsp;» dit pourquoi), puis importez-le.
                 {% endif %}
-            </div>
-        </div>
+            </twig:Tabler:Card:Footer>
+        </twig:Tabler:Card>
     {% endif %}
 
     {% if import.outcomes is not empty %}
@@ -134,21 +139,23 @@
                 {label: 'Non importés', count: import.failedCount, tone: 'danger'},
             ]|merge(import.skippedCount > 0 ? [{label: 'Écartés', count: import.skippedCount, tone: 'secondary'}] : []) %}
                 <div class="col-6 col-md">
-                    <div class="card card-sm mb-0">
-                        <div class="card-body">
+                    <twig:Tabler:Card size="sm" class="mb-0">
+                        <twig:Tabler:Card:Body>
                             <div class="subheader">{{ tile.label }}</div>
                             <div class="h1 text-start mb-0 text-{{ tile.tone }}">{{ tile.count|format_number() }}</div>
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 </div>
             {% endfor %}
         </div>
 
-        {% if status == 'completed' %}
-            <div class="alert alert-success">
-                L’import est terminé. Les images sont téléchargées dans les minutes qui suivent.
-                <a class="alert-link" href="{{ path('app_event_list') }}">Voir mes événements</a>
-            </div>
+        {% if state == 'completed' %}
+            <twig:Tabler:Alert variant="success">
+                <twig:block name="description">
+                    L’import est terminé. Les images sont téléchargées dans les minutes qui suivent.
+                    <twig:Tabler:Alert:Link href="{{ path('app_event_list') }}">Voir mes événements</twig:Tabler:Alert:Link>
+                </twig:block>
+            </twig:Tabler:Alert>
         {% endif %}
 
         {# The events the import created, all at once: drafts unless the file said otherwise, they are published here.
@@ -165,123 +172,119 @@
                 {% for id in created_ids %}
                     <input type="hidden" name="ids[]" value="{{ id }}">
                 {% endfor %}
-                <div class="card-body d-flex flex-wrap align-items-center gap-2">
+                <twig:Tabler:Card:Body class="d-flex flex-wrap align-items-center gap-2">
                     <span class="fw-bold me-auto">
                         {{ '{count, plural, one {L’événement créé} other {Les {count, number} événements créés}}'|trans({count: created_ids|length}, 'messages+intl-icu') }}
                     </span>
-                    <button type="submit" name="action" value="publish" class="btn btn-teal">
-                        <twig:Icon name="lucide:eye" />
+                    <twig:Tabler:Button variant="default" type="submit" name="action" value="publish" class="btn-teal">
+                        <twig:Tabler:Icon name="lucide:eye" />
                         Publier
-                    </button>
-                    <button type="submit" name="action" value="draft" class="btn">
-                        <twig:Icon name="lucide:eye-off" />
+                    </twig:Tabler:Button>
+                    <twig:Tabler:Button variant="default" type="submit" name="action" value="draft">
+                        <twig:Tabler:Icon name="lucide:eye-off" />
                         Passer en brouillon
-                    </button>
-                    <button type="submit" name="action" value="delete" class="btn btn-outline-danger">
-                        <twig:Icon name="lucide:trash-2" />
+                    </twig:Tabler:Button>
+                    <twig:Tabler:Button variant="danger" appearance="outline" type="submit" name="action" value="delete">
+                        <twig:Tabler:Icon name="lucide:trash-2" />
                         Supprimer
-                    </button>
-                </div>
+                    </twig:Tabler:Button>
+                </twig:Tabler:Card:Body>
             </form>
         {% endif %}
 
-        <div class="card mb-4">
-            <div class="card-header"><h3 class="card-title">Événement par événement</h3></div>
+        <twig:Tabler:Card class="mb-4">
+            <twig:Tabler:Card:Header><twig:Tabler:Card:Title>Événement par événement</twig:Tabler:Card:Title></twig:Tabler:Card:Header>
             {# The events not imported first, then the file's order; the first ones shown, the others folded #}
             {% set outcomes = import.outcomes|sort((a, b) => ((a.outcome == 'failed' ? 0 : 1) <=> (b.outcome == 'failed' ? 0 : 1)) ?: (a.row <=> b.row)) %}
             {% set shown = 20 %}
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead>
-                        <tr><th>Ligne</th><th>Événement</th><th>Référence</th><th></th></tr>
-                    </thead>
-                    <tbody>
-                        {% for outcome in outcomes|slice(0, shown) %}
+            <twig:Tabler:Table vcenter card>
+                <thead>
+                    <tr><th>Ligne</th><th>Événement</th><th>Référence</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for outcome in outcomes|slice(0, shown) %}
+                        {{ include('personal-space/transfers/import/_outcome.html.twig') }}
+                    {% endfor %}
+                </tbody>
+                {% if outcomes|length > shown %}
+                    <tbody class="collapse" id="import-other-outcomes">
+                        {% for outcome in outcomes|slice(shown) %}
                             {{ include('personal-space/transfers/import/_outcome.html.twig') }}
                         {% endfor %}
                     </tbody>
-                    {% if outcomes|length > shown %}
-                        <tbody class="collapse" id="import-other-outcomes">
-                            {% for outcome in outcomes|slice(shown) %}
-                                {{ include('personal-space/transfers/import/_outcome.html.twig') }}
-                            {% endfor %}
-                        </tbody>
-                    {% endif %}
-                </table>
-            </div>
+                {% endif %}
+            </twig:Tabler:Table>
             {% if outcomes|length > shown %}
-                <div class="card-footer">
-                    <button type="button" class="btn btn-sm w-100 btn-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target="#import-other-outcomes" aria-expanded="false" aria-controls="import-other-outcomes">
+                <twig:Tabler:Card:Footer>
+                    <twig:Tabler:Button variant="default" size="sm" block type="button" data-bs-toggle="collapse" data-bs-target="#import-other-outcomes" aria-expanded="false" aria-controls="import-other-outcomes" class="btn-collapse-toggle collapsed">
                         <span class="when-collapsed">{{ '{count, plural, one {Voir l’autre événement} other {Voir les {count, number} autres événements}}'|trans({count: outcomes|length - shown}, 'messages+intl-icu') }}</span>
                         <span class="when-expanded">Masquer les autres événements</span>
-                        <twig:Icon name="lucide:chevron-down" class="ms-1" />
-                    </button>
-                </div>
+                        <twig:Tabler:Icon name="lucide:chevron-down" class="ms-1" />
+                    </twig:Tabler:Button>
+                </twig:Tabler:Card:Footer>
             {% endif %}
-            </div>
+            </twig:Tabler:Card>
         </div>
     {% endif %}
 
     {% for list in [
         {title: 'Erreurs', problems: import.errors, count: import.invalidCount, tone: 'danger', skippable: false},
-        {title: 'Avertissements', problems: import.warnings, count: import.warningCount, tone: 'yellow', skippable: status == 'checked' and import.validCount > 0},
+        {title: 'Avertissements', problems: import.warnings, count: import.warningCount, tone: 'yellow', skippable: state == 'checked' and import.validCount > 0},
     ] %}
         {% if list.problems is not empty %}
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3 class="card-title">{{ list.title }}</h3>
+            <twig:Tabler:Card class="mb-4">
+                <twig:Tabler:Card:Header>
+                    <twig:Tabler:Card:Title>{{ list.title }}</twig:Tabler:Card:Title>
                     {% if list.problems|length >= constant('App\\Entity\\EventImport::MAX_LISTED_PROBLEMS') %}
-                        <div class="card-subtitle ms-2">les {{ list.problems|length }} premiers, tous dans le fichier des lignes en erreur</div>
+                        <twig:Tabler:Card:Subtitle class="ms-2">les {{ list.problems|length }} premiers, tous dans le fichier des lignes en erreur</twig:Tabler:Card:Subtitle>
                     {% endif %}
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-vcenter card-table">
-                        <thead>
+                </twig:Tabler:Card:Header>
+                <twig:Tabler:Table vcenter card>
+                    <thead>
+                        <tr>
+                            {% if list.skippable %}<th class="w-1">Ne pas importer</th>{% endif %}
+                            <th>Ligne</th><th>Référence</th><th>Colonne</th><th>Problème</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for problem in list.problems %}
                             <tr>
-                                {% if list.skippable %}<th class="w-1">Ne pas importer</th>{% endif %}
-                                <th>Ligne</th><th>Référence</th><th>Colonne</th><th>Problème</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for problem in list.problems %}
-                                <tr>
-                                    {% if list.skippable %}
-                                        {# Joins the import's form above: the event is left out by its reference, not its
-                                           row, which the check's file of kept rows numbers afresh #}
-                                        <td class="text-center">
-                                            {% if problem.reference is not null %}
-                                                <input class="form-check-input m-0" type="checkbox" name="skip[]" value="{{ problem.reference }}" form="import-run-form" aria-label="{{ 'Ne pas importer l’événement de la ligne {row}'|trans({row: problem.row}, 'messages+intl-icu') }}">
-                                            {% endif %}
-                                        </td>
-                                    {% endif %}
-                                    <td class="text-secondary">{{ problem.row }}</td>
-                                    <td class="text-secondary">{{ problem.reference }}</td>
-                                    <td class="text-nowrap">{{ problem.column }}</td>
-                                    <td>
-                                        {{ problem.message }}
-                                        {% if problem.url is defined %}
-                                            <a href="{{ problem.url }}" target="_blank" rel="noopener">Voir l’événement</a>
+                                {% if list.skippable %}
+                                    {# Joins the import's form above: the event is left out by its reference, not its
+                                       row, which the check's file of kept rows numbers afresh #}
+                                    <td class="text-center">
+                                        {% if problem.reference is not null %}
+                                            <input class="form-check-input m-0" type="checkbox" name="skip[]" value="{{ problem.reference }}" form="import-run-form" aria-label="{{ 'Ne pas importer l’événement de la ligne {row}'|trans({row: problem.row}, 'messages+intl-icu') }}">
                                         {% endif %}
                                     </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                {% endif %}
+                                <td class="text-secondary">{{ problem.row }}</td>
+                                <td class="text-secondary">{{ problem.reference }}</td>
+                                <td class="text-nowrap">{{ problem.column }}</td>
+                                <td>
+                                    {{ problem.message }}
+                                    {% if problem.url is defined %}
+                                        <a href="{{ problem.url }}" target="_blank" rel="noopener">Voir l’événement</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </twig:Tabler:Table>
+            </twig:Tabler:Card>
         {% endif %}
     {% endfor %}
 
     {# The rows the check refused, fixed by the member in their file, sent again from here: the rows already imported match their events #}
-    {% if import.errorFilePath and form and status in ['checked', 'completed', 'failed'] %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3 class="card-title">Importer le fichier corrigé</h3>
+    {% if import.errorFilePath and form and state in ['checked', 'completed', 'failed'] %}
+        <twig:Tabler:Card class="mb-4">
+            <twig:Tabler:Card:Body>
+                <twig:Tabler:Card:Title>Importer le fichier corrigé</twig:Tabler:Card:Title>
                 <p class="text-secondary small">
                     Corrigez les lignes du <a href="{{ path('app_event_import_file', {id: import.id, kind: 'erreurs'}) }}">fichier des erreurs</a> (la colonne «&nbsp;Erreurs&nbsp;» dit pourquoi), puis déposez-le ici&nbsp;: il est vérifié à son tour.
                 </p>
                 {{ include('personal-space/transfers/import/_upload_form.html.twig', {prompt: 'Glissez-déposez le fichier corrigé ou cliquez pour parcourir'}) }}
-            </div>
-        </div>
+            </twig:Tabler:Card:Body>
+        </twig:Tabler:Card>
     {% endif %}
 {% endif %}
