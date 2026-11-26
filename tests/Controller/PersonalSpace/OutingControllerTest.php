@@ -112,7 +112,7 @@ final class OutingControllerTest extends AppWebTestCase
         self::assertNotNull($token);
         $url = 'https://by-night.test/calendrier/' . $token . '.ics';
         self::assertSame($url, $crawler->filter('#calendar-url')->attr('value'));
-        self::assertSelectorExists(\sprintf('#calendrier [data-copy-url="%s"]', $url));
+        self::assertSelectorExists(\sprintf('#calendrier [data-copy="%s"]', $url));
         self::assertSelectorExists(\sprintf('#calendrier a[href="webcal://by-night.test/calendrier/%s.ics"]', $token));
         self::assertSelectorExists(\sprintf('#calendrier a[href="https://calendar.google.com/calendar/render?cid=%s"]', rawurlencode('webcal://by-night.test/calendrier/' . $token . '.ics')));
 

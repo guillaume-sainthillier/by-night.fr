@@ -10,7 +10,7 @@ import '@/js/overrides'
 import * as Sentry from '@sentry/browser'
 import { App, type ErrorContext, lazyListener, setHiddenClass } from '@silarhi/app-js'
 import { collectionListener } from '@silarhi/app-js/form'
-import { autoSubmit, passwordToggle, webauthn } from '@silarhi/app-js/listeners'
+import { autoSubmit, passwordToggle, submitOnce, webauthn } from '@silarhi/app-js/listeners'
 // Per-element listeners (connected on every mount)
 import actionBar from '@/js/listeners/action-bar'
 import activeChip from '@/js/listeners/active-chip'
@@ -127,6 +127,7 @@ const app = new App({
         popup,
         readMore,
         share,
+        submitOnce(),
         toc,
         tooltip,
         transferToasts,

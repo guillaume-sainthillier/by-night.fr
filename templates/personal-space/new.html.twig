@@ -34,9 +34,10 @@
 
             {% block body_form %}
                 {% form_theme form 'personal-space/_event_form_theme.html.twig' %}
-                {# The publish button first asks for the events already online that this one likely repeats #}
+                {# The publish button first asks for the events already online that this one likely repeats; a second click
+                   while it is sent would create the event twice #}
                 {% set duplicates_url = block('duplicates_url')|trim %}
-                {{ form_start(form, {attr: duplicates_url ? {'data-duplicates-url': duplicates_url} : {}}) }}
+                {{ form_start(form, {attr: {'data-submit-once': ''}|merge(duplicates_url ? {'data-duplicates-url': duplicates_url} : {})}) }}
                 {{ form_errors(form) }}
 
                 <twig:FormCard icon="lucide:file-text" title="1. Informations principales">
