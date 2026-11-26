@@ -86,11 +86,11 @@ export default class CommentApp {
     }
 
     /**
-     * The next page a "load more" block asks for (`data-page`): the replies of its thread, else the comments of the
+     * The next page a "load more" block asks for (`data-comment-page`): the replies of its thread, else the comments of the
      * event (`data-event-id` of the comments block)
      */
     get_load_more_url(loadMore: HTMLElement): string {
-        const page = loadMore.dataset.page ?? ''
+        const page = loadMore.dataset.commentPage ?? ''
         const thread = loadMore.closest<HTMLElement>(this.options.css_main_reply_block)
         if (thread) {
             return path('app_comment_reponse_list', { id: thread.dataset.commentId ?? '', page })
