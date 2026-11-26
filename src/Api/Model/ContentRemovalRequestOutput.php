@@ -13,8 +13,8 @@ namespace App\Api\Model;
 final readonly class ContentRemovalRequestOutput
 {
     public function __construct(
-        public bool $success,
-        public ?string $message = null,
+        /** What the visitor is told */
+        public string $message,
     ) {
     }
 }

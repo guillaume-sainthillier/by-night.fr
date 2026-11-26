@@ -59,7 +59,7 @@ final readonly class ContentRemovalRequestProcessor implements ProcessorInterfac
         $type = $data->type;
         \assert(null !== $type);
         if (null !== $this->contentRemovalRequestRepository->findPendingDuplicate($data->email, $type, $event)) {
-            return new ContentRemovalRequestOutput(success: true, message: self::SENT);
+            return new ContentRemovalRequestOutput(message: self::SENT);
         }
 
         // Only the event of the page the request was made from: the requester lists the other
@@ -77,6 +77,6 @@ final readonly class ContentRemovalRequestProcessor implements ProcessorInterfac
 
         $this->mailerManager->sendContentRemovalRequestEmail($contentRemovalRequest);
 
-        return new ContentRemovalRequestOutput(success: true, message: self::SENT);
+        return new ContentRemovalRequestOutput(message: self::SENT);
     }
 }

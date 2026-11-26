@@ -49,7 +49,7 @@ use App\Security\Voter\EventVoter;
         processor: EventParticipationProcessor::class,
     ),
     new Post(
-        uriTemplate: '/events/{id}/removal-request',
+        uriTemplate: '/events/{id}/removal-requests',
         input: ContentRemovalRequestInput::class,
         output: ContentRemovalRequestOutput::class,
         name: 'api_event_removal_request',

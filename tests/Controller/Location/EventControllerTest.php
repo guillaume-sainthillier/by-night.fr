@@ -335,6 +335,16 @@ final class EventControllerTest extends AppWebTestCase
         self::assertTrue($this->hasEventJsonLd($crawler));
     }
 
+    public function testTheReportButtonCarriesTheAddressOfTheRemovalRequests(): void
+    {
+        $client = self::createClient();
+        $event = $this->createEvent();
+
+        $client->request('GET', $this->eventUrl($event));
+
+        self::assertSelectorExists(\sprintf('button[data-bs-target="#modalContentRemovalRequest"][data-removal-url="/api/events/%d/removal-requests"]', $event->getId()));
+    }
+
     public function testTheAuthorPreviewsTheirDraft(): void
     {
         $client = self::createClient();
