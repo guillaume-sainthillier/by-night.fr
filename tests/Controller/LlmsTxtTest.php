@@ -65,7 +65,8 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringNotContainsString('Muret', $content);
         self::assertStringNotContainsString('Albi', $content);
         self::assertStringNotContainsString('Liège', $content);
-        self::assertStringContainsString("## Articles\n\n- [Est-ce que le handpan est illégal ?](https://by-night.test/p/est-ce-que-le-handpan-est-illegal): Le handpan n'est pas illégal.\n", $content);
+        // Their Markdown version
+        self::assertStringContainsString("## Articles\n\n- [Est-ce que le handpan est illégal ?](https://by-night.test/p/est-ce-que-le-handpan-est-illegal.md): Le handpan n'est pas illégal.\n", $content);
         // Neither the events nor the venues
         self::assertStringNotContainsString('/soiree/', $content);
         self::assertStringNotContainsString('/sortir-a/', $content);
@@ -86,6 +87,23 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringContainsString('## Pages', $content);
         self::assertStringNotContainsString('## Agendas', $content);
         self::assertStringNotContainsString('## Articles', $content);
+    }
+
+    public function testTheFullFileHoldsTheEditorialPages(): void
+    {
+        $client = self::createClient();
+        PageFactory::createOne(['title' => 'Est-ce que le handpan est illégal ?', 'content' => "<p>Non, le handpan n'est pas <strong>illégal</strong>.</p>"]);
+
+        $client->request('GET', '/llms-full.txt');
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
+        $content = $client->getInternalResponse()->getContent();
+        self::assertStringStartsWith("# By Night\n\n> Agenda des sorties", $content);
+        self::assertStringContainsString("# Est-ce que le handpan est illégal ?\n\nSource: https://by-night.test/p/est-ce-que-le-handpan-est-illegal.md\n\nNon, le handpan n'est pas **illégal**.\n", $content);
+        // The static pages have no Markdown version, the agendas no content: left out
+        self::assertStringNotContainsString('Source: https://by-night.test/a-propos', $content);
+        self::assertStringNotContainsString('Source: https://by-night.test/mcp', $content);
     }
 
     public function testThePagesAdvertiseIt(): void

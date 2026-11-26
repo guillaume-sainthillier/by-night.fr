@@ -18,11 +18,12 @@ use Generator;
 use Silarhi\LlmsTxtBundle\Attribute\AsLlmsTxtLinkProvider;
 use Silarhi\LlmsTxtBundle\Model\Link;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Environment;
 
 /**
  * The sections of /llms.txt, in their order in the file: an entry point to the agenda, not a copy of the sitemap. The
- * countries and the cities with events to come (their location page is noindex without any), the editorial pages, the
- * MCP server; the static pages come from the "llms_txt" option of their route. Left out: the events (millions, most of them short-lived), the venues and the
+ * countries and the cities with events to come (their location page is noindex without any), the editorial pages
+ * (their Markdown version, and their content in llms-full.txt), the MCP server; the static pages come from the "llms_txt" option of their route. Left out: the events (millions, most of them short-lived), the venues and the
  * per-type or per-category agendas (filters of a city agenda, which links to them), and the member profiles.
  *
  * Every query reads the counts UpcomingEventCounter stores, never the events themselves: light enough to build the
@@ -41,6 +42,7 @@ final readonly class LlmsTxtLinkProvider
         private EventRepository $eventRepository,
         private CityRepository $cityRepository,
         private PageRepository $pageRepository,
+        private Environment $twig,
     ) {
     }
 
@@ -78,13 +80,22 @@ final readonly class LlmsTxtLinkProvider
     }
 
     /**
+     * The Markdown version of each page, also its content in llms-full.txt: loaded only when that file is rendered.
+     *
      * @return Generator<int, Link>
      */
     #[AsLlmsTxtLinkProvider(section: 'Articles')]
     public function getPageLinks(): Generator
     {
         foreach ($this->pageRepository->findAllLlmsTxt() as $page) {
-            yield new Link($this->url('app_page_show', ['slug' => $page['slug']]), $page['title'], $page['metaDescription']);
+            $id = $page['id'];
+
+            yield new Link(
+                $this->url('app_page_show', ['slug' => $page['slug'], '_format' => 'md']),
+                $page['title'],
+                $page['metaDescription'],
+                content: fn (): string => $this->renderPage($id),
+            );
         }
     }
 
@@ -99,6 +110,20 @@ final readonly class LlmsTxtLinkProvider
             'Serveur MCP',
             "L'agenda en Model Context Protocol (Streamable HTTP) : find_cities, search_events, get_event",
         )];
+    }
+
+    /**
+     * The page as /p/{slug}.md shows it, without the title llms-full.txt writes above it; nothing for a page deleted
+     * since it was listed, which the file leaves out.
+     */
+    private function renderPage(int $id): string
+    {
+        $page = $this->pageRepository->find($id);
+        if (null === $page) {
+            return '';
+        }
+
+        return $this->twig->render('page/_content.md.twig', ['page' => $page]);
     }
 
     /**

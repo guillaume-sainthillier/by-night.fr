@@ -59,6 +59,7 @@
         "league/flysystem-bundle": "^3.7.1",
         "league/flysystem-memory": "^3.31",
         "league/glide": "^4.2.0",
+        "league/html-to-markdown": "^5.2.3",
         "league/oauth2-facebook": "^2.3",
         "league/oauth2-google": "^5.0",
         "neitanod/forceutf8": "^2.0.4",
