@@ -15,7 +15,6 @@ use App\Entity\Publisher;
 use App\Entity\User;
 use App\Repository\FollowRepository;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Attribute\AsTwigFunction;
 
 /**
@@ -26,17 +25,17 @@ final readonly class FollowExtension
     public function __construct(
         private FollowRepository $followRepository,
         private Security $security,
-        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
     /**
-     * The API's address that follows it, or stops following it.
+     * What it is, for follow.ts to call the API's address that follows it (PUT /api/publishers/{id}/follow or
+     * /api/places/{id}/follow).
      */
-    #[AsTwigFunction(name: 'follow_path')]
-    public function followPath(Publisher|Place $target): string
+    #[AsTwigFunction(name: 'follow_kind')]
+    public function followKind(Publisher|Place $target): string
     {
-        return $this->urlGenerator->generate($target instanceof Publisher ? 'api_publisher_follow' : 'api_place_follow', ['id' => $target->getId()]);
+        return $target instanceof Publisher ? 'publisher' : 'place';
     }
 
     #[AsTwigFunction(name: 'is_following')]

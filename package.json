@@ -36,6 +36,7 @@
         "@hotwired/stimulus": "^3.2.2",
         "@silarhi/cap-bundle": "file:vendor/silarhi/cap-bundle/assets",
         "@symfony/reprise": "^1.4.0",
+        "@symfony/ux-router": "file:vendor/symfony/ux-router/assets",
         "@types/google.maps": "^3.67.0",
         "@types/lodash": "^4.17.27",
         "@types/node": "^26.6.6",

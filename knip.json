@@ -5,7 +5,8 @@
         "assets/**/controllers/**/*.{ts,tsx}"
     ],
     "ignore": [
-        "assets/js/icons/**"
+        "assets/js/icons/**",
+        "assets/js/enums/**"
     ],
     "paths": {
         "@/*": [

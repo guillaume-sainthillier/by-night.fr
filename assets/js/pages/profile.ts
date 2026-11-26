@@ -1,6 +1,7 @@
 import { definePage } from '@silarhi/app-js'
 import { Tab } from '@tabler/core'
 import SocialLogin from '@/js/components/SocialLogin'
+import { path } from '@/js/router'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 
 export default definePage(() => {
@@ -87,15 +88,14 @@ function initAvatarPreview() {
 function initCityPicker() {
     for (const picker of document.querySelectorAll<HTMLElement>('[data-city-picker]')) {
         const element = picker.querySelector<HTMLInputElement>('input[type="text"]')
-        const url = picker.dataset.cityPicker
-        if (!element || !url) {
+        if (!element) {
             continue
         }
 
         createAutocomplete({
             element,
             valueInput: picker.querySelector<HTMLInputElement>('input[type="hidden"]'),
-            url,
+            url: (q) => path('api_cities', { _query: { q } }),
         })
     }
 }

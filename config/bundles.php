@@ -50,4 +50,5 @@ return [
     AhmedBhs\DoctrineDoctor\DoctrineDoctorBundle::class => ['dev' => true, 'test' => true],
     Silarhi\CapBundle\SilarhiCapBundle::class => ['all' => true],
     Symfony\AI\McpBundle\McpBundle::class => ['all' => true],
+    Symfony\UX\Router\UXRouterBundle::class => ['all' => true],
 ];

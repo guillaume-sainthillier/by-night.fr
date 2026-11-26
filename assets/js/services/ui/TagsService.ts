@@ -1,3 +1,4 @@
+import { getJson } from '@silarhi/app-js/http'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback } from 'tom-select/dist/esm/types/core.js'
 import * as fr from '@/js/services/ui/tomSelectFr'
@@ -12,7 +13,8 @@ type TagRecord = Record<string, unknown>
 
 export interface TagsOptions {
     element: string | HTMLInputElement | HTMLSelectElement
-    url?: string | null
+    /** The URL of the tags matching the text typed; none: only the tags typed */
+    url?: ((query: string) => string) | null
     allowNew?: boolean
     maxItems?: number | null
     separator?: string
@@ -87,10 +89,8 @@ export function create({
         let loadedQuery: string | null = null
         options.score = (query: string) => () => (query === loadedQuery ? 1 : 0)
         options.load = function (this: TomSelect, query: string, callback: TomLoadCallback) {
-            const fetchUrl = url.replace('__QUERY__', encodeURIComponent(query))
-            fetch(fetchUrl, fetchOptions)
-                .then((res) => res.json())
-                .then((data: unknown) => {
+            getJson<unknown>(url(query), fetchOptions)
+                .then((data) => {
                     // A slower answer to text typed since
                     if (query !== this.lastValue) {
                         callback([], [])

@@ -150,7 +150,7 @@ final class EventController extends BaseController
      * The published events a draft likely repeats, before it goes online: from its form as filled in (POST), or as
      * saved, for the publish button of its preview (GET).
      */
-    #[Route(path: '/evenements/{id<%patterns.id%>}/doublons', name: 'app_event_edit_duplicates', methods: ['GET', 'POST'])]
+    #[Route(path: '/evenements/{id<%patterns.id%>}/doublons', name: 'app_event_edit_duplicates', options: ['expose' => true], methods: ['GET', 'POST'])]
     #[IsGranted(EventVoter::EDIT, subject: 'event')]
     public function editDuplicates(Request $request, Event $event, EventDtoFactory $eventDtoFactory, DuplicateEventFinder $duplicateEventFinder): Response
     {

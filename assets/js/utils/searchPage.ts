@@ -1,10 +1,8 @@
-/**
- * The search page of a query, from the URL the header gives (data-search-page-url), which may already carry the
- * city of the page: "/recherche/?city=toulouse" leads to "/recherche/?city=toulouse&q=jazz".
- */
-export function searchPageHref(searchPageUrl: string, query: string): string {
-    const url = new URL(searchPageUrl, window.location.href)
-    url.searchParams.set('q', query)
+import { path } from '@/js/router'
 
-    return `${url.pathname}${url.search}`
+/**
+ * The search page of a query, with the city of the page when it has one: "/recherche/?city=toulouse&q=jazz".
+ */
+export function searchPageHref(city: string | null, query: string): string {
+    return path('app_search_index', { _query: { city, q: query } })
 }

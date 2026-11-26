@@ -239,7 +239,7 @@
     {%- if not valid -%}
         {%- set name_attr = name_attr|merge({class: (name_attr.class|default('') ~ ' is-invalid')|trim}) -%}
     {%- endif -%}
-    <div class="form-group" data-city-picker="{{ path('api_cities', {q: '__QUERY__'}) }}">
+    <div class="form-group" data-city-picker>
         {{- form_label(name, label) -}}
         <twig:InputIcon iconPrepend="lucide:map-pin">
             {{- form_widget(name, {attr: name_attr}) -}}

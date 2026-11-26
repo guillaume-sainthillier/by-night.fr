@@ -23,7 +23,7 @@ final class SearchControllerTest extends AppWebTestCase
     use StubsAgendaSearch;
 
     /**
-     * The header sends the city of its page (data-search-page-url): the search page keeps it for the next search.
+     * The header sends the city of its page (data-city): the search page keeps it for the next search.
      */
     public function testTheSearchPageKeepsTheCityItCameFrom(): void
     {

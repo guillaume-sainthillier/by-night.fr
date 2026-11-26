@@ -1,5 +1,6 @@
 import { type App, definePage } from '@silarhi/app-js'
 import { sendJson } from '@silarhi/app-js/http'
+import { path } from '@/js/router'
 
 /**
  * Switches of the list of events: each patches the event when it changes (PATCH /api/events/{id}), and is disabled
@@ -10,7 +11,11 @@ function bindSwitches(app: App, selector: string, body: (checkbox: HTMLInputElem
         checkbox.addEventListener('change', async () => {
             checkbox.disabled = true
             try {
-                await sendJson('PATCH', checkbox.dataset.href ?? '', body(checkbox))
+                await sendJson(
+                    'PATCH',
+                    path('api_event_update', { id: checkbox.dataset.eventId ?? '' }),
+                    body(checkbox)
+                )
             } catch {
                 checkbox.checked = !checkbox.checked
                 app.get('toastManager').createToast('error', "La modification n'a pas pu être enregistrée.")

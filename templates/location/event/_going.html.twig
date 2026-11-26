@@ -3,7 +3,7 @@
    script #}
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     <button type="button" class="btn participate btn-like-event {{ trendsData.participate ? 'btn-primary' }}{{ (class ?? null) ? ' ' ~ class }}"
-            data-href="{{ path('api_event_participation', {id: event.id}) }}"{% if intent ?? true %} data-intent="participer"{% endif %}>
+            data-event-id="{{ event.id }}"{% if intent ?? true %} data-intent="participer"{% endif %}>
         <twig:Icon name="lucide:heart" />
         J'y vais&nbsp;!
     </button>

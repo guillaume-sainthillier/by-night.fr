@@ -1,3 +1,4 @@
+import { request } from '@silarhi/app-js/http'
 import type ModalManager from '@/js/services/modals/ModalManager'
 
 /**
@@ -15,7 +16,7 @@ export async function confirmPublication(
 ): Promise<boolean> {
     let response: Response
     try {
-        response = await fetch(url, { ...init, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        response = await request(url, init)
     } catch {
         return true
     }

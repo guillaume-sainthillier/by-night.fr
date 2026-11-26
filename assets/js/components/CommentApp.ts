@@ -2,6 +2,7 @@ import { getHtml, postForm } from '@silarhi/app-js/http'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import type { SweetAlertIcon } from 'sweetalert2'
 import { LucideLoader2Icon } from '@/js/icons'
+import { path } from '@/js/router'
 import type ToastManager from '@/js/services/modals/ToastManager'
 import { loadingButtons, resetButtons } from '@/js/utils/buttons'
 import { plural } from '@/js/utils/plural'
@@ -84,6 +85,22 @@ export default class CommentApp {
         }
     }
 
+    /**
+     * The next page a "load more" block asks for (`data-page`): the replies of its thread, else the comments of the
+     * event (`data-event-id` of the comments block)
+     */
+    get_load_more_url(loadMore: HTMLElement): string {
+        const page = loadMore.dataset.page ?? ''
+        const thread = loadMore.closest<HTMLElement>(this.options.css_main_reply_block)
+        if (thread) {
+            return path('app_comment_reponse_list', { id: thread.dataset.commentId ?? '', page })
+        }
+
+        const comments = loadMore.closest<HTMLElement>(this.options.css_main_block_comments)
+
+        return path('app_comment_list', { id: comments?.dataset.eventId ?? '', page })
+    }
+
     init_load_more_comments(comments: ParentNode) {
         this.on_click(comments, this.options.css_load_more_comments, async (loadMore) => {
             const btn = loadMore.querySelector<HTMLButtonElement>('.btn')
@@ -98,7 +115,7 @@ export default class CommentApp {
 
             let html: string
             try {
-                html = await getHtml(loadMore.dataset.url ?? '')
+                html = await getHtml(this.get_load_more_url(loadMore))
             } catch {
                 if (btn) {
                     btn.innerHTML = originalText
@@ -146,7 +163,8 @@ export default class CommentApp {
             postAnswerContainer.classList.remove('is-visible')
             let html: string
             try {
-                html = await getHtml(link.dataset.url ?? '')
+                const thread = link.closest<HTMLElement>(this.options.css_main_reply_block)
+                html = await getHtml(path('app_comment_reponse_new', { id: thread?.dataset.commentId ?? '' }))
             } catch {
                 link.innerHTML = originalHtml
                 this.showToast('error', 'Une erreur est survenue')

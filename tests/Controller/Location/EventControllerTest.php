@@ -342,7 +342,7 @@ final class EventControllerTest extends AppWebTestCase
 
         $client->request('GET', $this->eventUrl($event));
 
-        self::assertSelectorExists(\sprintf('button[data-bs-target="#modalContentRemovalRequest"][data-removal-url="/api/events/%d/removal-requests"]', $event->getId()));
+        self::assertSelectorExists(\sprintf('button[data-bs-target="#modalContentRemovalRequest"][data-event-id="%d"]', $event->getId()));
     }
 
     public function testTheAuthorPreviewsTheirDraft(): void
@@ -357,8 +357,8 @@ final class EventControllerTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('#event');
         self::assertSelectorExists('#event-draft-notice');
-        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-publish-href="/api/events/%d"]', $event->getId()));
-        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-duplicates-href="/espace-perso/organisateurs/%s/evenements/%d/doublons"]', $event->getPublisher()?->getSlug(), $event->getId()), 'It asks first for the events already online it likely repeats');
+        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-publish-event="%d"]', $event->getId()));
+        self::assertSelectorExists(\sprintf('#event-draft-notice button[data-publisher="%s"]', $event->getPublisher()?->getSlug()), 'It asks first for the events already online it likely repeats');
         self::assertSelectorExists('meta[name="robots"][content="noindex, follow"]', 'A preview stays out of the index');
     }
 

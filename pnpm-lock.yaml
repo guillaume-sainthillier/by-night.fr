@@ -267,6 +267,9 @@ importers:
       '@symfony/reprise':
         specifier: ^1.4.0
         version: 1.4.0(@hotwired/stimulus@3.2.2)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)(sass@1.108.2)(yaml@2.9.1))
+      '@symfony/ux-router':
+        specifier: file:vendor/symfony/ux-router/assets
+        version: file:vendor/symfony/ux-router/assets
       '@types/google.maps':
         specifier: ^3.67.0
         version: 3.67.0
@@ -1079,6 +1082,9 @@ packages:
         optional: true
       vite:
         optional: true
+
+  '@symfony/ux-router@file:vendor/symfony/ux-router/assets':
+    resolution: {directory: vendor/symfony/ux-router/assets, type: directory}
 
   '@tabler/core@1.7.5':
     resolution: {integrity: sha512-lqR2kfrxvH6q0fESm4ABJk3lhUJGQ/tBtiNi4oSCvDgMNljStTLpY38F+e5EtaUqufpbZq8MIxN94QK8cTApAA==}
@@ -2546,6 +2552,8 @@ snapshots:
       - rollup
       - unloader
       - webpack
+
+  '@symfony/ux-router@file:vendor/symfony/ux-router/assets': {}
 
   '@tabler/core@1.7.5(vanilla-calendar-pro@3.4.2)':
     dependencies:

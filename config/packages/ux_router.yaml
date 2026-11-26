@@ -1,0 +1,25 @@
+ux_router:
+    # Committed (index.js, index.d.ts), so the frontend builds and type-checks without PHP (CI, Docker), as the icons.
+    # Dumped again on every cache rebuild, or with `bin/console ux:router:warm-cache`: commit the changes after exposing
+    # a route or changing an exposed one
+    dump_directory: '%kernel.project_dir%/assets/js/routes'
+
+    # The app's own routes are exposed by their `expose` option; these are the API Platform operations the scripts call,
+    # whose routes take no option
+    routes:
+        - 'api_cities'
+        - 'api_event_participation'
+        - 'api_event_removal_request'
+        - 'api_event_update'
+        - 'api_place_follow'
+        - 'api_publisher_follow'
+        - 'api_search'
+        - 'api_search_suggestions'
+        - 'api_tags'
+        - 'api_users_autocomplete'
+
+when@prod:
+    ux_router:
+        # The image ships the built assets: its cache warmup must not write into assets/
+        dump_directory: '%kernel.project_dir%/var/routes'
+        dump_typescript: false

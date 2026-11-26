@@ -48,7 +48,7 @@ final class PlaceFollowTest extends AppWebTestCase
 
         $client->request('GET', '/toulouse/agenda/sortir-a/le-bikini');
 
-        self::assertSelectorExists(\sprintf('.agenda-header-card .btn-follow.btn-primary[data-href="/api/places/%d/follow"]', $bikini->getId()));
+        self::assertSelectorExists(\sprintf('.agenda-header-card .btn-follow.btn-primary[data-follow="place"][data-follow-id="%d"]', $bikini->getId()));
         self::assertSelectorTextContains('.agenda-header-card [data-followers]', '1 abonné');
     }
 }

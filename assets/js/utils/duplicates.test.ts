@@ -16,8 +16,10 @@ const modal = (answer: boolean | undefined) => ({ createConfirm: vi.fn(() => Pro
 const asManager = (modalManager: ReturnType<typeof modal>) => fake<Pick<ModalManager, 'createConfirm'>>(modalManager)
 
 const response = (status: number, body = '', redirected = false) => ({
+    ok: status >= 200 && status < 300,
     status,
     redirected,
+    headers: new Headers({ 'Content-Type': 'text/html' }),
     text: () => Promise.resolve(body),
 })
 

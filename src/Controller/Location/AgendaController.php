@@ -54,7 +54,7 @@ final class AgendaController extends BaseController
 
     // Shared by the CDN for visitors only (SharedCacheListener); never by a browser, which would keep it after a login
     #[Cache(maxage: 0, smaxage: 600, public: true, staleWhileRevalidate: 600, staleIfError: 86400)]
-    #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', methods: ['GET'])]
+    #[Route(path: '/{page<%patterns.page%>}', name: 'app_location_index', options: ['expose' => true], methods: ['GET'])]
     #[Route(path: '/{dateSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_date', requirements: ['dateSlug' => new DatePageSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir/{typeSlug}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['typeSlug' => new AgendaTypeSlugRequirement()], methods: ['GET'])]
     #[Route(path: '/agenda/sortir-a/{placeSlug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]

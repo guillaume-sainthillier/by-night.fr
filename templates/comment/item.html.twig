@@ -15,7 +15,7 @@
             {{ comment.comment|striptags('<i><b>')|nl2br|parse_tags|raw }}
         </div>
         {% if is_granted('ROLE_USER') %}
-            <button class="btn btn-sm btn-ghost-secondary reply-link mt-2" data-url="{{ path('app_comment_reponse_new', {id: comment.id}) }}">
+            <button class="btn btn-sm btn-ghost-secondary reply-link mt-2">
                 <twig:Icon name="lucide:reply" class="icon-inline" /> Répondre
             </button>
         {% endif %}
@@ -33,7 +33,7 @@
 
             {# Show "Load more" if there are more than 5 replies #}
             {% if childrenSlice|length > 5 %}
-                <div class="load-more mt-2 text-start" data-url="{{ path('app_comment_reponse_list', {id: comment.id, page: 2}) }}">
+                <div class="load-more mt-2 text-start" data-page="2">
                     <button type="button" class="btn btn-sm">
                         Plus de réponses
                     </button>

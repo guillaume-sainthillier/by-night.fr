@@ -30,7 +30,7 @@ final class CommentController extends BaseController
 {
     public const int COMMENTS_PER_PAGE = 10;
 
-    #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
+    #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', options: ['expose' => true], methods: ['GET'])]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comments = $this->createMultipleEagerLoadingPaginator(

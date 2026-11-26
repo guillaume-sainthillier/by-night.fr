@@ -31,14 +31,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 final class EventType extends AbstractType
 {
     public function __construct(
         private readonly DoctrineEventHandler $doctrineEventHandler,
-        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -134,7 +132,6 @@ final class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Concert, Spectacle…',
                     'class' => 'js-category-input',
-                    'data-autocomplete-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                 ],
             ])
             ->add('themes', TextType::class, [
@@ -143,7 +140,6 @@ final class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap…',
                     'class' => 'js-tags-input',
-                    'data-tags-url' => $this->urlGenerator->generate('api_tags', ['q' => '__QUERY__']),
                     'data-tags-allow-new' => 'true',
                 ],
             ])

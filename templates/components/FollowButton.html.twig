@@ -14,7 +14,7 @@
     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
         {% set following = is_following(target) %}
         <button type="button" class="btn btn-follow{{ following ? ' btn-primary' }}{{ small ? ' btn-sm' }}"
-                data-href="{{ follow_path(target) }}"
+                data-follow="{{ follow_kind(target) }}" data-follow-id="{{ target.id }}"
                 data-intent="suivre" aria-pressed="{{ following ? 'true' : 'false' }}">
             <twig:Icon name="lucide:bell" />
             <span class="btn-follow-label">{{ following ? 'Suivi' : 'Suivre' }}</span>

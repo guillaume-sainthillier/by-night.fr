@@ -30,7 +30,7 @@ final class ReplyController extends BaseController
 {
     public const int REPLIES_PER_PAGE = 5;
 
-    #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', methods: ['GET'])]
+    #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', options: ['expose' => true], methods: ['GET'])]
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comments = $this->createMultipleEagerLoadingPaginator(
@@ -48,7 +48,7 @@ final class ReplyController extends BaseController
         ]);
     }
 
-    #[Route(path: '/{id<%patterns.id%>}/repondre', name: 'app_comment_reponse_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/{id<%patterns.id%>}/repondre', name: 'app_comment_reponse_new', options: ['expose' => true], methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function new(Request $request, Comment $comment): Response
     {

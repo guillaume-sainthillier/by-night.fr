@@ -6,6 +6,7 @@ import initEventDateMode from '@/js/listeners/event-date-mode'
 import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 import initTimesheetRows from '@/js/listeners/timesheet-rows'
+import { path } from '@/js/router'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createTags } from '@/js/services/ui/TagsService'
@@ -35,7 +36,7 @@ function initTagInputs(container: ParentNode = document) {
     container.querySelectorAll<HTMLInputElement>('.js-tags-input:not(.tomselected)').forEach((el) => {
         createTags({
             element: el,
-            url: el.dataset.tagsUrl,
+            url: (q) => path('api_tags', { _query: { q } }),
             allowNew: el.dataset.tagsAllowNew === 'true',
             maxItems: parseInt(el.dataset.tagsMaxItems ?? '', 10) || null,
             separator: el.dataset.tagsSeparator || ',',
@@ -48,12 +49,9 @@ function initTagInputs(container: ParentNode = document) {
 
 function initCategoryInputs(container: ParentNode = document) {
     container.querySelectorAll<HTMLInputElement>('.js-category-input').forEach((el) => {
-        const url = el.dataset.autocompleteUrl
-        if (!url) return
-
         createAutocomplete({
             element: el,
-            url,
+            url: (q) => path('api_tags', { _query: { q } }),
             valueField: 'name',
             labelField: 'name',
             placeholder: el.getAttribute('placeholder') || '',

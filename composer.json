@@ -119,6 +119,7 @@
         "symfony/twig-bridge": "~8.1.10",
         "symfony/twig-bundle": "~8.1.9",
         "symfony/ux-icons": "^3.8.1",
+        "symfony/ux-router": "^3.8",
         "symfony/validator": "~8.1.11",
         "symfony/web-link": "~8.1.0",
         "symfony/yaml": "~8.1.11",

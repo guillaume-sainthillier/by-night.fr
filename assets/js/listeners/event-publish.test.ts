@@ -10,15 +10,14 @@ import eventPublish from '@/js/listeners/event-publish'
 import { fake } from '@/js/test/fake'
 import { confirmPublication } from '@/js/utils/duplicates'
 
-vi.mock('@/js/utils/duplicates', () => ({ confirmPublication: vi.fn() }))
-
 const { sendJson } = vi.hoisted(() => ({ sendJson: vi.fn() }))
 
 vi.mock('@silarhi/app-js/http', () => ({ sendJson }))
+vi.mock('@/js/utils/duplicates', () => ({ confirmPublication: vi.fn() }))
 
 const URL = '/api/events/42'
 
-const DUPLICATES_URL = '/espace-perso/42/doublons'
+const DUPLICATES_URL = '/espace-perso/organisateurs/le-bikini/evenements/42/doublons'
 
 type Handler = () => Promise<void>
 
@@ -26,7 +25,7 @@ const connect = (dataset: Record<string, string> = {}) => {
     const listeners: Record<string, Handler | undefined> = {}
     const notice = { remove: vi.fn() }
     const button = {
-        dataset: { publishHref: URL, ...dataset },
+        dataset: { publishEvent: '42', ...dataset },
         disabled: false,
         closest: (selector: string) => (selector === '.alert' ? notice : null),
         addEventListener: (type: string, listener: Handler) => {
@@ -57,7 +56,7 @@ afterEach(() => {
 
 describe('event-publish listener', () => {
     test('targets the publish buttons', () => {
-        expect(eventPublish.selector).toBe('button[data-publish-href]')
+        expect(eventPublish.selector).toBe('button[data-publish-event]')
     })
 
     test('takes the event out of draft, then drops the preview notice', async () => {
@@ -91,7 +90,7 @@ describe('event-publish listener', () => {
     test('asks first for the events already online the draft likely repeats', async () => {
         vi.mocked(confirmPublication).mockResolvedValue(true)
         sendJson.mockResolvedValue({ draft: false, cancelled: false })
-        const { modalManager, notice, click } = connect({ duplicatesHref: DUPLICATES_URL })
+        const { modalManager, notice, click } = connect({ publisher: 'le-bikini' })
 
         await click()
 
@@ -102,7 +101,7 @@ describe('event-publish listener', () => {
 
     test('keeps the draft when the author cancels', async () => {
         vi.mocked(confirmPublication).mockResolvedValue(false)
-        const { button, notice, toastManager, click } = connect({ duplicatesHref: DUPLICATES_URL })
+        const { button, notice, toastManager, click } = connect({ publisher: 'le-bikini' })
 
         await click()
 

@@ -84,7 +84,7 @@ final class LocationPageTest extends AppWebTestCase
         $client->request('GET', '/toulouse');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('#autocomplete[data-search-url="/api/search?city=toulouse"][data-suggestions-url="/api/search/suggestions?city=toulouse"][data-search-page-url="/recherche/?city=toulouse"]');
+        self::assertSelectorExists('#autocomplete[data-city="toulouse"]');
     }
 
     public function testACountryWithFewCitiesRanksNone(): void

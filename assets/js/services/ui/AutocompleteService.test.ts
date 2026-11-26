@@ -41,7 +41,7 @@ describe('AutocompleteService', () => {
         create({
             element: fake<HTMLInputElement>(element),
             valueInput: fake<HTMLInputElement>(valueInput),
-            url: '/api/cities?q=__QUERY__',
+            url: (q) => `/api/cities?q=${q}`,
             onSelection,
         })
     })

@@ -1,4 +1,5 @@
 import { definePage } from '@silarhi/app-js'
+import { getHtml } from '@silarhi/app-js/http'
 import { coalesce, followTransfers } from '@/js/utils/transfers'
 
 /**
@@ -14,12 +15,13 @@ export default definePage<{ hub?: string; refreshUrl?: string; iri?: string | nu
         }
 
         const refresh = coalesce(async () => {
-            const response = await fetch(refreshUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            if (!response.ok) {
+            let html: string
+            try {
+                html = await getHtml(refreshUrl)
+            } catch {
                 return
             }
 
-            const html = await response.text()
             app.unmount(target)
             target.innerHTML = html
             app.mount(target)
