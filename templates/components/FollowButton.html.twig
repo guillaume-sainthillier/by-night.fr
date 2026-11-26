@@ -1,0 +1,30 @@
+{#
+    The "Suivre" button of a publisher or a venue: a member follows it in a click (follow.ts, PUT /api/…/follow) and
+    hears of its new events by e-mail; a visitor logs in first, and the page follows it once back (the "#suivre"
+    fragment). The number of followers sits beside it.
+
+    <twig:FollowButton target="{{ publisher }}" />
+    <twig:FollowButton target="{{ place }}" returnPath="{{ path('app_agenda_by_place', {…}) }}" />
+#}
+{# @var target \App\Entity\Publisher|\App\Entity\Place #}
+{# @var returnPath string|null the page to come back to after the login: the current one by default #}
+{% props target, returnPath = null, small = false %}
+{% set followers = count_followers(target) %}
+<div {{ attributes.defaults({class: 'd-inline-flex align-items-center gap-2'}) }}>
+    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+        {% set following = is_following(target) %}
+        <button type="button" class="btn btn-follow{{ following ? ' btn-primary' }}{{ small ? ' btn-sm' }}"
+                data-href="{{ follow_path(target) }}"
+                data-intent="suivre" aria-pressed="{{ following ? 'true' : 'false' }}">
+            <twig:Icon name="lucide:bell" />
+            <span class="btn-follow-label">{{ following ? 'Suivi' : 'Suivre' }}</span>
+        </button>
+    {% else %}
+        {% set afterLogin = (returnPath ?? app.request.pathInfo) ~ '#suivre' %}
+        <a class="btn{{ small ? ' btn-sm' }}" rel="nofollow" href="{{ path('app_login', {_target_path: afterLogin}) }}" title="Connectez-vous pour être prévenu de ses nouveaux événements">
+            <twig:Icon name="lucide:bell" />
+            Suivre
+        </a>
+    {% endif %}
+    <span class="small text-secondary" data-followers>{{ '{count, plural, =0 {} one {# abonné} other {# abonnés}}'|trans({count: followers}, 'messages+intl-icu') }}</span>
+</div>

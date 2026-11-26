@@ -28,6 +28,7 @@ final class ContentRemovalActionControllerTest extends AppWebTestCase
     {
         $client = self::createClient();
         $client->loginUser(UserFactory::createOne(['roles' => ['ROLE_ADMIN']]));
+
         $event = EventFactory::createOne(['url' => 'https://example.test/affiche.png']);
         $path = tempnam(sys_get_temp_dir(), 'png');
         imagepng(imagecreatetruecolor(4, 4), $path);

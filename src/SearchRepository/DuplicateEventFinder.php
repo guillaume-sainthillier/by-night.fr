@@ -157,13 +157,13 @@ final readonly class DuplicateEventFinder
             return false;
         }
 
-        return self::distance((float) $search->latitude, (float) $search->longitude, $latitude, $longitude) <= self::SAME_VENUE_KM;
+        return $this->distance((float) $search->latitude, (float) $search->longitude, $latitude, $longitude) <= self::SAME_VENUE_KM;
     }
 
     /**
      * The great-circle distance between two points, in kilometres.
      */
-    private static function distance(float $latitude, float $longitude, float $otherLatitude, float $otherLongitude): float
+    private function distance(float $latitude, float $longitude, float $otherLatitude, float $otherLongitude): float
     {
         $latitudeDelta = deg2rad($otherLatitude - $latitude);
         $longitudeDelta = deg2rad($otherLongitude - $longitude);

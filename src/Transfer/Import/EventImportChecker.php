@@ -91,7 +91,7 @@ final readonly class EventImportChecker
                     array_push($kept, ...$group->rows);
                 } else {
                     foreach ($group->rows as $row) {
-                        $turnedDown[] = [$row, self::rowErrors($row, $mapped->errors)];
+                        $turnedDown[] = [$row, $this->rowErrors($row, $mapped->errors)];
                     }
                 }
 
@@ -108,7 +108,7 @@ final readonly class EventImportChecker
                 return;
             }
 
-            $kept = self::sorted($kept);
+            $kept = $this->sorted($kept);
             $import->setSuccessFilePath($this->writeRows($import, 'valides', $sheet['headers'], $kept, $locals))
                 ->setKeptRows(array_map(static fn (SheetRow $row): int => $row->number, $kept));
             $import->setErrorFilePath([] === $turnedDown ? null : $this->writeErrors($import, $sheet['headers'], $turnedDown, $locals));
@@ -170,7 +170,7 @@ final readonly class EventImportChecker
     /**
      * @param list<RowProblem> $errors
      */
-    private static function rowErrors(SheetRow $row, array $errors): string
+    private function rowErrors(SheetRow $row, array $errors): string
     {
         $own = array_filter($errors, static fn (RowProblem $problem): bool => $problem->row === $row->number);
 
@@ -184,7 +184,7 @@ final readonly class EventImportChecker
      *
      * @return list<SheetRow> in the file's order
      */
-    private static function sorted(array $rows): array
+    private function sorted(array $rows): array
     {
         usort($rows, static fn (SheetRow $a, SheetRow $b): int => $a->number <=> $b->number);
 
@@ -200,7 +200,7 @@ final readonly class EventImportChecker
      */
     private function writeRows(EventImport $import, string $name, array $headers, array $rows, array &$locals): string
     {
-        $columns = self::reportColumns($headers);
+        $columns = $this->reportColumns($headers);
 
         return $this->store($import, $name, self::pick($headers, $columns), array_map(static fn (SheetRow $row): array => self::pick($row->cells, $columns), $rows), $locals);
     }
@@ -213,7 +213,7 @@ final readonly class EventImportChecker
     private function writeErrors(EventImport $import, array $headers, array $rows, array &$locals): string
     {
         usort($rows, static fn (array $a, array $b): int => $a[0]->number <=> $b[0]->number);
-        $columns = self::reportColumns($headers);
+        $columns = $this->reportColumns($headers);
 
         return $this->store($import, 'erreurs', [...self::pick($headers, $columns), self::ERRORS_HEADER], array_map(static fn (array $row): array => [...self::pick($row[0]->cells, $columns), $row[1]], $rows), $locals);
     }
@@ -243,7 +243,7 @@ final readonly class EventImportChecker
      *
      * @return list<int>
      */
-    private static function reportColumns(array $headers): array
+    private function reportColumns(array $headers): array
     {
         return array_keys(array_filter($headers, static fn (string $header): bool => 0 !== strcasecmp(trim($header), self::ERRORS_HEADER)));
     }

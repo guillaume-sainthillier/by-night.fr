@@ -136,7 +136,7 @@ final class CloudflareCdnPurgerTest extends TestCase
             self::fail('A 429 must throw');
         } catch (CdnPurgeQuotaExceededException $e) {
             self::assertSame(30_000, $e->getRetryDelay());
-            self::assertFalse($e->forceRetry(), 'The transport\'s max_retries still bounds the retries');
+            self::assertFalse($e->forceRetry(), "The transport's max_retries still bounds the retries");
         }
     }
 

@@ -109,7 +109,7 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
      */
     public function testDownloadedImageOnlyUpdatesTheSystemImageHash(): void
     {
-        $gif = (string) base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
+        $gif = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
         $client = new MockHttpClient(new MockResponse($gif, ['http_code' => 200]));
 
         // Persisted (non-null id): uploadFile() only attaches the file, Vich uploads it on flush
@@ -209,9 +209,9 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
 
     public function testAnImageAnnouncedTooLargeIsNotDownloaded(): void
     {
-        $client = new MockHttpClient(new MockResponse(self::largeGif(), [
+        $client = new MockHttpClient(new MockResponse($this->largeGif(), [
             'http_code' => 200,
-            'response_headers' => ['Content-Length' => (string) self::largeGifSize()],
+            'response_headers' => ['Content-Length' => (string) $this->largeGifSize()],
         ]));
         $event = EventFactory::createOne(['url' => 'https://example.test/huge.gif']);
 
@@ -223,7 +223,7 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
     public function testAnImageGrowingPastTheLimitIsGivenUp(): void
     {
         // No Content-Length: the size is only known once the bytes come
-        $client = new MockHttpClient(new MockResponse(self::largeGif(), ['http_code' => 200]));
+        $client = new MockHttpClient(new MockResponse($this->largeGif(), ['http_code' => 200]));
         $event = EventFactory::createOne(['url' => 'https://example.test/endless.gif']);
 
         $this->download($client, $event);
@@ -236,7 +236,7 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
      *
      * @return iterable<string>
      */
-    private static function largeGif(): iterable
+    private function largeGif(): iterable
     {
         yield self::GIF;
         for ($i = 0; $i <= EventHandler::MAX_IMAGE_BYTES / 1_000_000; ++$i) {
@@ -244,7 +244,7 @@ final class EventHandlerDownloadTest extends AppKernelTestCase
         }
     }
 
-    private static function largeGifSize(): int
+    private function largeGifSize(): int
     {
         return \strlen(self::GIF) + (intdiv(EventHandler::MAX_IMAGE_BYTES, 1_000_000) + 1) * 1_000_000;
     }

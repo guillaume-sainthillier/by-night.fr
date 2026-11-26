@@ -38,7 +38,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * A publisher's events, as the members who manage it see them in their personal space: its list, the bulk actions,
- * the new event form and each event's form. PublisherContextSubscriber resolves {publisher} and checks they manage it.
+ * the new event form and each event's form. PublisherContextListener resolves {publisher} and checks they manage it.
  */
 #[Route(path: '/organisateurs/{publisher<%patterns.slug%>}')]
 final class EventController extends BaseController

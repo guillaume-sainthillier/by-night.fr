@@ -1,0 +1,163 @@
+<?php
+
+/*
+ * This file is part of By Night.
+ * (c) 2013-present Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace App\EventListener;
+
+use App\App\AppContext;
+use App\App\CountrySlugs;
+use App\App\LazyLocationFactory;
+use App\App\Location;
+use App\Entity\Country;
+use App\Exception\CityMovedException;
+use RuntimeException;
+use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Exception\GoneHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+/**
+ * Populates AppContext with the location of the URL parameter; the pages without one take the member's city (AppContext).
+ * Runs early in the request lifecycle to ensure location context is always available.
+ *
+ * Uses PHP 8.4 LazyObject to defer database loading of City/Country entities
+ * until their properties are actually accessed.
+ */
+final readonly class AppContextListener
+{
+    /**
+     * The events filed in no country answered on "/unknown". The ones located since redirect to their city from
+     * these pages; the others were deleted on 2026-10-05, and the listings of "/unknown" are gone.
+     */
+    private const string UNKNOWN_LOCATION = 'unknown';
+
+    private const array UNKNOWN_LOCATION_ROUTES = ['app_event_details', 'app_event_details_old', 'app_widget_next_events', 'app_widget_similar_events', 'app_agenda_by_place'];
+
+    public function __construct(
+        private AppContext $appContext,
+        private LazyLocationFactory $lazyLocationFactory,
+        private CountrySlugs $countrySlugs,
+    ) {
+    }
+
+    #[AsEventListener(event: KernelEvents::REQUEST)]
+    public function onKernelRequest(KernelEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $request = $event->getRequest();
+
+        // Check if route has a {location} parameter
+        if ($request->attributes->has('location')) {
+            $this->resolveLocationFromUrl($request);
+        }
+    }
+
+    /**
+     * Resolve location from URL slug using lazy loading.
+     * The actual database query is deferred until entity properties are accessed.
+     */
+    private function resolveLocationFromUrl(Request $request): void
+    {
+        $locationSlug = $request->attributes->getString('location');
+
+        if (self::UNKNOWN_LOCATION === $locationSlug) {
+            if (!\in_array($request->attributes->getString('_route'), self::UNKNOWN_LOCATION_ROUTES, true)) {
+                throw new GoneHttpException('Les événements sans pays ne sont plus en ligne');
+            }
+
+            $noWhere = new Country();
+            $noWhere->setName('Nowhere');
+            $noWhere->setSlug($locationSlug);
+
+            $location = new Location();
+            $location->setCountry($noWhere);
+
+            $this->appContext->setLocation($location);
+
+            return;
+        }
+
+        // A city under its country ("suisse/geneve"): the first segment of anything else ("rennes/k") is no country,
+        // not found before any lookup of the city
+        if (str_contains($locationSlug, '/') && !$this->countrySlugs->has(strstr($locationSlug, '/', true))) {
+            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug));
+        }
+
+        try {
+            // Create lazy-loaded location - database query deferred until access. Countries and cities share the
+            // slugs of the URLs ("/france", "/toulouse"): a country's comes first
+            if ($this->countrySlugs->has($locationSlug)) {
+                $location = $this->lazyLocationFactory->createWithLazyCountry($locationSlug);
+            } else {
+                $location = $this->lazyLocationFactory->createWithLazyCity($locationSlug);
+                // A redirect that would not read the city (the former agenda, the router's trailing slash) reads it
+                // now: a city named by a former slug then takes a single redirect, to its current page
+                if ($this->onlyRedirects($request)) {
+                    $location->getCity()?->getId();
+                }
+            }
+
+            $this->appContext->setLocation($location);
+        } catch (RuntimeException $e) {
+            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug), $e);
+        }
+    }
+
+    private function onlyRedirects(Request $request): bool
+    {
+        return 'app_agenda_legacy' === $request->attributes->getString('_route')
+            || str_starts_with((string) $request->attributes->get('_controller'), RedirectController::class);
+    }
+
+    /**
+     * What is not found under "/unknown" was deleted: gone tells search engines to forget it sooner than not found.
+     *
+     * The page of a client error (4xx) has the site's header, which names the location of the URL: a slug no city has
+     * ("/nowhere") would fail there again, and the error page with it, and "/unknown" is nowhere. That page takes the
+     * member's city instead.
+     */
+    #[AsEventListener(event: KernelEvents::EXCEPTION)]
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $throwable = $event->getThrowable();
+        $unknownLocation = self::UNKNOWN_LOCATION === $event->getRequest()->attributes->get('location');
+        if ($unknownLocation && $throwable instanceof NotFoundHttpException) {
+            $event->setThrowable($throwable = new GoneHttpException($throwable->getMessage(), $throwable));
+        }
+
+        if (!$throwable instanceof HttpExceptionInterface || $throwable->getStatusCode() >= 500) {
+            return;
+        }
+
+        if ($unknownLocation) {
+            $this->appContext->reset();
+
+            return;
+        }
+
+        try {
+            // Loads the city or the country of the URL, which were only lazy so far
+            $this->appContext->getLocation()?->getName();
+        } catch (NotFoundHttpException|CityMovedException) {
+            $this->appContext->reset();
+        }
+    }
+}

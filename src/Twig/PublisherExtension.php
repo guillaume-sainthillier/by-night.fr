@@ -13,7 +13,7 @@ namespace App\Twig;
 use App\App\PublisherContext;
 use App\Entity\Publisher;
 use App\Entity\User;
-use App\EventSubscriber\PublisherContextSubscriber;
+use App\EventListener\PublisherContextListener;
 use App\Repository\PublisherRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -66,7 +66,7 @@ final readonly class PublisherExtension
         $route = $request?->attributes->getString('_route');
         /** @var array<string, mixed> $parameters */
         $parameters = $request?->attributes->get('_route_params') ?? [];
-        $parameter = PublisherContextSubscriber::ROUTE_PARAMETER;
+        $parameter = PublisherContextListener::ROUTE_PARAMETER;
         if (null === $route || '' === $route || [$parameter] !== array_keys($parameters)) {
             return $this->urlGenerator->generate('app_event_list', [$parameter => $publisher->getSlug()]);
         }

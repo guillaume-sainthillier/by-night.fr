@@ -1,4 +1,4 @@
-# The /llms.txt of the site (https://llmstxt.org): its links come from App\EventSubscriber\LlmsTxtSubscriber
+# The /llms.txt of the site (https://llmstxt.org): its links come from App\EventListener\LlmsTxtListener
 # and from the "llms_txt" option of the static routes
 llms_txt:
     title: 'By Night'

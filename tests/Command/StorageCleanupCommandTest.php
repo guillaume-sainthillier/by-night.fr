@@ -118,6 +118,7 @@ final class StorageCleanupCommandTest extends AppKernelTestCase
         $cleaner = new OrphanedUploadsCleaner(self::getContainer()->get(Connection::class), $client, 'bucket', $mappings, new ImageCachePurger($bus));
         $tester = new CommandTester(new StorageCleanupCommand($cleaner));
         $tester->execute($options);
+
         $this->dispatched = $bus->messages;
 
         return $tester;

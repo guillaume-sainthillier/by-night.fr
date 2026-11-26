@@ -123,7 +123,7 @@ final class SeeTicketsKwankoParserTest extends TestCase
         $ref = new ReflectionClass(SeeTicketsKwankoParser::class);
         $parser = $ref->newInstanceWithoutConstructor();
 
-        $headers = $ref->getMethod('normalizeHeaders')->invoke(null, str_getcsv($headerLine, ',', '"', ''));
+        $headers = $ref->getMethod('normalizeHeaders')->invoke($parser, str_getcsv($headerLine, ',', '"', ''));
 
         return $ref->getMethod('arrayToDto')->invoke($parser, array_combine($headers, $row));
     }

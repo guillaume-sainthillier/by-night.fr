@@ -91,7 +91,7 @@ final class EventExporterTest extends AppKernelTestCase
             'startDate' => $day, 'endDate' => $day, 'draft' => false, 'placeName' => 'La Guinguette', 'placeCity' => 'Toulouse',
             'placePostalCode' => '31000', 'placeCountry' => CountryFactory::find(['id' => 'FR']),
         ]);
-        $csv = (string) $this->storage()->read((string) $this->export()->getFilePath());
+        $csv = $this->storage()->read((string) $this->export()->getFilePath());
 
         $import = $this->import(str_replace('Concert de jazz', 'Concert de jazz manouche', $csv));
 
@@ -105,7 +105,7 @@ final class EventExporterTest extends AppKernelTestCase
         $day = new DateTimeImmutable('+1 month');
         EventFactory::createOne(['user' => $this->user, 'name' => 'Soirée jazz', 'startDate' => $day, 'endDate' => $day, 'startTime' => new DateTimeImmutable('1970-01-01 20:30'), 'endTime' => new DateTimeImmutable('1970-01-01 01:00')]);
 
-        $ics = (string) $this->storage()->read((string) $this->export(format: TransferFormat::Ics)->getFilePath());
+        $ics = $this->storage()->read((string) $this->export(format: TransferFormat::Ics)->getFilePath());
 
         self::assertStringContainsString('BEGIN:VCALENDAR', $ics);
         self::assertSame(1, substr_count($ics, 'BEGIN:VEVENT'));

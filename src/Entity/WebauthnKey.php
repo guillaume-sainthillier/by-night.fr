@@ -37,7 +37,7 @@ use Webauthn\TrustPath\TrustPath;
 #[Entity(repositoryClass: WebauthnKeyRepository::class)]
 #[Table(name: 'webauthn_key')]
 #[UniqueConstraint(name: 'webauthn_key_user_name', columns: ['user_id', 'name'])]
-#[UniqueEntity(fields: ['user', 'name'], message: 'Vous avez déjà une clé d\'accès de ce nom.')]
+#[UniqueEntity(fields: ['user', 'name'], message: "Vous avez déjà une clé d'accès de ce nom.")]
 class WebauthnKey extends PublicKeyCredentialSource
 {
     #[Id]

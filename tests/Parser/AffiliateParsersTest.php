@@ -42,6 +42,7 @@ final class AffiliateParsersTest extends TestCase
     {
         $dto = new EventDto();
         $dto->parserName = $parserName;
+
         $event = new Event()->setFromData($parserName);
 
         self::assertSame($affiliate, $dto->isAffiliate(), 'The import Firewall reads the DTO');
@@ -58,6 +59,6 @@ final class AffiliateParsersTest extends TestCase
             SeeTicketsKwankoParser::getParserName(),
             CDiscountAwinParser::getParserName(),
         ]));
-        self::assertSame(0, AffiliateParsers::pageRank(null), 'A member\'s own event');
+        self::assertSame(0, AffiliateParsers::pageRank(null), "A member's own event");
     }
 }

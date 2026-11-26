@@ -22,6 +22,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/cities',
+            // The same for every visitor: never opens a session
+            stateless: true,
             cacheHeaders: [
                 'max_age' => 31536000,
                 'shared_max_age' => 31536000,
@@ -32,8 +34,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             ),
             paginationEnabled: true,
             paginationItemsPerPage: 7,
-            paginationClientItemsPerPage: true,
             paginationMaximumItemsPerPage: 50,
+            paginationClientItemsPerPage: true,
             name: 'api_cities',
             provider: CityAutocompleteProvider::class,
             parameters: [

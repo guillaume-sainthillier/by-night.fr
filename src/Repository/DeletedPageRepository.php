@@ -49,7 +49,7 @@ final class DeletedPageRepository extends ServiceEntityRepository
             return [];
         }
 
-        return array_map('strval', $this->createQueryBuilder('d')
+        return array_map(strval(...), $this->createQueryBuilder('d')
             ->select('d.identifier')
             ->where('d.kind = :kind')
             ->andWhere('d.identifier IN (:identifiers)')

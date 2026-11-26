@@ -72,7 +72,7 @@ final class SheetReaderTest extends TestCase
 
     public function testACsvFromExcelOnWindowsIsReadAsWindows1252WithSemicolons(): void
     {
-        $sheet = $this->readCsv((string) mb_convert_encoding("Nom;Date de début;Lieu\nThéâtre;12/03/2027;Salle Pleyel\n", 'Windows-1252', 'UTF-8'));
+        $sheet = $this->readCsv(mb_convert_encoding("Nom;Date de début;Lieu\nThéâtre;12/03/2027;Salle Pleyel\n", 'Windows-1252', 'UTF-8'));
 
         self::assertSame('Théâtre', $sheet['rows'][0]->get(EventColumn::Name));
         self::assertSame('Salle Pleyel', $sheet['rows'][0]->get(EventColumn::Place));
@@ -140,7 +140,7 @@ final class SheetReaderTest extends TestCase
     public function testARequiredColumnMustBeThere(): void
     {
         $this->expectException(InvalidSheetException::class);
-        $this->expectExceptionMessage('La colonne « Date de début » manque au fichier.');
+        $this->expectExceptionMessageIsOrContains('La colonne « Date de début » manque au fichier.');
 
         $this->readCsv("Nom;Lieu\nConcert;Salle\n");
     }
@@ -148,7 +148,7 @@ final class SheetReaderTest extends TestCase
     public function testAFileWithoutKnownHeadersIsTurnedDown(): void
     {
         $this->expectException(InvalidSheetException::class);
-        $this->expectExceptionMessage('La première ligne du fichier doit nommer ses colonnes');
+        $this->expectExceptionMessageIsOrContains('La première ligne du fichier doit nommer ses colonnes');
 
         $this->readCsv("Concert;12/03/2027\n");
     }
@@ -156,7 +156,7 @@ final class SheetReaderTest extends TestCase
     public function testTooManyRowsAreTurnedDown(): void
     {
         $this->expectException(InvalidSheetException::class);
-        $this->expectExceptionMessage("Le fichier dépasse 1\u{a0}000 lignes");
+        $this->expectExceptionMessageIsOrContains("Le fichier dépasse 1\u{a0}000 lignes");
 
         $this->readCsv("Nom;Date de début\n" . str_repeat("Concert;12/03/2027\n", SheetReader::MAX_ROWS + 1));
     }
@@ -167,7 +167,7 @@ final class SheetReaderTest extends TestCase
         file_put_contents($path, 'not a zip');
 
         $this->expectException(InvalidSheetException::class);
-        $this->expectExceptionMessage('Le fichier ne peut pas être lu');
+        $this->expectExceptionMessageIsOrContains('Le fichier ne peut pas être lu');
 
         new SheetReader()->read($path, TransferFormat::Xlsx);
     }

@@ -74,7 +74,7 @@ final readonly class CrossSourceLinker
             $wanted = [];
             foreach ($chunk->pairs as $pair) {
                 if ($pair->verdict->isMatch() && ($consistent[$pair->leftId] ?? false)) {
-                    $wanted[self::key($pair->leftId, $pair->rightId)] = [$pair->leftId, $pair->rightId];
+                    $wanted[$this->key($pair->leftId, $pair->rightId)] = [$pair->leftId, $pair->rightId];
                 }
             }
 
@@ -87,7 +87,7 @@ final readonly class CrossSourceLinker
             /** @var array<string, true> $keptApart */
             $keptApart = [];
             foreach ($this->linkRepository->findTouching(array_keys($scope)) as $link) {
-                $key = self::key($link['eventId'], $link['linkedEventId']);
+                $key = $this->key($link['eventId'], $link['linkedEventId']);
                 if ($link['keptApart']) {
                     $keptApart[self::identityKey($link['eventId'], $link['eventIdentityHash'], $link['linkedEventId'], $link['linkedEventIdentityHash'])] = true;
                 } elseif (isset($scope[$link['eventId']], $scope[$link['linkedEventId']])
@@ -118,7 +118,7 @@ final readonly class CrossSourceLinker
                     // The events gathered or parted, and through them their families, venue by venue, each venue's
                     // forgotten before the next: the families of a whole chunk, sessions loaded, did not fit in the
                     // 512 MB of a worker on the first run (2026-10-06)
-                    foreach (self::eventIdsByVenue([...array_values($added), ...array_map(self::pairOf(...), array_keys($removed))], $chunk->eventPlaces) as $eventIds) {
+                    foreach ($this->eventIdsByVenue([...array_values($added), ...array_map($this->pairOf(...), array_keys($removed))], $chunk->eventPlaces) as $eventIds) {
                         $this->entityManager->clear();
                         $this->familyResolver->resolveForEvents($eventIds);
                     }
@@ -149,7 +149,7 @@ final readonly class CrossSourceLinker
         });
     }
 
-    private static function key(int $leftId, int $rightId): string
+    private function key(int $leftId, int $rightId): string
     {
         return min($leftId, $rightId) . '-' . max($leftId, $rightId);
     }
@@ -175,7 +175,7 @@ final readonly class CrossSourceLinker
      *
      * @return list<list<int>>
      */
-    private static function eventIdsByVenue(array $pairs, array $eventPlaces): array
+    private function eventIdsByVenue(array $pairs, array $eventPlaces): array
     {
         $byVenue = [];
         foreach ($pairs as [$leftId, $rightId]) {
@@ -190,7 +190,7 @@ final readonly class CrossSourceLinker
     /**
      * @return array{int, int}
      */
-    private static function pairOf(string $key): array
+    private function pairOf(string $key): array
     {
         [$leftId, $rightId] = explode('-', $key);
 

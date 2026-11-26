@@ -44,7 +44,6 @@ final class FeedbackTest extends AppApiTestCase
         self::assertResponseIsSuccessful();
         self::assertResponseFormatSame('json');
         self::assertJsonContains([
-            'success' => true,
             'message' => "Merci pour votre retour\u{a0}!",
         ]);
     }

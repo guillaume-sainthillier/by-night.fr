@@ -28,6 +28,7 @@ import facebookPage from '@/js/listeners/facebook-page'
 import feedback from '@/js/listeners/feedback'
 import fileMaxSize from '@/js/listeners/file-max-size'
 import filteredLink from '@/js/listeners/filtered-link'
+import follow from '@/js/listeners/follow'
 import formConfirm from '@/js/listeners/form-confirm'
 import formErrors from '@/js/listeners/form-errors'
 import formTarget from '@/js/listeners/form-target'
@@ -108,6 +109,7 @@ const app = new App({
         feedback,
         fileMaxSize,
         filteredLink,
+        follow,
         // The add and remove buttons of the form collections, handed to the collectionManager service
         collectionListener('collectionManager'),
         formConfirm,

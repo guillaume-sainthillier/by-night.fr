@@ -14,3 +14,11 @@ api_platform:
         paths:
             - '%kernel.project_dir%/src/Api/ApiResource'
             - '%kernel.project_dir%/src/Entity'
+
+# The API serves the site's own pages: no documentation nor entry point for the public
+when@prod:
+    api_platform:
+        enable_docs: false
+        enable_entrypoint: false
+        enable_swagger_ui: false
+        enable_re_doc: false

@@ -36,9 +36,6 @@ final readonly class FeedbackProcessor implements ProcessorInterface
 
         $this->mailerManager->sendFeedbackEmail($user, $data->message);
 
-        return new FeedbackOutput(
-            success: true,
-            message: "Merci pour votre retour\u{a0}!",
-        );
+        return new FeedbackOutput(message: "Merci pour votre retour\u{a0}!");
     }
 }

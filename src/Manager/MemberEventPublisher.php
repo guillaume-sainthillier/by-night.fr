@@ -62,6 +62,7 @@ final readonly class MemberEventPublisher
 
         $event = $this->getEvent($dto);
         $event->setDraft($draft);
+
         $author = $this->entityManager->getReference(User::class, $dto->user?->entityId ?? throw new LogicException('The event has no author.'));
         $event->setPublisher($this->entityManager->getReference(Publisher::class, $publisher->getId()));
         if (null !== $comment && '' !== trim($comment)) {
@@ -88,6 +89,7 @@ final readonly class MemberEventPublisher
 
         $event = $this->getEvent($dto);
         $event->setDraft($draft);
+
         $this->entityManager->flush();
 
         return $event;

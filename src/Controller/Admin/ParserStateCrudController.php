@@ -11,7 +11,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ParserState;
-use DateTimeImmutable;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -54,14 +53,14 @@ final class ParserStateCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         // Read before the form is submitted, so this is the watermark as stored
-        $state = $this->getContext()?->getEntity()->getInstance();
+        $this->getContext()?->getEntity()->getInstance();
 
         $id = IdField::new('id', 'ID');
         // The parser is the row's identity (no setter): shown on the form for context only
         $parser = TextField::new('parser', 'Parser')->setDisabled();
         $lastParsedAt = DateTimeField::new('lastParsedAt', 'Début du dernier import réussi')
             ->setHelp('Au prochain passage, un parser incrémental récupère les changements de sa source depuis cette date, moins une heure de marge. Supprimer la ligne relance un import complet.')
-            ->setFormTypeOption('constraints', $this->getLastParsedAtConstraints($state instanceof ParserState ? $state->getLastParsedAt() : null));
+            ->setFormTypeOption('constraints', $this->getLastParsedAtConstraints());
 
         return [
             $id->hideOnForm(),
@@ -75,11 +74,9 @@ final class ParserStateCrudController extends AbstractCrudController
      * new date, then moves the watermark to its own start: moving it back only re-fetches a
      * window the dedup gate absorbs, moving it forward skips the changes in between for good.
      *
-     * @param DateTimeImmutable|null $storedLastParsedAt the watermark as stored, null outside the edit page
-     *
      * @return Constraint[]
      */
-    private function getLastParsedAtConstraints(?DateTimeImmutable $storedLastParsedAt): array
+    private function getLastParsedAtConstraints(): array
     {
         // TODO: decide how far the admin may move the watermark (see the docblock)
         return [];

@@ -31,7 +31,7 @@ final class AsyncObjectPersisterTest extends AppKernelTestCase
      */
     public function testAConflictingUpdateIsRetried(): void
     {
-        $client = self::getContainer()->get('fos_elastica.client.default');
+        $client = self::getContainer()->get(\FOS\ElasticaBundle\Elastica\Client::class);
         self::assertInstanceOf(Client::class, $client);
 
         $bulk = new Bulk($client)->addDocument(new Document('1', ['name' => 'Concert']), Action::OP_TYPE_UPDATE);

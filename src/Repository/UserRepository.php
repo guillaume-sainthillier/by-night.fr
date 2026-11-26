@@ -14,6 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\MultipleEagerLoaderInterface;
 use App\Dto\UserDto;
 use App\Entity\Event;
+use App\Entity\Follow;
 use App\Entity\Publisher;
 use App\Entity\PublisherNewsDelivery;
 use App\Entity\User;
@@ -186,13 +187,34 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     public function findWeekendDigestRecipientIds(string $week): array
     {
         /* @var list<int> */
-        return array_map('intval', $this->andWhereDeliverableEmail($this->createQueryBuilder('u'))
+        return array_map(intval(...), $this->andWhereDeliverableEmail($this->createQueryBuilder('u'))
             ->select('u.id')
             ->andWhere('u.weekendDigest = true')
             ->andWhere('u.enabled = true')
             ->andWhere('u.city IS NOT NULL')
             ->andWhere('u.weekendDigestSentWeek IS NULL OR u.weekendDigestSentWeek <> :week')
             ->setParameter('week', $week)
+            ->orderBy('u.id')
+            ->getQuery()
+            ->getSingleColumnResult());
+    }
+
+    /**
+     * The members following a publisher or a venue who want to hear of their new events and have not heard of them
+     * today, whose address may reach them.
+     *
+     * @return list<int>
+     */
+    public function findFollowAlertRecipientIds(DateTimeImmutable $today): array
+    {
+        /* @var list<int> */
+        return array_map('intval', $this->andWhereDeliverableEmail($this->createQueryBuilder('u'))
+            ->select('u.id')
+            ->andWhere('u.followAlerts = true')
+            ->andWhere('u.enabled = true')
+            ->andWhere('u.followAlertsSentAt IS NULL OR u.followAlertsSentAt < :today')
+            ->andWhere(\sprintf('EXISTS (SELECT f.id FROM %s f WHERE f.user = u)', Follow::class))
+            ->setParameter('today', $today->setTime(0, 0))
             ->orderBy('u.id')
             ->getQuery()
             ->getSingleColumnResult());

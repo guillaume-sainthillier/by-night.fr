@@ -27,7 +27,7 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
  * sends them to an address as a member would get them, recording nothing. --limit caps the e-mails of a run, all
  * editions together, under the mail provider's daily cap: a run again sends to the members still without them.
  */
-#[AsCommand('app:publishers:send-news', 'Send editions of the publishers\' news to the members they are for')]
+#[AsCommand('app:publishers:send-news', "Send editions of the publishers' news to the members they are for")]
 final readonly class PublishersSendNewsCommand
 {
     public function __construct(

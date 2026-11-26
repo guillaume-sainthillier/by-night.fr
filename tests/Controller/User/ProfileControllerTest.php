@@ -313,7 +313,7 @@ final class ProfileControllerTest extends AppWebTestCase
         $panel = $crawler->filter('h3:contains("E-mails") + .form-panel');
         self::assertCount(1, $panel);
         self::assertSame(
-            ['profile_form[weekendDigest]', 'profile_form[outingAlerts]', 'profile_form[publisherNews]'],
+            ['profile_form[weekendDigest]', 'profile_form[outingAlerts]', 'profile_form[followAlerts]', 'profile_form[publisherNews]'],
             $panel->filter('input[type="checkbox"]')->each(static fn ($input): ?string => $input->attr('name')),
         );
     }

@@ -49,7 +49,7 @@ final class PlaceEntityFactoryTest extends AppKernelTestCase
         $place = PlaceFactory::createOne(['name' => 'Le Bikini', 'city' => $toulouse, 'country' => $france]);
 
         // Nothing was prefetched for this DTO, so neither its city nor its country resolves
-        $entity = $this->factory->create($place, self::placeDto('ZZ'));
+        $entity = $this->factory->create($place, $this->placeDto('ZZ'));
 
         self::assertSame($place, $entity);
         self::assertSame('FR', $entity->getCountry()?->getId(), 'The stored country survives an import that cannot resolve one');
@@ -59,7 +59,7 @@ final class PlaceEntityFactoryTest extends AppKernelTestCase
 
     public function testANewPlaceWithoutResolvableCountryIsReported(): void
     {
-        $entity = $this->factory->create(null, self::placeDto('ZZ'));
+        $entity = $this->factory->create(null, $this->placeDto('ZZ'));
 
         self::assertInstanceOf(Place::class, $entity);
         self::assertNull($entity->getCountry());
@@ -68,7 +68,7 @@ final class PlaceEntityFactoryTest extends AppKernelTestCase
         self::assertStringContainsString('without country', $this->logger->records[0]['message']);
     }
 
-    private static function placeDto(string $countryCode): PlaceDto
+    private function placeDto(string $countryCode): PlaceDto
     {
         $country = new CountryDto();
         $country->code = $countryCode;

@@ -11,7 +11,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\City;
-use App\EventSubscriber\LlmsTxtSubscriber;
+use App\EventListener\LlmsTxtListener;
 use App\Factory\AdminZone1Factory;
 use App\Factory\CityFactory;
 use App\Factory\CountryFactory;
@@ -35,11 +35,11 @@ final class LlmsTxtTest extends AppWebTestCase
         $france = $toulouse->getCountry();
         $toulouse->setParent(AdminZone1Factory::createOne(['name' => 'Haute-Garonne', 'country' => $france]));
         save($toulouse);
-        $this->createEvents($toulouse, LlmsTxtSubscriber::CITY_MIN_EVENTS, '+2 days');
+        $this->createEvents($toulouse, LlmsTxtListener::CITY_MIN_EVENTS, '+2 days');
         // Less than a full agenda page of events to come: left out
-        $this->createEvents(CityFactory::createOne(['name' => 'Muret', 'country' => $france]), LlmsTxtSubscriber::CITY_MIN_EVENTS - 1, '+2 days');
+        $this->createEvents(CityFactory::createOne(['name' => 'Muret', 'country' => $france]), LlmsTxtListener::CITY_MIN_EVENTS - 1, '+2 days');
         // Only past events: its location page is noindex
-        $this->createEvents(CityFactory::createOne(['name' => 'Albi', 'country' => $france]), LlmsTxtSubscriber::CITY_MIN_EVENTS, '-10 days');
+        $this->createEvents(CityFactory::createOne(['name' => 'Albi', 'country' => $france]), LlmsTxtListener::CITY_MIN_EVENTS, '-10 days');
         $this->createEvents(CityFactory::createOne(['name' => 'Liège', 'country' => CountryFactory::belgium()->create()]), 1, '+2 days');
         self::counter()->refresh();
         PageFactory::createOne(['title' => 'Est-ce que le handpan est illégal ?', 'metaDescription' => "Le handpan n'est pas illégal."]);
@@ -58,7 +58,7 @@ final class LlmsTxtTest extends AppWebTestCase
         self::assertStringContainsString('- [Recherche](https://by-night.test/recherche/): Trouvez des événements', $content);
         self::assertStringContainsString('- [Annonceurs et partenaires](https://by-night.test/annonceurs): Organisateurs, salles, billetteries et marques', $content);
         // The busiest first
-        $events = LlmsTxtSubscriber::CITY_MIN_EVENTS;
+        $events = LlmsTxtListener::CITY_MIN_EVENTS;
         self::assertStringContainsString(\sprintf("## Agendas par pays\n\n- [France](https://by-night.test/france): %d sorties à venir\n- [Belgique](https://by-night.test/belgique): 1 sortie à venir\n", 2 * $events - 1), $content);
         self::assertStringContainsString(\sprintf("## Agendas par ville\n\n- [Toulouse](https://by-night.test/toulouse): Haute-Garonne, France : %d sorties à venir\n\n", $events), $content);
         self::assertStringNotContainsString('Muret', $content);
@@ -75,7 +75,7 @@ final class LlmsTxtTest extends AppWebTestCase
     public function testLeavesTheAgendasOutWhileNothingIsToCome(): void
     {
         $client = self::createClient();
-        $this->createEvents(CityFactory::toulouse()->create(), LlmsTxtSubscriber::CITY_MIN_EVENTS, '-10 days');
+        $this->createEvents(CityFactory::toulouse()->create(), LlmsTxtListener::CITY_MIN_EVENTS, '-10 days');
         self::counter()->refresh();
 
         $client->request('GET', '/llms.txt');

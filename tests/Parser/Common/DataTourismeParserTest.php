@@ -89,8 +89,8 @@ final class DataTourismeParserTest extends AppKernelTestCase
     public function testFullImportPagesThroughTheUpcomingEvents(): void
     {
         $this->responses = [
-            self::page([self::apiEvent(['identifier' => 'A']), self::apiEvent(['identifier' => 'B'])], self::SECOND_PAGE),
-            self::page([self::apiEvent(['identifier' => 'C'])], null),
+            $this->page([$this->apiEvent(['identifier' => 'A']), $this->apiEvent(['identifier' => 'B'])], self::SECOND_PAGE),
+            $this->page([$this->apiEvent(['identifier' => 'C'])], null),
         ];
 
         $this->parser->parse(null);
@@ -99,7 +99,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
         [$first, $second] = $this->requests;
         self::assertSame('GET', $first['method']);
         self::assertStringStartsWith(self::BASE_URI . 'entertainmentAndEvent?', $first['url']);
-        $query = self::query($first['url']);
+        $query = $this->query($first['url']);
         self::assertSame('250', $query['page_size'], 'The API maximum');
         self::assertSame('fr', $query['lang']);
         self::assertSame(\sprintf('takesPlaceAt.endDate[gte]=%s', date('Y-m-d')), $query['filters'], 'A full import takes every event still to come, whenever it changed');
@@ -114,18 +114,18 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testABackfillAlsoAsksForThePastEvents(): void
     {
-        $this->responses = [self::page([self::apiEvent(['identifier' => 'A'])], null)];
+        $this->responses = [$this->page([$this->apiEvent(['identifier' => 'A'])], null)];
 
         $this->parser->parse(null, includePast: true);
 
         self::assertCount(1, $this->requests);
-        self::assertArrayNotHasKey('filters', self::query($this->requests[0]['url']), 'No end date filter left, nor an empty one');
+        self::assertArrayNotHasKey('filters', $this->query($this->requests[0]['url']), 'No end date filter left, nor an empty one');
         self::assertSame(['A'], $this->externalIds());
     }
 
     public function testIncrementalImportOnlyAsksForTheEventsUpdatedSinceThePreviousRun(): void
     {
-        $this->responses = [self::page([], null)];
+        $this->responses = [$this->page([], null)];
 
         // 00:30 UTC: the safety margin pushes the lower bound to the previous day
         $this->parser->parse(new DateTimeImmutable('2026-09-22 00:30:00', new DateTimeZone('UTC')));
@@ -133,14 +133,14 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertCount(1, $this->requests);
         self::assertSame(
             \sprintf('takesPlaceAt.endDate[gte]=%s and lastUpdateDatatourisme[gte]=2026-09-21', date('Y-m-d')),
-            self::query($this->requests[0]['url'])['filters']
+            $this->query($this->requests[0]['url'])['filters']
         );
         self::assertSame(0, $this->parser->getParsedEvents());
     }
 
     public function testAnApiObjectIsMappedToAnEvent(): void
     {
-        $this->responses = [self::page([self::apiEvent()], null)];
+        $this->responses = [$this->page([$this->apiEvent()], null)];
 
         $this->parser->parse(null);
 
@@ -173,14 +173,14 @@ final class DataTourismeParserTest extends AppKernelTestCase
         self::assertMatchesRegularExpression('/^DT-[0-9a-f]{32}$/', (string) $event->place?->externalId);
         self::assertSame('Sainte-Pazanne', $event->place?->city?->name);
         self::assertSame('44680', $event->place?->city?->postalCode);
-        self::assertSame('44186', $event->place->city->officialCode, 'The commune\'s INSEE code');
+        self::assertSame('44186', $event->place->city->officialCode, "The commune's INSEE code");
         self::assertSame('France', $event->place?->country?->name);
         self::assertSame($event->place?->country, $event->place?->city?->country, 'City and place share one country DTO');
     }
 
     public function testTheWebsiteOfTheBookingContactIsTheTicketing(): void
     {
-        $this->responses = [self::page([self::apiEvent(['hasBookingContact' => [['homepage' => ['https://billetterie.pazanne.fr']]]])], null)];
+        $this->responses = [$this->page([$this->apiEvent(['hasBookingContact' => [['homepage' => ['https://billetterie.pazanne.fr']]]])], null)];
 
         $this->parser->parse(null);
 
@@ -190,7 +190,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testTheFirstSessionOfTheFirstDayStartsTheEvent(): void
     {
-        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+        $this->responses = [$this->page([$this->apiEvent(['takesPlaceAt' => [
             ['startDate' => '2026-10-18', 'endDate' => '2026-10-18', 'startTime' => '10:00:00'],
             ['startDate' => '2026-10-17', 'endDate' => '2026-10-17', 'startTime' => '20:30:00'],
             ['startDate' => '2026-10-17', 'endDate' => '2026-10-17'],
@@ -204,7 +204,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testAFirstDayWithoutATimeGivesNone(): void
     {
-        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+        $this->responses = [$this->page([$this->apiEvent(['takesPlaceAt' => [
             ['startDate' => '2026-10-18', 'endDate' => '2026-10-18', 'startTime' => '10:00'],
             ['startDate' => '2026-10-17', 'endDate' => '2026-10-17'],
         ]])], null)];
@@ -216,7 +216,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testAnEventWithoutABookingContactHasNoTicketing(): void
     {
-        $this->responses = [self::page([self::apiEvent()], null)];
+        $this->responses = [$this->page([$this->apiEvent()], null)];
 
         $this->parser->parse(null);
 
@@ -225,10 +225,10 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testTheSameAddressIsTheSameVenueWhateverTheEvent(): void
     {
-        $this->responses = [self::page([
-            self::apiEvent(['identifier' => 'A', 'label' => ['@fr' => 'Concert']]),
-            self::apiEvent(['identifier' => 'B', 'label' => ['@fr' => 'Théâtre']]),
-            self::apiEvent(['identifier' => 'C', 'isLocatedAt' => [self::location(['streetAddress' => ['Les Halles']])]]),
+        $this->responses = [$this->page([
+            $this->apiEvent(['identifier' => 'A', 'label' => ['@fr' => 'Concert']]),
+            $this->apiEvent(['identifier' => 'B', 'label' => ['@fr' => 'Théâtre']]),
+            $this->apiEvent(['identifier' => 'C', 'isLocatedAt' => [$this->location(['streetAddress' => ['Les Halles']])]]),
         ], null)];
 
         $this->parser->parse(null);
@@ -252,7 +252,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
     #[DataProvider('provideUnusableObjects')]
     public function testAnObjectWithoutDatesOrAddressIsSkipped(array $overrides): void
     {
-        $this->responses = [self::page([self::apiEvent($overrides)], null)];
+        $this->responses = [$this->page([$this->apiEvent($overrides)], null)];
 
         $this->parser->parse(null);
 
@@ -261,10 +261,10 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testAnObsoleteObjectRemovesTheEventImportedFromIt(): void
     {
-        $this->responses = [self::page([
-            self::apiEvent(['identifier' => 'A', 'isObsolete' => true]),
-            self::apiEvent(['identifier' => null, 'isObsolete' => true]),
-            self::apiEvent(['identifier' => 'B']),
+        $this->responses = [$this->page([
+            $this->apiEvent(['identifier' => 'A', 'isObsolete' => true]),
+            $this->apiEvent(['identifier' => null, 'isObsolete' => true]),
+            $this->apiEvent(['identifier' => 'B']),
         ], null)];
 
         $this->parser->parse(null);
@@ -279,7 +279,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testDatatourismeUuidStandsInForAMissingProducerIdentifier(): void
     {
-        $this->responses = [self::page([self::apiEvent(['identifier' => null])], null)];
+        $this->responses = [$this->page([$this->apiEvent(['identifier' => null])], null)];
 
         $this->parser->parse(null);
 
@@ -288,7 +288,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testDatatourismeUuidStandsInForAProducerIdentifierTooLongToStore(): void
     {
-        $this->responses = [self::page([self::apiEvent(['identifier' => str_repeat('Salle-des-fetes-Concert-du-samedi-', 5)])], null)];
+        $this->responses = [$this->page([$this->apiEvent(['identifier' => str_repeat('Salle-des-fetes-Concert-du-samedi-', 5)])], null)];
 
         $this->parser->parse(null);
 
@@ -297,7 +297,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testEveryPeriodOfTheScheduleBecomesATimesheet(): void
     {
-        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+        $this->responses = [$this->page([$this->apiEvent(['takesPlaceAt' => [
             ['startDate' => '2026-11-14', 'endDate' => '2026-11-14', 'startTime' => '09:00', 'endTime' => '12:30'],
             ['startDate' => '2026-11-14', 'endDate' => '2026-11-14', 'startTime' => '13:30', 'endTime' => '18:30'],
             ['startDate' => '2026-11-21', 'endDate' => '2026-11-22'],
@@ -319,7 +319,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
     public function testTheEventSpansItsPeriodsWhateverTheirOrder(): void
     {
         // As served for event 3491797: the latest period first
-        $this->responses = [self::page([self::apiEvent(['takesPlaceAt' => [
+        $this->responses = [$this->page([$this->apiEvent(['takesPlaceAt' => [
             ['startDate' => '2026-09-11', 'endDate' => '2026-09-11'],
             ['startDate' => '2026-08-14', 'endDate' => '2026-08-14'],
             ['startDate' => '2026-08-20', 'endDate' => '2026-08-21'],
@@ -334,10 +334,10 @@ final class DataTourismeParserTest extends AppKernelTestCase
 
     public function testDescriptionFallsBackToShortDescriptionThenComment(): void
     {
-        $this->responses = [self::page([
-            self::apiEvent(['identifier' => 'short', 'hasDescription' => [['shortDescription' => ['@fr' => 'La courte.']]]]),
-            self::apiEvent(['identifier' => 'comment', 'hasDescription' => []]),
-            self::apiEvent(['identifier' => 'label', 'hasDescription' => [], 'comment' => null]),
+        $this->responses = [$this->page([
+            $this->apiEvent(['identifier' => 'short', 'hasDescription' => [['shortDescription' => ['@fr' => 'La courte.']]]]),
+            $this->apiEvent(['identifier' => 'comment', 'hasDescription' => []]),
+            $this->apiEvent(['identifier' => 'label', 'hasDescription' => [], 'comment' => null]),
         ], null)];
 
         $this->parser->parse(null);
@@ -390,7 +390,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
     #[DataProvider('provideOffers')]
     public function testThePricesAreReadFromTheOffers(array $offers, ?string $prices, ?float $startingPrice): void
     {
-        $this->responses = [self::page([self::apiEvent(['offers' => $offers])], null)];
+        $this->responses = [$this->page([$this->apiEvent(['offers' => $offers])], null)];
 
         $this->parser->parse(null);
 
@@ -426,7 +426,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
     {
         self::assertSame(
             ['name' => $name, 'street' => $street],
-            new ReflectionMethod(DataTourismeParser::class, 'venue')->invoke(null, $lines, 'Sainte-Pazanne')
+            new ReflectionMethod(DataTourismeParser::class, 'venue')->invoke($this->parser, $lines, 'Sainte-Pazanne')
         );
     }
 
@@ -444,7 +444,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
     /**
      * @return array<string, string>
      */
-    private static function query(string $url): array
+    private function query(string $url): array
     {
         parse_str((string) parse_url($url, \PHP_URL_QUERY), $query);
 
@@ -457,7 +457,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
      *
      * @param list<array<string, mixed>> $objects
      */
-    private static function page(array $objects, ?string $next): MockResponse
+    private function page(array $objects, ?string $next): MockResponse
     {
         return new MockResponse(json_encode([
             'objects' => $objects,
@@ -473,7 +473,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
      *
      * @return array<string, mixed>
      */
-    private static function apiEvent(array $overrides = []): array
+    private function apiEvent(array $overrides = []): array
     {
         return array_replace([
             'uuid' => '0000eb03-9346-3cc8-ab23-dbb259b8e493',
@@ -488,7 +488,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
             'hasTheme' => [['label' => ['@fr' => 'Humour'], 'key' => 'Humour'], ['label' => ['@fr' => 'Spectacle'], 'key' => 'Show']],
             'hasMainRepresentation' => [['hasRelatedResource' => [['hasMimeType' => [['label' => ['@fr' => 'image/jpeg']]], 'locator' => ['https://cdt64.media.tourinsoft.eu/upload/Site-de-Bergerac.jpg']]]]],
             'takesPlaceAt' => [['startDate' => '2026-10-17', 'endDate' => '2026-10-17', 'startTime' => '20:30', 'endTime' => '20:30']],
-            'isLocatedAt' => [self::location()],
+            'isLocatedAt' => [$this->location()],
             'hasContact' => [['telephone' => ['+33 6 99 04 04 34', '+33 2 40 02 43 74'], 'homepage' => ['http://www.sainte-pazanne.fr/listes/theatre-municipal-pazenais']]],
         ], $overrides);
     }
@@ -498,7 +498,7 @@ final class DataTourismeParserTest extends AppKernelTestCase
      *
      * @return array<string, mixed>
      */
-    private static function location(array $address = []): array
+    private function location(array $address = []): array
     {
         return [
             'geo' => ['latitude' => 47.10078, 'longitude' => -1.81272],

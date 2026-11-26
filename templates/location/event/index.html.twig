@@ -189,7 +189,7 @@
                             <div class="fw-bold">Aperçu&nbsp;: cet événement n'est pas encore publié</div>
                             Seuls son auteur et les administrateurs le voient. Publiez-le pour qu'il apparaisse dans l'agenda.
                         </div>
-                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_draft', {id: event.id}) }}" {% if event.publisher %}data-duplicates-href="{{ path('app_event_edit_duplicates', {publisher: event.publisher.slug, id: event.id}) }}"{% endif %}>
+                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_update', {id: event.id}) }}" {% if event.publisher %}data-duplicates-href="{{ path('app_event_edit_duplicates', {publisher: event.publisher.slug, id: event.id}) }}"{% endif %}>
                             <twig:Icon name="lucide:rocket" />
                             Publier l'événement
                         </button>
@@ -543,7 +543,7 @@
                                     class="btn btn-sm ms-auto"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalContentRemovalRequest"
-                                    data-event-id="{{ event.id }}"
+                                    data-removal-url="{{ path('api_event_removal_request', {id: event.id}) }}"
                                     data-event-url="{{ eventUrl }}">
                                 <twig:Icon name="lucide:flag" />
                                 Signaler ce contenu

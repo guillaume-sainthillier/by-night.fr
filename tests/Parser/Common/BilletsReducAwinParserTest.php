@@ -33,7 +33,7 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
 
     public function testARowMapsToAnEvent(): void
     {
-        $event = $this->map(self::row());
+        $event = $this->map($this->row());
 
         self::assertSame('Billets Reduc', $event->fromData);
         self::assertSame('987654', $event->externalId);
@@ -58,7 +58,7 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
 
     public function testASoldOutSessionDoesNotOpenTheEvent(): void
     {
-        $event = $this->map(self::row(['custom_3' => json_encode([
+        $event = $this->map($this->row(['custom_3' => json_encode([
             ['SessionDate' => '2027-04-05T20:30:00', 'SoldOut' => 1, 'Delayed' => 0],
             ['SessionDate' => '2027-04-06T20:30:00', 'SoldOut' => 0, 'Delayed' => 0],
         ])]));
@@ -68,7 +68,7 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
 
     public function testEverySessionOnSaleIsATimesheetInChronologicalOrder(): void
     {
-        $event = $this->map(self::row(['custom_3' => json_encode([
+        $event = $this->map($this->row(['custom_3' => json_encode([
             ['SessionDate' => '2027-04-07T20:30:00', 'SoldOut' => 0, 'Delayed' => 0],
             ['SessionDate' => '2027-04-06T20:30:00', 'SoldOut' => 0, 'Delayed' => 0],
             ['SessionDate' => '2027-04-06T15:00:00', 'SoldOut' => 0, 'Delayed' => 0],
@@ -86,33 +86,33 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
 
     public function testAPlaceholderStreetIsDropped(): void
     {
-        self::assertNull($this->map(self::row(['Tickets:event_location_address' => '.']))->place?->street);
+        self::assertNull($this->map($this->row(['Tickets:event_location_address' => '.']))->place?->street);
     }
 
     public function testAnUnparsableValidToEndsTheEventOnItsFirstDay(): void
     {
-        $event = $this->map(self::row(['valid_to' => '']));
+        $event = $this->map($this->row(['valid_to' => '']));
 
         self::assertSame('2027-04-06', $event->endDate?->format('Y-m-d'));
     }
 
     public function testAWholePriceLosesItsDecimals(): void
     {
-        self::assertSame('22€', $this->map(self::row(['search_price' => '22.0000']))->prices);
+        self::assertSame('22€', $this->map($this->row(['search_price' => '22.0000']))->prices);
     }
 
     public function testAZeroPriceIsNoPrice(): void
     {
         // An affiliate feed says 0 when it has no price, not when the entry is free
-        self::assertNull($this->map(self::row(['search_price' => '0.0000']))->prices);
+        self::assertNull($this->map($this->row(['search_price' => '0.0000']))->prices);
     }
 
     public function testRowsThatCannotBeListedAreLeftOut(): void
     {
-        self::assertNull($this->invoke(self::row(['is_for_sale' => '0'])), 'Not for sale');
-        self::assertNull($this->invoke(self::row(['Tickets:venue_name' => ' '])), 'No venue');
-        self::assertNull($this->invoke(self::row(['custom_3' => '[]'])), 'No session');
-        self::assertNull($this->invoke(self::row(['custom_3' => json_encode([
+        self::assertNull($this->invoke($this->row(['is_for_sale' => '0'])), 'Not for sale');
+        self::assertNull($this->invoke($this->row(['Tickets:venue_name' => ' '])), 'No venue');
+        self::assertNull($this->invoke($this->row(['custom_3' => '[]'])), 'No session');
+        self::assertNull($this->invoke($this->row(['custom_3' => json_encode([
             ['SessionDate' => '2027-04-06T20:30:00', 'SoldOut' => 1, 'Delayed' => 0],
         ])])), 'Every session sold out');
     }
@@ -138,7 +138,7 @@ final class BilletsReducAwinParserTest extends AppKernelTestCase
      *
      * @return array<string, string>
      */
-    private static function row(array $overrides = []): array
+    private function row(array $overrides = []): array
     {
         return array_replace([
             'aw_deep_link' => 'https://www.awin1.com/pclick.php?p=1&a=2&m=3',

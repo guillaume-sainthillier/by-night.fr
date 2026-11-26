@@ -16,7 +16,7 @@ use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * The publisher whose organizer pages the member is on (/espace-perso/organisateurs/{publisher}/…), resolved from the
- * URL by PublisherContextSubscriber. Never from the session: two tabs on two publishers stay apart.
+ * URL by PublisherContextListener. Never from the session: two tabs on two publishers stay apart.
  */
 final class PublisherContext implements ResetInterface
 {

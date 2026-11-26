@@ -34,9 +34,7 @@ final readonly class TransferFiles
      */
     public function createLocalFile(TransferFormat $format): string
     {
-        $path = $this->filesystem->tempnam(sys_get_temp_dir(), 'by-night-transfer-', '.' . $format->value);
-
-        return $path;
+        return $this->filesystem->tempnam(sys_get_temp_dir(), 'by-night-transfer-', '.' . $format->value);
     }
 
     /**

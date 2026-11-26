@@ -512,7 +512,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         }
 
         if (null !== $filter) {
-            $qb->andWhere(self::personalEventCondition($filter));
+            $qb->andWhere($this->personalEventCondition($filter));
         }
 
         $today = new DateTimeImmutable('today');
@@ -695,7 +695,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
         }
 
         if (null !== $filter) {
-            $qb->andWhere(self::personalEventCondition($filter));
+            $qb->andWhere($this->personalEventCondition($filter));
         }
 
         return $qb;
@@ -732,7 +732,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
 
         foreach (PersonalEventFilter::cases() as $filter) {
             // Not aliased by the bare value: "hidden" is a DQL keyword
-            $qb->addSelect(\sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS %sCount', self::personalEventCondition($filter), $filter->value));
+            $qb->addSelect(\sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS %sCount', $this->personalEventCondition($filter), $filter->value));
         }
 
         /** @var array<string, int|string|null> $row SUM() is NULL when the user has no event */
@@ -786,7 +786,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     /**
      * The DQL condition of a filter of an organizer's list, shared by the list and its counts so that they agree.
      */
-    private static function personalEventCondition(PersonalEventFilter $filter): string
+    private function personalEventCondition(PersonalEventFilter $filter): string
     {
         return match ($filter) {
             PersonalEventFilter::Visible => 'e.draft = false',
@@ -1042,7 +1042,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      */
     public function countUserCalendarHabits(User $user, int $aheadDays): array
     {
-        $isFree = self::isFree();
+        $isFree = $this->isFree();
 
         /** @var array{addedAhead: int|string|null, free: int|string|null} $row SUM() is NULL without any event */
         $row = $this->createUserCalendarQueryBuilder($user)
@@ -1071,7 +1071,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->select(
                 'COUNT(e.id) AS events',
                 'SUM(CASE WHEN e.endDate >= :today THEN 1 ELSE 0 END) AS upcoming',
-                \sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS free', self::isFree()),
+                \sprintf('SUM(CASE WHEN %s THEN 1 ELSE 0 END) AS free', $this->isFree()),
                 'SUM(e.participations) AS participations',
                 'SUM(e.interests) AS interests',
                 'MIN(e.startDate) AS first',
@@ -1129,7 +1129,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      * The DQL condition of a free event: its price text starts with "Gratuit", "Entrée gratuite", "Entrée libre" or is
      * "Free", with no amount in euros ("4 € - gratuit pour les moins de 18 ans" is not). The price is free text.
      */
-    private static function isFree(): string
+    private function isFree(): string
     {
         return \sprintf(
             "(%s OR LOWER(e.prices) = 'free') AND e.prices NOT LIKE '%%€%%'",
@@ -1148,7 +1148,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->from(UserEvent::class, 'ue')
             ->join('ue.event', 'e')
             ->where('ue.user = :user')
-            ->andWhere(self::inCalendar('ue'))
+            ->andWhere($this->inCalendar('ue'))
             ->andWhere('e.draft = false')
             ->setParameter('user', $user->getId());
     }
@@ -1157,7 +1157,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
      * A "J'y vais" taken back keeps its row, neither going nor interested (EventParticipationManager::participate()):
      * out of the calendar.
      */
-    private static function inCalendar(string $alias): string
+    private function inCalendar(string $alias): string
     {
         return \sprintf('(%1$s.going = true OR %1$s.wish = true)', $alias);
     }
@@ -1168,7 +1168,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->createQueryBuilder('e')
             ->join('e.userEvents', 'cal')
             ->where('cal.user = :user')
-            ->andWhere(self::inCalendar('cal'))
+            ->andWhere($this->inCalendar('cal'))
             ->andWhere('e.draft = false')
             ->andWhere('e.endDate ' . ($isNext ? '>=' : '<') . ' :start_date')
             ->orderBy('e.endDate', $isNext ? SortDirection::Ascending : SortDirection::Descending)
@@ -1209,6 +1209,50 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
             ->orderBy('e.endDate', SortDirection::Ascending)
             ->addOrderBy('e.id', SortDirection::Ascending)
             ->setParameter('since', $since->format('Y-m-d'));
+    }
+
+    /**
+     * The events of these publishers and venues that went online in ($since, $until] and are still to come, online,
+     * not folded into another one's page: what their followers hear of (App\Follow\FollowAlertSender). One query per
+     * kind, each on its own index.
+     *
+     * @param list<int> $publisherIds
+     * @param list<int> $placeIds
+     *
+     * @return list<Event> the soonest first
+     */
+    public function findPublishedForFollowers(array $publisherIds, array $placeIds, DateTimeImmutable $since, DateTimeImmutable $until): array
+    {
+        $events = [];
+        foreach (['publisher' => $publisherIds, 'place' => $placeIds] as $field => $ids) {
+            if ([] === $ids) {
+                continue;
+            }
+
+            /** @var list<Event> $found */
+            $found = $this
+                ->createQueryBuilder('e')
+                ->where(\sprintf('e.%s IN (:ids)', $field))
+                ->andWhere('e.publishedAt > :since')
+                ->andWhere('e.publishedAt <= :until')
+                ->andWhere('e.endDate >= :today')
+                ->andWhere('e.draft = false')
+                ->andWhere('e.duplicateOf IS NULL')
+                ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
+                ->setParameter('since', $since)
+                ->setParameter('until', $until)
+                ->setParameter('today', $until->format('Y-m-d'))
+                ->getQuery()
+                ->getResult();
+            foreach ($found as $event) {
+                $events[$event->getId()] = $event;
+            }
+        }
+
+        $events = array_values($events);
+        usort($events, static fn (Event $a, Event $b): int => [$a->getStartDate(), $a->getId()] <=> [$b->getStartDate(), $b->getId()]);
+
+        return $events;
     }
 
     /**
@@ -1742,7 +1786,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     {
         $types = [];
         foreach (array_chunk($ids, 1_000) as $chunk) {
-            $types += self::agendaTypes($this
+            $types += $this->agendaTypes($this
                 ->createQueryBuilder('e')
                 ->where('e.id IN (:ids)')
                 ->setParameter('ids', $chunk));
@@ -1754,7 +1798,7 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     /**
      * @return array<int, list<string>>
      */
-    private static function agendaTypes(QueryBuilder $qb): array
+    private function agendaTypes(QueryBuilder $qb): array
     {
         $rows = $qb
             ->select('e.id', 'e.agendaTypes')

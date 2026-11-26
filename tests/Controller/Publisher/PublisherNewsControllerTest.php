@@ -35,7 +35,7 @@ final class PublisherNewsControllerTest extends AppWebTestCase
         $client->submitForm('Me désinscrire');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'C\'est noté');
+        self::assertSelectorTextContains('h1', "C'est noté");
         refresh($user);
         self::assertFalse($user->isPublisherNews());
     }

@@ -161,7 +161,7 @@ final class SowProgParserTest extends AppKernelTestCase
         $event = $this->map(self::record([
             'tagline' => 'Cette soirée plaira aux fans de La Femme',
             'description' => "MARLON MAGNÉE (21h50)\r\n(Pop psych - Paris, FR)\r\n\r\nAprès quinze ans <avec> La Femme.",
-            'artists' => [self::artist('Marlon Magnée', 1)],
+            'artists' => [$this->artist('Marlon Magnée', 1)],
         ]));
 
         self::assertSame(
@@ -184,7 +184,7 @@ final class SowProgParserTest extends AppKernelTestCase
             'title' => 'Blow Up Trio',
             'tagline' => '',
             'description' => 'Le guitariste Hugo Corbin et ses complices.',
-            'artists' => [self::artist('Martin Cazals', 2, 'batterie'), self::artist('Hugo Corbin - guitare/compos', 1)],
+            'artists' => [$this->artist('Martin Cazals', 2, 'batterie'), $this->artist('Hugo Corbin - guitare/compos', 1)],
         ]));
 
         self::assertSame("<p>Le guitariste Hugo Corbin et ses complices.</p>\n<p><strong>Line-up :</strong> Hugo Corbin - guitare/compos, Martin Cazals (batterie)</p>", $event->description);
@@ -192,7 +192,7 @@ final class SowProgParserTest extends AppKernelTestCase
 
     public function testAnEventThatIsItsOnlyArtistHasNoLineUp(): void
     {
-        $event = $this->map(self::record(['tagline' => '', 'description' => 'Un concert.', 'artists' => [self::artist('Trio Rosenberg', 1)]]));
+        $event = $this->map(self::record(['tagline' => '', 'description' => 'Un concert.', 'artists' => [$this->artist('Trio Rosenberg', 1)]]));
 
         self::assertSame('<p>Un concert.</p>', $event->description);
     }
@@ -277,7 +277,7 @@ final class SowProgParserTest extends AppKernelTestCase
     /**
      * @return array<string, mixed>
      */
-    private static function artist(string $name, int $position, ?string $instrument = null): array
+    private function artist(string $name, int $position, ?string $instrument = null): array
     {
         return ['id' => $position, 'name' => $name, 'instrument' => $instrument, 'position' => $position, 'musicBrainzId' => null, 'imageUrl' => null];
     }

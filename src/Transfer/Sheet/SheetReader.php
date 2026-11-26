@@ -121,12 +121,12 @@ final class SheetReader
     {
         return match ($format) {
             TransferFormat::Xlsx => new XlsxReader(new XlsxOptions(SHOULD_PRESERVE_EMPTY_ROWS: true)),
-            TransferFormat::Csv => new CsvReader(self::csvOptions($path)),
+            TransferFormat::Csv => new CsvReader($this->csvOptions($path)),
             TransferFormat::Ics => throw new InvalidArgumentException('A calendar is not imported.'),
         };
     }
 
-    private static function csvOptions(string $path): CsvOptions
+    private function csvOptions(string $path): CsvOptions
     {
         $sample = (string) file_get_contents($path, length: 65536);
         $firstLine = strtok($sample, "\n") ?: '';

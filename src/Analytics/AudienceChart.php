@@ -37,7 +37,7 @@ final readonly class AudienceChart
         private array $days,
     ) {
         $peak = max(0, ...array_column($days, 'visitors'), ...array_column($days, 'ticketClicks'));
-        $this->step = self::niceStep($peak / self::TICKS);
+        $this->step = $this->niceStep($peak / self::TICKS);
         $this->steps = max(1, (int) ceil($peak / $this->step));
     }
 
@@ -116,7 +116,7 @@ final readonly class AudienceChart
     /**
      * The round step at least $rough: 1, 2, 5, 10, 20, 25, 50… (1 for nothing to show).
      */
-    private static function niceStep(float $rough): int
+    private function niceStep(float $rough): int
     {
         if ($rough <= 1) {
             return 1;

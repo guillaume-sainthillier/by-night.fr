@@ -34,6 +34,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             uriTemplate: '/tags',
+            // The same for every visitor: never opens a session
+            stateless: true,
             cacheHeaders: [
                 'max_age' => 3600,
                 'shared_max_age' => 3600,
@@ -44,8 +46,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
             ),
             paginationEnabled: true,
             paginationItemsPerPage: 20,
-            paginationClientItemsPerPage: true,
             paginationMaximumItemsPerPage: 50,
+            paginationClientItemsPerPage: true,
             normalizationContext: ['groups' => ['tag:list']],
             name: 'api_tags',
             provider: TagAutocompleteProvider::class,

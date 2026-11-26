@@ -88,7 +88,7 @@ final class SecurityController extends AbstractController
             $this->generateUrl('app_index', [], UrlGeneratorInterface::ABSOLUTE_URL),
             'Compte : ' . $user->getEmail(),
             '',
-            'Chaque code remplace une fois votre application d\'authentification ou votre clé d\'accès :',
+            "Chaque code remplace une fois votre application d'authentification ou votre clé d'accès :",
             '',
             ...array_map(static fn (string $code): string => '  ' . $code, $setupManager->getOrGenerateRecoveryCodes()),
             '',
@@ -144,7 +144,7 @@ final class SecurityController extends AbstractController
                 $user->setGoogleAuthenticatorSecret($setupManager->getOrGenerateSecret());
                 $this->getEntityManager()->flush();
                 $setupManager->clearSecret();
-                $this->addFlash('success', 'L\'application d\'authentification est activée : elle vous sera demandée à chaque connexion.');
+                $this->addFlash('success', "L'application d'authentification est activée : elle vous sera demandée à chaque connexion.");
 
                 return $this->redirectToSecurityTab();
             }
@@ -164,7 +164,7 @@ final class SecurityController extends AbstractController
         $this->getAppUser()->setGoogleAuthenticatorSecret(null);
         $this->getEntityManager()->flush();
 
-        $this->addFlash('success', 'L\'application d\'authentification est désactivée.');
+        $this->addFlash('success', "L'application d'authentification est désactivée.");
 
         return $this->redirectToSecurityTab();
     }
@@ -182,18 +182,18 @@ final class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $name = (string) $form->get('name')->getData();
             if (null !== $user->getWebauthnKeys()->findFirst(static fn (int $i, WebauthnKey $key): bool => $key->getName() === $name)) {
-                $form->get('name')->addError(new FormError('Vous avez déjà une clé d\'accès de ce nom.'));
+                $form->get('name')->addError(new FormError("Vous avez déjà une clé d'accès de ce nom."));
             } else {
                 try {
                     WebauthnKey::register($registration->checkRegistrationResponse((string) $form->get('credential')->getData()), $user, $name);
                     $this->getEntityManager()->flush();
 
-                    $this->addFlash('success', 'La clé d\'accès est enregistrée : elle vous sera proposée à chaque connexion.');
+                    $this->addFlash('success', "La clé d'accès est enregistrée : elle vous sera proposée à chaque connexion.");
 
                     return $this->redirectToSecurityTab();
                 } catch (Throwable $e) {
                     $logger->notice('Passkey registration refused.', ['exception' => $e, 'user_id' => $user->getId()]);
-                    $form->addError(new FormError('Votre clé d\'accès n\'a pas pu être vérifiée : réessayez.'));
+                    $form->addError(new FormError("Votre clé d'accès n'a pas pu être vérifiée : réessayez."));
                 }
             }
         }
@@ -213,7 +213,7 @@ final class SecurityController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getEntityManager()->flush();
-            $this->addFlash('success', 'La clé d\'accès est renommée.');
+            $this->addFlash('success', "La clé d'accès est renommée.");
 
             return $this->redirectToSecurityTab();
         }
@@ -231,7 +231,7 @@ final class SecurityController extends AbstractController
         $this->getAppUser()->removeWebauthnKey($this->findPasskey($uuid));
         $this->getEntityManager()->flush();
 
-        $this->addFlash('success', 'La clé d\'accès est supprimée.');
+        $this->addFlash('success', "La clé d'accès est supprimée.");
 
         return $this->redirectToSecurityTab();
     }

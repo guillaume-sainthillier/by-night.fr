@@ -75,6 +75,12 @@
                     <twig:Publisher:Avatar publisher="{{ publisher }}" size="{{ 176 }}" priority="{{ true }}" class="avatar-4xl rounded-3 mb-3" />
                     <div class="h2 mb-0">{{ name }}</div>
                     <span class="badge bg-primary-lt text-uppercase mt-2">Organisateur</span>
+                    {# Its own members have nothing to hear of: they publish its events #}
+                    {% if not canEdit %}
+                        <div class="mt-3">
+                            <twig:FollowButton target="{{ publisher }}" />
+                        </div>
+                    {% endif %}
                 </div>
                 {% if websiteUrl %}
                     <div class="card-body d-flex align-items-center justify-content-center gap-2 text-secondary">

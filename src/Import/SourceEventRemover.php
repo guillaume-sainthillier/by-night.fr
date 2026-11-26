@@ -47,7 +47,7 @@ final readonly class SourceEventRemover
                 continue;
             }
 
-            if (!self::isRemovable($event)) {
+            if (!$this->isRemovable($event)) {
                 continue;
             }
 
@@ -82,7 +82,7 @@ final readonly class SourceEventRemover
      * Whatever its dates (an event over is gone from the source as much as one to come) and its status (a cancelled
      * event withdrawn by its organiser is gone too), but never one a member published, which no source owns.
      */
-    private static function isRemovable(Event $event): bool
+    private function isRemovable(Event $event): bool
     {
         return !$event->isRemovedAtSource() && null === $event->getUser();
     }

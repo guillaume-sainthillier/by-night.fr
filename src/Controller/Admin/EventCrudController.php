@@ -174,18 +174,18 @@ final class EventCrudController extends AbstractCrudController
         $imageSystem = VichImageField::new('imageSystemFile', 'Image')
             ->setHelp("Récupérée à l'import\u{a0}: un nouvel import peut la remplacer. Pour imposer une image, utilisez l'image utilisateur.");
         $url = TextField::new('url', 'URL source')
-            ->setHelp('Image téléchargée à l\'import.');
+            ->setHelp("Image téléchargée à l'import.");
         $userImagePanel = FormField::addFieldset('Image utilisateur');
         $image = VichImageField::new('imageFile', 'Image')
-            ->setHelp('Envoyée par l\'utilisateur, prioritaire sur l\'image système à l\'affichage.');
+            ->setHelp("Envoyée par l'utilisateur, prioritaire sur l'image système à l'affichage.");
         $imageName = TextField::new('image.name')->onlyOnDetail();
         $imageSystemName = TextField::new('imageSystem.name')->onlyOnDetail();
         $panel4 = FormField::addFieldset('Parser');
         $duplicateOf = AssociationField::new('duplicateOf')
             ->setLabel('Doublon de (redirige vers)')
             ->autocomplete()
-            ->setHelp('Si défini, cet événement redirigera vers l\'événement principal');
-        $identityHash = TextField::new('identityHash', 'Empreinte d\'identité')
+            ->setHelp("Si défini, cet événement redirigera vers l'événement principal");
+        $identityHash = TextField::new('identityHash', "Empreinte d'identité")
             ->onlyOnDetail()
             ->setHelp('Partagée par les événements importés qui décrivent le même événement sous des identifiants distincts (même famille).');
         $fromData = TextField::new('fromData');

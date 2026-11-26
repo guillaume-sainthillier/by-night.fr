@@ -31,7 +31,7 @@ use Twig\Attribute\AsTwigFunction;
 final readonly class UserChannel
 {
     public function __construct(
-        #[Autowire('%env(APP_URL)%')]
+        #[Autowire(env: 'APP_URL')]
         private string $appUrl,
         private ?HubInterface $hub = null,
         private ?Authorization $authorization = null,
