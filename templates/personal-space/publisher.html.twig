@@ -62,6 +62,33 @@
                 </div>
             {{ form_end(form) }}
 
+            {# The page's events outside By Night (PublisherFeedController): on the publisher's website, in its visitors'
+               calendars. Both follow its events, an hour late at most #}
+            {% if publisher.id %}
+                {% set widgetUrl = url('app_publisher_widget', {slug: publisher.slug}) %}
+                {% set widgetCode = '<iframe src="' ~ widgetUrl ~ '" title="Les prochains événements de ' ~ publisher.name|e('html') ~ '" width="100%" height="520" style="border:0" loading="lazy"></iframe>' %}
+                <section id="votre-site" class="mb-5">
+                    <twig:FormCard icon="lucide:code" tone="teal" title="Votre agenda sur votre site" description="Vos prochains événements sur votre site et dans les calendriers de votre public, à jour d'eux-mêmes">
+                        <label class="form-label" for="widget-code">Collez ce code dans une page de votre site</label>
+                        <div class="input-group mb-2">
+                            <textarea class="form-control font-monospace small" id="widget-code" rows="3" readonly>{{ widgetCode }}</textarea>
+                            <button type="button" class="btn" data-copy-url="{{ widgetCode }}" data-copy-message="Code copié !">
+                                <twig:Icon name="lucide:copy" />
+                                Copier
+                            </button>
+                        </div>
+                        <p class="form-hint mb-4">
+                            Ajoutez <code>?limit=10</code> à l'adresse pour en lister davantage (20 au plus), <code>?theme=dark</code> pour un site aux couleurs sombres.
+                            <a href="{{ widgetUrl }}" target="_blank" rel="noopener">Voir un aperçu</a>
+                        </p>
+
+                        <div class="subheader mb-2">Le calendrier de vos événements</div>
+                        <p class="text-secondary">Votre public l'ajoute à son agenda&nbsp;: vos nouveaux événements et leurs changements s'y retrouvent d'eux-mêmes.</p>
+                        <twig:CalendarSubscribe url="{{ url('app_publisher_calendar', {slug: publisher.slug}) }}" name="{{ publisher.name }}" label="L'adresse du calendrier, à partager" />
+                    </twig:FormCard>
+                </section>
+            {% endif %}
+
             {# The deletion of the page: its events move to another of the member's pages or go with it #}
             <section id="supprimer" class="mb-5">
                 <twig:FormCard icon="lucide:trash-2" tone="danger" title="Supprimer cette page" description="La page, ses imports et ses exports, sans retour possible." badge="Action définitive" badgeTone="danger">

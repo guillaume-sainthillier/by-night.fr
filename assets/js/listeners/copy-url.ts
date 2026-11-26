@@ -4,21 +4,22 @@ import { type App, defineListener } from '@silarhi/app-js'
  * Copy an address to the clipboard and say so (or that the browser refused): the copy buttons, and the share buttons
  * without a share sheet (share.ts).
  */
-export const copyLink = (app: App, url: string): void => {
+export const copyLink = (app: App, url: string, message = 'Lien copié !'): void => {
     const toastManager = app.get('toastManager')
     navigator.clipboard.writeText(url).then(
-        () => toastManager.createToast('success', 'Lien copié !'),
+        () => toastManager.createToast('success', message),
         () => toastManager.createToast('error', 'Impossible de copier le lien')
     )
 }
 
 /**
- * Copy the address a button carries in `data-copy-url` (the share menu of an event, the calendar of "Mes sorties").
+ * Copy the address a button carries in `data-copy-url` (the share menu of an event, the calendars), or the code of a
+ * widget, saying so with its `data-copy-message` when it is not a link.
  */
 export default defineListener<HTMLButtonElement>({
     selector: '[data-copy-url]',
     connect(button, { app }) {
-        const copy = () => copyLink(app, button.dataset.copyUrl ?? '')
+        const copy = () => copyLink(app, button.dataset.copyUrl ?? '', button.dataset.copyMessage)
 
         button.addEventListener('click', copy)
 

@@ -42,6 +42,20 @@ final class PublisherControllerTest extends AppWebTestCase
         self::assertSame('le-bikini', $saved->getSlug());
     }
 
+    public function testThePageGivesTheWidgetAndTheCalendarOfItsEvents(): void
+    {
+        $client = self::createClient();
+        $user = UserFactory::createOne();
+        PublisherFactory::createOne(['owner' => $user, 'name' => 'Le Bikini']);
+        $client->loginUser($user);
+
+        $client->request('GET', self::organizerPath($user, 'page'));
+
+        self::assertSelectorTextContains('#widget-code', '<iframe src="https://by-night.test/organisateurs/le-bikini/widget"');
+        self::assertSelectorExists('#calendar-url[value="https://by-night.test/organisateurs/le-bikini/calendrier.ics"]');
+        self::assertSelectorExists('#votre-site a[href="webcal://by-night.test/organisateurs/le-bikini/calendrier.ics"]');
+    }
+
     public function testTheLogoIsShownOnThePublishersPage(): void
     {
         $client = self::createClient();

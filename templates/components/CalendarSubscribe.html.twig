@@ -1,0 +1,19 @@
+{#
+    The buttons that add a calendar (ICS) to Google Agenda, Apple Calendrier and Outlook, then its address to copy into
+    any other app. Its apps read it again on their own, so it follows its changes.
+
+    <twig:CalendarSubscribe url="{{ url('app_publisher_calendar', {slug: publisher.slug}) }}" name="Le Bikini" />
+
+    Composed, e.g. without the address:
+    <twig:CalendarSubscribe:Buttons url="…" name="…" />
+    <twig:CalendarSubscribe:Address url="…" label="L'adresse du calendrier" />
+#}
+{# @var url string the calendar's absolute address (https) #}
+{# @var name string its name in the calendar app #}
+{% props url, name, label = 'Ou copiez l\'adresse dans votre application de calendrier', id = 'calendar-url' %}
+<div {{ attributes }}>
+    {% block content %}
+        <twig:CalendarSubscribe:Buttons url="{{ url }}" name="{{ name }}" class="mb-3" />
+        <twig:CalendarSubscribe:Address url="{{ url }}" label="{{ label }}" id="{{ id }}" />
+    {% endblock %}
+</div>
