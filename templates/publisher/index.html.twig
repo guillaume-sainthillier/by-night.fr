@@ -114,11 +114,11 @@
                         <div class="subheader">Géré par</div>
                     </twig:Tabler:Card:Body>
                     <twig:Tabler:ListGroup flush>
-                        <twig:Tabler:ListGroup:Item href="{{ path('app_user_index', {id: owner.id, slug: owner.slug}) }}" title="Le profil de {{ owner.username }}" class="d-flex align-items-center gap-2">
+                        <twig:Tabler:ListGroup:Item href="{{ path('app_user_index', {id: owner.id, slug: owner.slug}) }}" class="d-flex align-items-center gap-2">
                             <twig:Tabler:Avatar>
                                 <twig:User:Thumb user="{{ owner }}" width="{{ 40 }}" height="{{ 40 }}" />
                             </twig:Tabler:Avatar>
-                            <strong class="text-truncate">{{ owner.username }}</strong>
+                            <strong class="text-truncate" title="Le profil de {{ owner.username }}">{{ owner.username }}</strong>
                         </twig:Tabler:ListGroup:Item>
                     </twig:Tabler:ListGroup>
                 {% endif %}

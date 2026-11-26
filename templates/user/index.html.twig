@@ -84,9 +84,9 @@
                     </twig:Tabler:Card:Body>
                     <twig:Tabler:ListGroup flush>
                         {% for publisher in publishers %}
-                            <twig:Tabler:ListGroup:Item href="{{ path('app_publisher_index', {slug: publisher.slug}) }}" title="Les événements de {{ publisher.name }}" class="d-flex align-items-center gap-2">
+                            <twig:Tabler:ListGroup:Item href="{{ path('app_publisher_index', {slug: publisher.slug}) }}" class="d-flex align-items-center gap-2">
                                 <twig:Publisher:Avatar publisher="{{ publisher }}" />
-                                <strong class="text-truncate">{{ publisher.name }}</strong>
+                                <strong class="text-truncate" title="Les événements de {{ publisher.name }}">{{ publisher.name }}</strong>
                             </twig:Tabler:ListGroup:Item>
                         {% endfor %}
                     </twig:Tabler:ListGroup>
