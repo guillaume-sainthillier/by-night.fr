@@ -1,0 +1,12 @@
+{# @var url string the calendar's absolute address, to paste in another calendar app #}
+{% props url, label = 'Ou copiez l\'adresse dans votre application de calendrier', id = 'calendar-url' %}
+<div {{ attributes }}>
+    <label class="form-label" for="{{ id }}">{{ label }}</label>
+    <div class="input-group">
+        <input class="form-control" id="{{ id }}" type="text" value="{{ url }}" readonly>
+        <button type="button" class="btn" data-copy-url="{{ url }}">
+            <twig:Icon name="lucide:copy" />
+            Copier
+        </button>
+    </div>
+</div>

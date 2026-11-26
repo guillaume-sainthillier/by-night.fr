@@ -1,0 +1,75 @@
+{# @var owner \App\Entity\Publisher|\App\Entity\Place the publisher or the venue whose events are listed #}
+{# @var publisher \App\Entity\Publisher|null #}
+{# @var place \App\Entity\Place|null #}
+{# @var events \App\Entity\Event[] #}
+{# @var dark bool the dark theme, for a website of dark colours #}
+{# The widget a publisher or a venue embeds on its website in an iframe (EventFeedManager): its next events, each
+   opening its page on By Night. A page of its own, without the site's header, scripts or audience: the same for every
+   visitor, it is cached by Cloudflare. #}
+{% set name = owner.name %}
+{% set ownerUrl = publisher ? url('app_publisher_index', {slug: publisher.slug}) : url('app_agenda_by_place', {location: place.locationSlug, placeSlug: place.slug}) %}
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="{{ dark ? 'dark' : 'light' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Les prochains événements {{ place ? name|at_place : 'de ' ~ name }} - By Night</title>
+    {# Its links open By Night's pages, never inside the frame of the website #}
+    <base target="_blank">
+    {{ reprise_entry_link_tags('app') }}
+</head>
+<body class="bg-transparent">
+    <div class="card mb-0">
+        <div class="card-header">
+            <div class="min-w-0">
+                <h1 class="card-title text-truncate mb-0">Prochains événements</h1>
+                <div class="small text-secondary text-truncate">{{ name }}</div>
+            </div>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for event in events %}
+                {% set session = event.sessionFor %}
+                {% set when = null %}
+                {% if session %}
+                    {% set lastDay = session.endAt ?? session.startAt %}
+                    {% if session.startAt|date('Y-m-d') < 'now'|date('Y-m-d') %}
+                        {% set when = 'Jusqu\'au ' ~ lastDay|format_date(pattern: 'd MMMM') %}
+                    {% elseif lastDay|date('Y-m-d') > session.startAt|date('Y-m-d') %}
+                        {% set when = session.startAt|format_date(pattern: 'd MMM') ~ ' – ' ~ lastDay|format_date(pattern: 'd MMM') %}
+                    {% else %}
+                        {% set start = session_start(session) %}
+                        {% set when = session.startAt|format_date(pattern: 'EEE d MMMM')|capitalize ~ (start ? ' · ' ~ start) %}
+                    {% endif %}
+                {% endif %}
+                <a class="list-group-item list-group-item-action d-flex align-items-center gap-3" href="{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
+                    <span class="avatar avatar-lg rounded overflow-hidden flex-shrink-0">
+                        <twig:Event:Thumb event="{{ event }}" width="{{ 96 }}" class="w-100 h-100 object-fit-cover" loading="lazy" />
+                    </span>
+                    <span class="d-block min-w-0">
+                        {% if when %}
+                            <span class="d-block small text-primary fw-medium text-truncate">{{ when }}</span>
+                        {% endif %}
+                        <strong class="d-block line-clamp-2">{{ event.name }}</strong>
+                        {# A venue's widget names its own venue already #}
+                        {% if place is null and event.placeName %}
+                            <span class="d-block small text-secondary text-truncate">
+                                {{- event.placeName }}{% if event.placeCity %}, {{ event.placeCity }}{% endif -%}
+                            </span>
+                        {% endif %}
+                        {% if event.status %}
+                            <span class="badge bg-warning-lt mt-1">{{ event.status.label }}</span>
+                        {% endif %}
+                    </span>
+                </a>
+            {% else %}
+                <div class="card-body text-secondary">Aucun événement à venir pour le moment.</div>
+            {% endfor %}
+        </div>
+        <div class="card-footer bg-transparent d-flex align-items-center justify-content-between gap-2 small">
+            <a href="{{ ownerUrl }}">Tout l'agenda</a>
+            <a class="text-secondary" href="{{ url('app_index') }}">Agenda par <strong>By Night</strong></a>
+        </div>
+    </div>
+</body>
+</html>

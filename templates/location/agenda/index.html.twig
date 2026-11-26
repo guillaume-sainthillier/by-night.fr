@@ -134,6 +134,20 @@
             <aside class="col-lg-4 order-last order-lg-first">
                 {{ include('location/agenda/_filters.html.twig') }}
 
+                {# A venue's events in the visitor's calendar (PlaceFeedController) #}
+                {% if place %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="h3 text-start mb-2">
+                                <twig:Icon name="lucide:calendar-sync" />
+                                L'agenda {{ placeName|of_place }} dans votre calendrier
+                            </h2>
+                            <p class="text-secondary small">Ses nouveaux événements et leurs changements s'y ajoutent d'eux-mêmes.</p>
+                            <twig:CalendarSubscribe:Buttons url="{{ url('app_place_calendar', {location: place.locationSlug, placeSlug: place.slug}) }}" name="{{ placeName }}" small="{{ true }}" />
+                        </div>
+                    </div>
+                {% endif %}
+
                 <div class="card bg-primary-lt border-0">
                     <div class="card-body">
                         <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Organisateurs</twig:Section:Eyebrow>

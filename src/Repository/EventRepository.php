@@ -1190,6 +1190,28 @@ final class EventRepository extends ServiceEntityRepository implements DtoFindab
     }
 
     /**
+     * The events online of a publisher or of a venue that end on $since or later, the soonest to end first: what their
+     * calendar and their widget list (App\Feed\EventFeedManager).
+     */
+    public function createFeedQueryBuilder(Publisher|Place $owner, DateTimeInterface $since): QueryBuilder
+    {
+        $qb = $owner instanceof Publisher
+            ? $this->createPublisherOnlineQueryBuilder($owner)
+            : $this
+                ->createQueryBuilder('e')
+                ->where('e.place = :place')
+                ->andWhere('e.duplicateOf IS NULL')
+                ->andWhere('e.draft = false')
+                ->setParameter('place', $owner->getId());
+
+        return $qb
+            ->andWhere('e.endDate >= :since')
+            ->orderBy('e.endDate', SortDirection::Ascending)
+            ->addOrderBy('e.id', SortDirection::Ascending)
+            ->setParameter('since', $since->format('Y-m-d'));
+    }
+
+    /**
      * @return int the number of published events of a member's calendar: the ones their profile lists
      */
     public function getUserFavoriteEventsCount(User $user): int

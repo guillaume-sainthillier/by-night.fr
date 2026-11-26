@@ -44,6 +44,19 @@ final class PublisherControllerTest extends AppWebTestCase
         self::assertSelectorNotExists('meta[name="robots"]');
     }
 
+    public function testThePageOffersItsEventsToTheVisitorsCalendar(): void
+    {
+        $client = self::createClient();
+        $publisher = PublisherFactory::createOne(['name' => 'Le Bikini']);
+
+        $client->request('GET', '/organisateurs/le-bikini');
+        self::assertSelectorNotExists('a[href="webcal://by-night.test/organisateurs/le-bikini/calendrier.ics"]');
+
+        $this->createEvent($publisher, '+10 days', ['name' => 'Concert de jazz']);
+        $client->request('GET', '/organisateurs/le-bikini');
+        self::assertSelectorExists('aside a[href="webcal://by-night.test/organisateurs/le-bikini/calendrier.ics"]');
+    }
+
     public function testThePageLeadsToTheMemberWhoRunsIt(): void
     {
         $client = self::createClient();

@@ -96,6 +96,13 @@
                     </span>
                     <span class="badge bg-secondary-lt">{{ stats.firstYear ?: publisher.createdAt|date('Y') }}</span>
                 </div>
+                {# Its events in the visitor's calendar (PublisherFeedController) #}
+                {% if stats.upcomingEvents > 0 %}
+                    <div class="card-body">
+                        <div class="subheader mb-2">Ses événements dans votre agenda</div>
+                        <twig:CalendarSubscribe:Buttons url="{{ url('app_publisher_calendar', {slug: publisher.slug}) }}" name="{{ name }}" small="{{ true }}" class="justify-content-center" />
+                    </div>
+                {% endif %}
                 {% if owner %}
                     <div class="card-body pb-2">
                         <div class="subheader">Géré par</div>
