@@ -174,12 +174,12 @@
                                 </td>
                                 <td class="text-md-center" data-label="Visible">
                                     <div class="form-check form-switch form-check-single d-inline-block ps-0">
-                                        <input class="form-check-input draft" data-href="{{ path('api_event_draft', {id: event.id}) }}" type="checkbox" role="switch" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}" aria-label="Visible sur l'agenda&nbsp;: {{ event.name }}">
+                                        <input class="form-check-input draft" data-href="{{ path('api_event_update', {id: event.id}) }}" type="checkbox" role="switch" {{ not event.draft ? 'checked' }} id="draft-event-{{ event.id }}" aria-label="Visible sur l'agenda&nbsp;: {{ event.name }}">
                                     </div>
                                 </td>
                                 <td class="text-md-center" data-label="Annulé">
                                     <div class="form-check form-switch form-check-single d-inline-block ps-0">
-                                        <input class="form-check-input cancel" data-href="{{ path('api_event_cancel', {id: event.id}) }}" type="checkbox" role="switch" {{ cancelled ? 'checked' }} id="cancel-event-{{ event.id }}" aria-label="Annulé&nbsp;: {{ event.name }}">
+                                        <input class="form-check-input cancel" data-href="{{ path('api_event_update', {id: event.id}) }}" type="checkbox" role="switch" {{ cancelled ? 'checked' }} id="cancel-event-{{ event.id }}" aria-label="Annulé&nbsp;: {{ event.name }}">
                                     </div>
                                 </td>
                                 <td class="text-md-end">

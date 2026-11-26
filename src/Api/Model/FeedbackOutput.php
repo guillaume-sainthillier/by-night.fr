@@ -13,8 +13,8 @@ namespace App\Api\Model;
 final readonly class FeedbackOutput
 {
     public function __construct(
-        public bool $success,
-        public ?string $message = null,
+        /** What the member is told */
+        public string $message,
     ) {
     }
 }

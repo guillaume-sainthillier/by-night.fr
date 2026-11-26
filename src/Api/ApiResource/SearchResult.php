@@ -23,6 +23,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             uriTemplate: '/search',
+            // The same for every visitor: never opens a session
+            stateless: true,
             openapi: new OpenApiOperation(
                 summary: 'Global search across events, cities, users and tags',
                 description: 'Returns a paginated list of events, cities, users and tags matching the search query.',
@@ -55,7 +57,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new GetCollection(
             uriTemplate: '/search/suggestions',
-            // The same for every visitor of a city: a few minutes old is fine for suggestions
+            // The same for every visitor of a city: never opens a session, and a few minutes old is fine for suggestions
+            stateless: true,
             cacheHeaders: ['public' => true, 'max_age' => 300, 'shared_max_age' => 300],
             openapi: new OpenApiOperation(
                 summary: 'What the global search shows before a word is typed',

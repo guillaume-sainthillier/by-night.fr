@@ -12,7 +12,7 @@ namespace App\Api\Processor;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Api\Model\EventParticipateInput;
+use App\Api\Model\EventParticipationInput;
 use App\Api\Model\EventParticipationOutput;
 use App\Entity\Event;
 use App\Entity\User;
@@ -22,9 +22,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * @implements ProcessorInterface<EventParticipateInput, EventParticipationOutput>
+ * @implements ProcessorInterface<EventParticipationInput, EventParticipationOutput>
  */
-final readonly class EventParticipateProcessor implements ProcessorInterface
+final readonly class EventParticipationProcessor implements ProcessorInterface
 {
     public function __construct(
         private EventParticipationManager $eventParticipationManager,
@@ -42,12 +42,11 @@ final readonly class EventParticipateProcessor implements ProcessorInterface
 
         /** @var User $user */
         $user = $this->security->getUser();
-        $this->eventParticipationManager->participate($user, $event, $data->like);
+        $this->eventParticipationManager->participate($user, $event, $data->going);
 
         return new EventParticipationOutput(
-            success: true,
-            like: $data->like,
-            likes: $event->getParticipations() + $event->getInterests(),
+            going: $data->going,
+            participations: $event->getParticipations() + $event->getInterests(),
         );
     }
 }

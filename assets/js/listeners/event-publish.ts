@@ -1,18 +1,15 @@
 import { defineListener } from '@silarhi/app-js'
+import { sendJson } from '@silarhi/app-js/http'
 import { confirmPublication } from '@/js/utils/duplicates'
 
 /**
- * Puts the event online through the draft API, returning whether it worked.
+ * Puts the event online (PATCH /api/events/{id}), returning whether it worked.
  */
 async function publish(url: string): Promise<boolean> {
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ draft: false }),
-    })
+    // A lapsed session is redirected to the login page, whose HTML is no answer
+    const state = await sendJson<{ draft: boolean }>('PATCH', url, { draft: false })
 
-    // A lapsed session is redirected to the login page, whose HTML makes json() throw
-    return response.ok && ((await response.json()) as { success?: unknown }).success === true
+    return state?.draft === false
 }
 
 /**

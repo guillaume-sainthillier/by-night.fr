@@ -10,10 +10,14 @@
 
 namespace App\Api\Model;
 
-final readonly class EventParticipateInput
+/**
+ * An event's state once patched.
+ */
+final readonly class EventStateOutput
 {
     public function __construct(
-        public bool $like = true,
+        public bool $draft,
+        public bool $cancelled,
     ) {
     }
 }

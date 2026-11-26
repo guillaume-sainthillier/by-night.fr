@@ -6,14 +6,14 @@ const options = {
     css_active_class: 'btn-primary',
 }
 
-/** The answer of the like endpoint */
-interface LikeResponse {
-    success: boolean
-    like: boolean
+/** The answer of PUT /api/events/{id}/participation */
+interface ParticipationResponse {
+    going: boolean
+    participations: number
 }
 
 /**
- * Toggle an event like via AJAX when the like button is clicked.
+ * Says the member goes to an event, or no longer does, when its "J'y vais" button is clicked (PUT /api/events/{id}/participation).
  *
  * A button with a `data-intent` ("participer") also records the click a visitor made before logging in: the login
  * leads back to the page with that fragment (LoginTargetPath), and the button is clicked once for them, unless the
@@ -27,30 +27,30 @@ export default defineListener<HTMLElement>({
         const like = async () => {
             // A button, or a link styled as one: the attribute disables both
             element.setAttribute('disabled', 'disabled')
-            let msg: LikeResponse | null
+            let msg: ParticipationResponse | null
             try {
-                msg = await sendJson<LikeResponse>('PUT', href, {
-                    like: !element.classList.contains(options.css_active_class),
+                msg = await sendJson<ParticipationResponse>('PUT', href, {
+                    going: !element.classList.contains(options.css_active_class),
                 })
             } catch {
                 element.removeAttribute('disabled')
                 app.get('toastManager').createToast('error', 'Une erreur est survenue, veuillez réessayer.')
                 return
             }
-            // Refused: the button stays disabled
-            if (!msg?.success) {
+            // No answer of the API (a lapsed session led to the login page): the button stays disabled
+            if (!msg) {
                 return
             }
 
             element.removeAttribute('disabled')
-            element.classList.toggle(options.css_active_class, msg.like)
+            element.classList.toggle(options.css_active_class, msg.going)
             // The page's other buttons of the same event (the action bar of a phone) follow
             for (const other of document.querySelectorAll<HTMLElement>(options.css_selector_like)) {
                 if (other.dataset.href === href) {
-                    other.classList.toggle(options.css_active_class, msg.like)
+                    other.classList.toggle(options.css_active_class, msg.going)
                 }
             }
-            if (msg.like) {
+            if (msg.going) {
                 app.get('toastManager').createToast('success', 'Ajouté à vos sorties')
             }
         }

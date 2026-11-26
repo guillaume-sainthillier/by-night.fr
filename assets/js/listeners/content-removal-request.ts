@@ -3,11 +3,10 @@ import { errorBody, sendJson } from '@silarhi/app-js/http'
 import { Modal } from '@tabler/core'
 
 /**
- * What the removal request API answers.
+ * What the removal request API answers once the request is recorded.
  */
 interface RemovalResponse {
-    success?: boolean
-    message?: string
+    message: string
 }
 
 /**
@@ -49,7 +48,7 @@ export default defineListener<HTMLElement>({
             return
         }
 
-        let currentEventId: string | null = null
+        let currentRemovalUrl: string | null = null
         let currentEventUrl: string | null = null
 
         const showError = (message: string) => {
@@ -63,7 +62,8 @@ export default defineListener<HTMLElement>({
             // Bootstrap's show event carries the element that opened the modal
             const button =
                 'relatedTarget' in event && event.relatedTarget instanceof Element ? event.relatedTarget : null
-            currentEventId = button?.getAttribute('data-event-id') ?? null
+            // The API's URL for the event, from the page (POST /api/events/{id}/removal-requests)
+            currentRemovalUrl = button?.getAttribute('data-removal-url') ?? null
             currentEventUrl = button?.getAttribute('data-event-url') ?? null
 
             // Reset form
@@ -129,13 +129,9 @@ export default defineListener<HTMLElement>({
             alertEl.classList.add('d-none')
 
             try {
-                const response = await sendJson<RemovalResponse>(
-                    'POST',
-                    `/api/events/${currentEventId}/removal-request`,
-                    data
-                )
-                if (response?.success) {
-                    alertEl.textContent = response.message ?? ''
+                const response = await sendJson<RemovalResponse>('POST', currentRemovalUrl ?? '', data)
+                if (response) {
+                    alertEl.textContent = response.message
                     alertEl.classList.remove('d-none', 'alert-danger')
                     alertEl.classList.add('alert-success')
                     form.classList.add('d-none')
@@ -149,7 +145,8 @@ export default defineListener<HTMLElement>({
                         submitBtn.classList.remove('d-none')
                     }, 3000)
                 } else {
-                    showError(response?.message || 'Une erreur est survenue')
+                    // No answer of the API: the page's HTML of an error
+                    showError('Une erreur est survenue')
                 }
             } catch (error) {
                 const body = errorBody<RemovalError>(error)

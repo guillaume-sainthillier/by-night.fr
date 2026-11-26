@@ -34,6 +34,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
     operations: [
         new GetCollection(
             uriTemplate: '/tags',
+            // The same for every visitor: never opens a session
+            stateless: true,
             cacheHeaders: [
                 'max_age' => 3600,
                 'shared_max_age' => 3600,

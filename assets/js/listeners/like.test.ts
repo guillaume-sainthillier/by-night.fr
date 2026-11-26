@@ -13,12 +13,12 @@ import { fake } from '@/js/test/fake'
 // with the response the test sets
 const { state, sendJson } = vi.hoisted(() => {
     interface Response {
-        success: boolean
-        like: boolean
+        going: boolean
+        participations: number
     }
     const state: { requests: unknown[]; response: Response | Error } = {
         requests: [],
-        response: { success: true, like: true },
+        response: { going: true, participations: 1 },
     }
     const sendJson = async (_method: string, _url: string, data: unknown) => {
         state.requests.push(data)
@@ -35,7 +35,7 @@ vi.mock('@silarhi/app-js/http', () => ({ sendJson }))
 const connect = ({ intent, active = false }: { intent?: string; active?: boolean } = {}) => {
     const classes = new Set(active ? ['btn-primary'] : [])
     const button = {
-        dataset: { href: '/api/events/42/participer', ...(intent ? { intent } : {}) },
+        dataset: { href: '/api/events/42/participation', ...(intent ? { intent } : {}) },
         classes,
         classList: {
             contains: (name: string) => classes.has(name),
@@ -70,7 +70,7 @@ const visit = (hash: string) => {
 beforeEach(() => {
     vi.stubGlobal('document', { querySelectorAll: () => [] })
     state.requests = []
-    state.response = { success: true, like: true }
+    state.response = { going: true, participations: 1 }
 })
 
 afterEach(() => {
@@ -84,15 +84,15 @@ describe('like listener', () => {
 
         await button.click?.()
 
-        expect(state.requests).toEqual([{ like: true }])
+        expect(state.requests).toEqual([{ going: true }])
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(toastManager.createToast).toHaveBeenCalledWith('success', 'Ajouté à vos sorties')
     })
 
     test('keeps the other buttons of the event in step', async () => {
         visit('')
-        const other = { dataset: { href: '/api/events/42/participer' }, classList: { toggle: vi.fn() } }
-        const elsewhere = { dataset: { href: '/api/events/7/participer' }, classList: { toggle: vi.fn() } }
+        const other = { dataset: { href: '/api/events/42/participation' }, classList: { toggle: vi.fn() } }
+        const elsewhere = { dataset: { href: '/api/events/7/participation' }, classList: { toggle: vi.fn() } }
         vi.stubGlobal('document', { querySelectorAll: () => [other, elsewhere] })
         const { button } = connect()
 
@@ -119,7 +119,7 @@ describe('like listener', () => {
         const { button } = connect({ intent: 'participer' })
         await vi.waitFor(() => expect(button.classes.size).toBe(1))
 
-        expect(state.requests).toEqual([{ like: true }])
+        expect(state.requests).toEqual([{ going: true }])
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(replaceState).toHaveBeenCalledWith(null, '', '/toulouse/soiree/concert--42')
     })
