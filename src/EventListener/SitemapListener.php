@@ -250,6 +250,7 @@ final class SitemapListener
             'app_terms',
             'app_transparency',
             'app_advertisers',
+            'app_assistants',
         ];
 
         foreach ($staticRoutes as $route) {

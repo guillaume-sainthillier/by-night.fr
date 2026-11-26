@@ -1,0 +1,135 @@
+{% extends 'layouts/full.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem('Assistants IA', url('app_assistants')) %}
+{%- endblock %}
+
+{% block title 'By Night dans votre assistant IA : Claude, ChatGPT, Le Chat' %}
+{% block meta_description "Demandez à votre assistant IA ce qu'il y a ce soir près de chez vous : branchez l'agenda de By Night sur Claude, ChatGPT, Le Chat ou tout client MCP, gratuitement et sans compte." %}
+
+{# The MCP server (config/packages/mcp.yaml) for the visitors: its address, what its tools do (App\Api\ApiResource:
+   find_cities, search_events, get_event), how to add it to the main assistants, and its terms (no account, read
+   only, McpRateLimitListener's limit). Keep the tools and the limit in step with the server; the menus of the
+   assistants change often, so the steps stay short and send to their help. #}
+{% set mcp_url = url('_mcp_endpoint_default') %}
+
+{% block body %}
+    <section class="hero-glow py-5">
+        <div class="container-lg">
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-7">
+                    <twig:Section:Eyebrow icon="lucide:sparkles" badge="{{ true }}">Assistants IA</twig:Section:Eyebrow>
+                    <h1 class="display-5 fw-bold text-start mb-3">Demandez à votre assistant ce qu'il y a ce soir.</h1>
+                    <p class="lead text-secondary mb-4">
+                        Branchez l'agenda de By Night sur Claude, ChatGPT, Le Chat ou tout assistant compatible MCP&nbsp;:
+                        il y cherche les concerts, spectacles, expos et soirées de votre ville et vous donne le lien de
+                        chaque sortie. Gratuit, sans compte.
+                    </p>
+                    <label class="form-label" for="mcp-url">Adresse du serveur</label>
+                    <div class="input-group input-group-lg" id="adresse">
+                        <input class="form-control font-monospace" id="mcp-url" type="text" value="{{ mcp_url }}" readonly>
+                        <button class="btn btn-primary" type="button" data-copy-url="{{ mcp_url }}" data-copy-message="Adresse copiée !">
+                            <twig:Icon name="lucide:copy" />
+                            Copier
+                        </button>
+                    </div>
+                    <p class="small text-secondary mt-2 mb-0">Model Context Protocol, transport HTTP (Streamable HTTP).</p>
+                </div>
+                <div class="col-lg-5 d-grid gap-3" id="exemples">
+                    {% for question in [
+                        'Quels concerts à Toulouse ce week-end ?',
+                        'Une expo gratuite à Lyon demain ?',
+                        'Que faire en famille à Bruxelles dimanche ?',
+                    ] %}
+                        <div class="card card-sm shadow-sm mb-0">
+                            <div class="card-body d-flex align-items-center gap-3">
+                                <span class="avatar bg-primary-lt flex-shrink-0"><twig:Icon name="lucide:message-square" /></span>
+                                <div class="fw-semibold">«&nbsp;{{ question }}&nbsp;»</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <twig:Section eyebrow="Ce qu'il sait faire" icon="lucide:search" title="L'agenda, ville par ville" description="Votre assistant choisit lui-même ce qu'il demande à By Night, selon votre question." id="outils">
+        <div class="row row-cards row-deck">
+            {% for tool in [
+                {icon: 'lucide:map-pin', tone: 'teal', name: 'find_cities', title: 'Trouver la ville', text: 'Les villes qui portent ce nom, en France, en Belgique, en Suisse et à Monaco, avec leurs sorties à venir.'},
+                {icon: 'lucide:calendar-days', tone: 'primary', name: 'search_events', title: 'Chercher les sorties', text: 'Celles d\'une ville, par dates (ce soir, ce week-end, des dates choisies), catégorie, mots et prix.'},
+                {icon: 'lucide:ticket', tone: 'yellow', name: 'get_event', title: 'Le détail d\'une sortie', text: 'Ses dates et horaires, le lieu, les prix, sa présentation et le lien de sa page.'},
+            ] %}
+                <div class="col-md-4">
+                    <div class="card card-layout mb-0">
+                        <div class="card-body">
+                            <span class="avatar bg-{{ tool.tone }}-lt mb-3"><twig:Icon name="{{ tool.icon }}" /></span>
+                            <h3 class="h4 mb-1">{{ tool.title }}</h3>
+                            <p class="text-secondary mb-2">{{ tool.text }}</p>
+                            <code class="small">{{ tool.name }}</code>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </twig:Section>
+
+    <twig:Section eyebrow="Mode d'emploi" icon="lucide:zap" title="Ajouter By Night à votre assistant" description="Les menus changent d'une version à l'autre : en cas de doute, l'aide de votre assistant explique comment ajouter un connecteur MCP personnalisé." muted="{{ true }}" id="installation">
+        <div class="row row-cards row-deck">
+            {% for assistant in [
+                {id: 'claude', name: 'Claude', steps: ['Ouvrez les paramètres, puis « Connecteurs ».', 'Choisissez « Ajouter un connecteur personnalisé ».', 'Nommez-le By Night et collez l\'adresse du serveur.']},
+                {id: 'chatgpt', name: 'ChatGPT', steps: ['Dans les paramètres, activez le mode développeur (offres payantes).', 'Créez un connecteur, ou une application, sans authentification.', 'Collez l\'adresse du serveur.']},
+                {id: 'le-chat', name: 'Le Chat', steps: ['Ouvrez « Connecteurs ».', 'Ajoutez un connecteur MCP personnalisé.', 'Collez l\'adresse du serveur.']},
+            ] %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-layout mb-0" id="{{ assistant.id }}">
+                        <div class="card-body">
+                            <h3 class="h4 mb-3">{{ assistant.name }}</h3>
+                            <ol class="mb-0 ps-3 vstack gap-2">
+                                {% for step in assistant.steps %}
+                                    <li>{{ step }}</li>
+                                {% endfor %}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="col-12">
+                <div class="card card-layout mb-0" id="developpeurs">
+                    <div class="card-body">
+                        <h3 class="h4 mb-2">Claude Code, Cursor, VS Code et les autres clients</h3>
+                        <p class="text-secondary">Tout client qui parle MCP en HTTP accepte l'adresse telle quelle, par exemple&nbsp;:</p>
+                        <pre class="mb-0"><code>claude mcp add --transport http by-night {{ mcp_url }}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </twig:Section>
+
+    <twig:Section eyebrow="Bon à savoir" icon="lucide:shield-check" title="Ce que fait le serveur, et ce qu'il ne fait pas" id="conditions">
+        <div class="row row-cards row-deck">
+            {% for fact in [
+                {icon: 'lucide:lock', tone: 'teal', title: 'Sans compte ni cookie', text: 'Le serveur ne connaît pas votre compte By Night : votre assistant ne lui envoie que sa recherche (une ville, des dates, des mots).'},
+                {icon: 'lucide:eye', tone: 'primary', title: 'En lecture seule', text: 'Il lit l\'agenda tel que le site le montre. Il ne publie rien, ne réserve rien et ne vend pas de billets : le lien de chaque sortie mène à sa page, avec les billetteries.'},
+                {icon: 'lucide:zap', tone: 'yellow', title: '60 requêtes par minute', text: 'Par adresse IP, de quoi poser toutes vos questions. Au-delà, le serveur demande à votre assistant de patienter un peu.'},
+                {icon: 'lucide:circle-help', tone: 'purple', title: 'Les textes sont en français', text: 'Ceux des sorties, tels que leurs organisateurs les ont écrits. Votre assistant les traduit si vous lui parlez dans une autre langue.'},
+            ] %}
+                <div class="col-md-6">
+                    <div class="card card-sm mb-0">
+                        <div class="card-body d-flex gap-3">
+                            <span class="avatar bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Icon name="{{ fact.icon }}" /></span>
+                            <div>
+                                <div class="fw-semibold mb-1">{{ fact.title }}</div>
+                                <div class="text-secondary">{{ fact.text }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <p class="text-secondary mt-4 mb-0">
+            Votre assistant reste soumis aux conditions de son éditeur. Une question, un souci&nbsp;?
+            <a href="mailto:support@by-night.fr?subject={{ 'Serveur MCP'|url_encode }}">Écrivez-nous</a>.
+        </p>
+    </twig:Section>
+{% endblock %}

@@ -101,6 +101,29 @@ final class ContentControllerTest extends AppWebTestCase
         self::assertSelectorExists('footer a[href="/conditions-generales-d-utilisation"]');
     }
 
+    public function testTheAssistantsPageGivesTheAddressOfTheMcpServerAndItsTools(): void
+    {
+        $client = self::createClient();
+
+        $client->request('GET', '/assistants-ia');
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1', 'Demandez à votre assistant');
+        self::assertSelectorExists('#mcp-url[value="https://by-night.test/mcp"][readonly]');
+        self::assertSelectorExists('#adresse button[data-copy-url="https://by-night.test/mcp"]');
+        // The tools the server declares (McpServerTest)
+        foreach (['find_cities', 'search_events', 'get_event'] as $tool) {
+            self::assertSelectorTextContains('#outils', $tool);
+        }
+        foreach (['#claude', '#chatgpt', '#le-chat', '#developpeurs'] as $assistant) {
+            self::assertSelectorExists($assistant);
+        }
+        self::assertSelectorTextContains('#developpeurs', 'claude mcp add --transport http by-night https://by-night.test/mcp');
+        self::assertSelectorTextContains('#conditions', '60 requêtes par minute');
+        self::assertSelectorExists('footer a[href="/assistants-ia"]');
+        self::assertResponseHeaderSame('Cache-Control', 'max-age=0, public, s-maxage=86400, stale-if-error=86400, stale-while-revalidate=86400');
+    }
+
     public function testTheTransparencyPageSaysHowTheSiteEarnsMoney(): void
     {
         $client = self::createClient();
