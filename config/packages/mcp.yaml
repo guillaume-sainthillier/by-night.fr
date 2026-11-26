@@ -1,0 +1,25 @@
+# The agenda for AI assistants (Model Context Protocol, Streamable HTTP) at /mcp: the "mcp" operations of the API
+# Platform resources (App\Api\ApiResource), which share their input and their answer with a GET of the API,
+# public and read-only. Throttled per IP address (App\EventListener\McpRateLimitListener), out of the main
+# firewall (security.yaml): no member, no session but the MCP one, kept in files next to the cache.
+mcp:
+    servers:
+        default:
+            name: 'By Night'
+            description: "L'agenda des sorties de By Night : concerts, spectacles, expos et soirées, ville par ville."
+            website_url: 'https://by-night.fr'
+            instructions: >-
+                By Night lists the events of cities in France, Belgium, Switzerland and Monaco. Use find_cities to
+                turn a city name into its slug, search_events to list what is on there, and get_event for the details
+                of one. Give the user the URL of each event's page: it has the tickets, the map and the updates.
+                The texts are in French.
+            # API Platform registers its tools through a loader of its own, which the registry does not filter. The
+            # registry must list something, and "*" is the only pattern allowed to match nothing: no service carries a
+            # Symfony #[McpTool]
+            registry:
+                tools: '*'
+            http:
+                path: /mcp
+                # The DNS rebinding protection: the site's own host only (by-night.fr in production). An element of
+                # the list, not the list: the bundle wants an array as it reads its configuration
+                allowed_hosts: ['%env(key:host:url:APP_URL)%']

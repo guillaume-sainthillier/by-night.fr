@@ -49,4 +49,5 @@ return [
     Jbtronics\TFAWebauthn\TFAWebauthnBundle::class => ['all' => true],
     AhmedBhs\DoctrineDoctor\DoctrineDoctorBundle::class => ['dev' => true, 'test' => true],
     Silarhi\CapBundle\SilarhiCapBundle::class => ['all' => true],
+    Symfony\AI\McpBundle\McpBundle::class => ['all' => true],
 ];

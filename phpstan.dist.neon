@@ -49,6 +49,8 @@ parameters:
               - src/SEO
               - src/Social
               - src/Updater
+        # the inputs of the API and the MCP tools, built by the serializer (App\Api\Input\QueryInputMapper)
+        - '#^Unused App\\Api\\Model\\\w+Input::__construct#'
         # referenced by string in config/packages/fos_elastica.yaml (query_builder_method)
         - '#^Unused App\\Repository\\EventRepository::createIsActiveQueryBuilder#'
         - identifier: shipmonk.deadProperty.neverRead

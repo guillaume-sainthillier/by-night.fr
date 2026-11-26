@@ -254,6 +254,21 @@ Umami's event-data values stop at the top 100, so the sync pages through `metric
 `/soiree/` page) and `events?event=ticket-click` (one row per click), and finds the event by the `--{id}` ending
 the path.
 
+### MCP server
+
+AI assistants (Claude, ChatGPT…) read the agenda through the MCP server at `https://by-night.fr/mcp` (Streamable
+HTTP, no authentication): `find_cities`, `search_events`, `get_event`. Each tool answers what a GET of the API
+answers, from the same input: `GET /api/cities?q=`, `GET /api/events?city=&when=…` and `GET /api/events/{id}`
+(documented at `/api/docs` locally only: production publishes no API documentation). Nothing to configure in
+production; the server only answers on the site's own hosts (`config/packages/mcp.yaml`) and 60 requests a minute per
+IP. To try it locally:
+
+```bash
+npx @modelcontextprotocol/inspector
+```
+
+then connect to `https://by-night.test/mcp` with the "Streamable HTTP" transport.
+
 ### Sign-up CAPTCHA (Cap)
 
 The sign-up form is protected by [Cap](https://trycap.dev), a proof-of-work CAPTCHA, through `silarhi/cap-bundle`

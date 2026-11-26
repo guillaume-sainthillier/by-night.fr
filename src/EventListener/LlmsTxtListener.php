@@ -51,7 +51,12 @@ final readonly class LlmsTxtListener
         $event->getDocument()
             ->addLinks('Agendas par pays', $this->countryLinks())
             ->addLinks('Agendas par ville', $this->cityLinks())
-            ->addLinks('Articles', $this->pageLinks());
+            ->addLinks('Articles', $this->pageLinks())
+            ->addLinks('Pour les assistants', [new Link(
+                $this->url('_mcp_endpoint_default'),
+                'Serveur MCP',
+                "L'agenda en Model Context Protocol (Streamable HTTP) : find_cities, search_events, get_event",
+            )]);
     }
 
     /**

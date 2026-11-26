@@ -632,6 +632,19 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
+    "symfony/mcp-bundle": {
+        "version": "0.15",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "0.13",
+            "ref": "6fbd19b68290f2d5decdb926636484950d185e4b"
+        },
+        "files": [
+            "config/packages/mcp.yaml",
+            "config/routes/mcp.yaml"
+        ]
+    },
     "symfony/mercure-bundle": {
         "version": "0.7",
         "recipe": {

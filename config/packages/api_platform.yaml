@@ -6,6 +6,10 @@ api_platform:
             mime_types: ['application/json']
         jsonld:
             mime_types: ['application/ld+json']
+    # The MCP tools (config/packages/mcp.yaml) answer in plain JSON: JSON-LD would add @context, @id and @type to every
+    # object an assistant reads
+    mcp:
+        format: json
     defaults:
         stateless: false
         cache_headers:
