@@ -10,6 +10,8 @@
 
 namespace App\Tests\Messenger;
 
+use App\Elasticsearch\Message\ReplaceManyDocuments;
+use App\Entity\Event;
 use App\Messenger\TransactionalMessageDispatcher;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -66,6 +68,16 @@ final class TransactionalMessageDispatcherTest extends TestCase
         $this->dispatcher->dispatch($third);
 
         $this->assertSame([$first, $second, $third], $this->sent);
+    }
+
+    public function testTheElasticsearchMessagesOfATransactionLeaveAsOne(): void
+    {
+        $this->dispatcher->begin();
+        $this->dispatcher->dispatch(new ReplaceManyDocuments('event', Event::class, [1]));
+        $this->dispatcher->dispatch(new ReplaceManyDocuments('event', Event::class, [2]));
+        $this->dispatcher->commit();
+
+        $this->assertEquals([new ReplaceManyDocuments('event', Event::class, [1, 2])], $this->sent);
     }
 
     public function testRollBackDropsHeldMessages(): void

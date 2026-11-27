@@ -10,6 +10,7 @@
 
 namespace App\Messenger;
 
+use App\Elasticsearch\DocumentsActionCoalescer;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -22,6 +23,9 @@ use Symfony\Contracts\Service\ResetInterface;
  * rows being written: image downloads scheduled after a flush, Elasticsearch documents
  * dispatched by the FOS Elastica postFlush listener. Sent immediately, such a message
  * can reach its worker before the commit, and the worker then finds nothing to load.
+ *
+ * The Elasticsearch messages held are released as one per index and action
+ * ({@see DocumentsActionCoalescer}): a batch flushes several times.
  *
  * Outside a transaction this is a plain pass-through to the bus.
  */
@@ -61,7 +65,7 @@ final class TransactionalMessageDispatcher implements ResetInterface
     public function commit(): void
     {
         $this->inTransaction = false;
-        $pending = $this->pending;
+        $pending = DocumentsActionCoalescer::coalesce($this->pending);
         $this->pending = [];
 
         foreach ($pending as $message) {
