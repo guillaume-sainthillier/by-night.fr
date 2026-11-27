@@ -10,62 +10,59 @@
 {% endblock %}
 
 {% block layout_header %}
+    {# block() inside a component's content would look in the component's template #}
+    {% set container_class = block('container_class') %}
     {% if not app.user.verified %}
-        <div class="alert alert-dismissible fade show alert-info">
-            <div class="{{ block('container_class') }}">
-                Votre adresse e-mail n'est pas vérifiée. En raison de nombreux abus, vous devez désormais <a href="{{ path('app_send_verification_email') }}" class="email-verify"><strong>vérifier votre adresse e-mail</strong></a> pour créer des événements sur la plateforme.
+        <twig:Tabler:Alert variant="info" dismissible class="fade show">
+            <div class="{{ container_class }}">
+                Votre adresse e-mail n'est pas vérifiée. En raison de nombreux abus, vous devez désormais <a href="#" role="button" class="email-verify"><strong>vérifier votre adresse e-mail</strong></a> pour créer des événements sur la plateforme.
             </div>
-        </div>
+        </twig:Tabler:Alert>
     {% endif %}
-    <div class="alert alert-dismissible fade show alert-info" id="feedback-banner">
-        <div class="{{ block('container_class') }} d-flex align-items-center gap-3">
-            <span class="avatar avatar-sm rounded-circle bg-yellow text-white flex-shrink-0">
-                <twig:Icon name="lucide:message-circle" />
-            </span>
+    <twig:Tabler:Alert variant="info" dismissible class="fade show" id="feedback-banner">
+        <div class="{{ container_class }} d-flex align-items-center gap-3">
+            <twig:Tabler:Avatar size="sm" rounded class="bg-yellow text-white flex-shrink-0">
+                <twig:Tabler:Icon name="lucide:message-circle" />
+            </twig:Tabler:Avatar>
             <div>
                 <strong>Nouveau !</strong> Nous avons amélioré la gestion de vos événements.
                 {# The body's link colour, not the alert's: the amber of .alert-info's links is unreadable on its background #}
                 <a href="#" class="text-nowrap" data-bs-toggle="modal" data-bs-target="#feedbackModal">
                     Donnez-nous votre avis !
-                    <twig:Icon name="lucide:arrow-right" />
+                    <twig:Tabler:Icon name="lucide:arrow-right" />
                 </a>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+            <twig:Tabler:Alert:Dismiss aria-label="Fermer" />
         </div>
-    </div>
+    </twig:Tabler:Alert>
 {% endblock %}
 
 {% block modals %}
     {# Tells the member, on any page of their space, when an import or an export of theirs is done (listeners/transfer-toasts.js) #}
     <div hidden data-transfer-toasts="{{ user_channel_hub(app.user) }}"></div>
-    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="feedbackModalLabel">Donnez-nous votre avis</h3>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+    <twig:Tabler:Modal id="feedbackModal" centered class="fade" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <twig:Tabler:Modal:Header>
+            <twig:Tabler:Modal:Title id="feedbackModalLabel">Donnez-nous votre avis</twig:Tabler:Modal:Title>
+            <twig:Tabler:Modal:Close aria-label="Fermer" />
+        </twig:Tabler:Modal:Header>
+        <twig:Tabler:Modal:Body>
+            <p class="text-muted mb-3">
+                Nous avons récemment mis à jour le système de gestion de vos événements.
+                Votre avis nous aide à améliorer l'expérience !
+            </p>
+            <form id="feedback-form" data-action="{{ path('api_feedback') }}">
+                <div class="mb-3">
+                    <label for="feedback-message" class="form-label">Votre message</label>
+                    <textarea class="form-control" id="feedback-message" rows="5" placeholder="Partagez votre avis sur le nouveau système…" required minlength="10"></textarea>
+                    <div class="invalid-feedback" id="feedback-error"></div>
                 </div>
-                <div class="modal-body">
-                    <p class="text-muted mb-3">
-                        Nous avons récemment mis à jour le système de gestion de vos événements.
-                        Votre avis nous aide à améliorer l'expérience !
-                    </p>
-                    <form id="feedback-form" data-action="{{ path('api_feedback') }}">
-                        <div class="mb-3">
-                            <label for="feedback-message" class="form-label">Votre message</label>
-                            <textarea class="form-control" id="feedback-message" rows="5" placeholder="Partagez votre avis sur le nouveau système…" required minlength="10"></textarea>
-                            <div class="invalid-feedback" id="feedback-error"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
-                    <button type="submit" form="feedback-form" class="btn btn-primary">
-                        <twig:Icon name="lucide:send" />
-                        Envoyer
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+            </form>
+        </twig:Tabler:Modal:Body>
+        <twig:Tabler:Modal:Footer>
+            <twig:Tabler:Button variant="secondary" appearance="outline" type="button" data-bs-dismiss="modal">Fermer</twig:Tabler:Button>
+            <twig:Tabler:Button variant="primary" type="submit" form="feedback-form" icon="lucide:send">
+                Envoyer
+            </twig:Tabler:Button>
+        </twig:Tabler:Modal:Footer>
+    </twig:Tabler:Modal>
 {% endblock %}

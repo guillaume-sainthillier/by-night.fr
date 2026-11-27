@@ -12,29 +12,20 @@ namespace App\Security\Voter;
 
 use App\Entity\EventImport;
 use App\Entity\User;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Vote;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Silarhi\VoterBundle\Attribute\Grants;
 
 /**
- * A member's event import and its report and its files (the member's spreadsheet, the rows the check kept and refused) are theirs alone: they hold their events' contacts and drafts. Administrators
- * included, as for the member's other private data.
- *
- * @extends Voter<string, EventImport>
+ * A member's event import and its report and its files (the member's spreadsheet, the rows the check kept and refused)
+ * are theirs alone: they hold their events' contacts and drafts. Administrators included, as for the member's other
+ * private data.
  */
-final class ImportVoter extends Voter
+final class ImportVoter extends AbstractMemberVoter
 {
     public const string VIEW = 'event_import.view';
 
-    protected function supports(string $attribute, mixed $subject): bool
+    #[Grants(self::VIEW)]
+    private function canView(EventImport $subject, User $user): bool
     {
-        return self::VIEW === $attribute && $subject instanceof EventImport;
-    }
-
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
-    {
-        $user = $token->getUser();
-
-        return $user instanceof User && null !== $user->getId() && $subject->getUser()?->getId() === $user->getId();
+        return null !== $user->getId() && $subject->getUser()?->getId() === $user->getId();
     }
 }

@@ -1,6 +1,8 @@
 import { defineListener } from '@silarhi/app-js'
 import { errorBody, sendJson } from '@silarhi/app-js/http'
 import { Modal } from '@tabler/core'
+import { MESSAGE_MIN_LENGTH } from '@/js/constants/ContentRemovalRequestInput'
+import { path } from '@/js/router'
 
 /**
  * What the removal request API answers once the request is recorded.
@@ -48,7 +50,7 @@ export default defineListener<HTMLElement>({
             return
         }
 
-        let currentRemovalUrl: string | null = null
+        let currentEventId: string | null = null
         let currentEventUrl: string | null = null
 
         const showError = (message: string) => {
@@ -62,8 +64,8 @@ export default defineListener<HTMLElement>({
             // Bootstrap's show event carries the element that opened the modal
             const button =
                 'relatedTarget' in event && event.relatedTarget instanceof Element ? event.relatedTarget : null
-            // The API's URL for the event, from the page (POST /api/events/{id}/removal-requests)
-            currentRemovalUrl = button?.getAttribute('data-removal-url') ?? null
+            // The event the request is about (POST /api/events/{id}/removal-requests)
+            currentEventId = button?.getAttribute('data-event-id') ?? null
             currentEventUrl = button?.getAttribute('data-event-url') ?? null
 
             // Reset form
@@ -93,7 +95,7 @@ export default defineListener<HTMLElement>({
                 isValid = false
             }
 
-            if (!messageInput.value.trim() || messageInput.value.trim().length < 10) {
+            if (!messageInput.value.trim() || messageInput.value.trim().length < MESSAGE_MIN_LENGTH) {
                 messageInput.classList.add('is-invalid')
                 isValid = false
             }
@@ -129,7 +131,11 @@ export default defineListener<HTMLElement>({
             alertEl.classList.add('d-none')
 
             try {
-                const response = await sendJson<RemovalResponse>('POST', currentRemovalUrl ?? '', data)
+                const response = await sendJson<RemovalResponse>(
+                    'POST',
+                    path('api_event_removal_request', { id: currentEventId ?? '' }),
+                    data
+                )
                 if (response) {
                     alertEl.textContent = response.message
                     alertEl.classList.remove('d-none', 'alert-danger')

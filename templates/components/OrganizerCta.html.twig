@@ -12,18 +12,18 @@
                     {% block description %}Publiez votre événement gratuitement en quelques clics&nbsp;: il rejoint l'agenda{% if atName %} {{ atName }}{% endif %} et les milliers de curieux qui le consultent chaque jour.{% endblock %}
                 </p>
                 <ul class="list-inline mb-0 small fw-bold text-body">
-                    <li class="list-inline-item me-3"><twig:Icon name="lucide:circle-check" class="text-teal" /> Publication instantanée</li>
-                    <li class="list-inline-item me-3"><twig:Icon name="lucide:circle-check" class="text-teal" /> 100&nbsp;% gratuit, sans engagement</li>
-                    <li class="list-inline-item"><twig:Icon name="lucide:circle-check" class="text-teal" /> Visible sur Google et les réseaux sociaux</li>
+                    <li class="list-inline-item me-3"><twig:Tabler:Icon name="lucide:circle-check" class="text-teal" /> Publication instantanée</li>
+                    <li class="list-inline-item me-3"><twig:Tabler:Icon name="lucide:circle-check" class="text-teal" /> 100&nbsp;% gratuit, sans engagement</li>
+                    <li class="list-inline-item"><twig:Tabler:Icon name="lucide:circle-check" class="text-teal" /> Visible sur Google et les réseaux sociaux</li>
                 </ul>
             </div>
             <div class="col-lg-4 d-grid gap-3">
                 <a class="btn btn-primary btn-lg" href="{{ path('app_personal_space_event_new') }}" title="Publiez votre événement gratuitement">
-                    <twig:Icon name="lucide:circle-plus" />
+                    <twig:Tabler:Icon name="lucide:circle-plus" />
                     Publier un événement
                 </a>
                 <a class="btn" href="{{ path('app_plus') }}" title="Comment publier un événement">
-                    <twig:Icon name="lucide:info" />
+                    <twig:Tabler:Icon name="lucide:info" />
                     Comment ça marche
                 </a>
             </div>

@@ -27,11 +27,11 @@
             <div class="row row-cards">
                 <div class="col-md-6">
                     <article class="card card-lg h-100 mb-0">
-                        <div class="card-body d-flex flex-column">
+                        <twig:Tabler:Card:Body class="d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <span class="avatar bg-primary-lt fw-bold">01</span>
+                                <twig:Tabler:Avatar variant="primary" class="fw-bold">01</twig:Tabler:Avatar>
                                 <h2 class="h1 text-start flex-fill mb-0">Configurez</h2>
-                                <span class="avatar bg-primary-lt"><twig:Icon name="lucide:sliders-horizontal" /></span>
+                                <twig:Tabler:Avatar variant="primary"><twig:Tabler:Icon name="lucide:sliders-horizontal" /></twig:Tabler:Avatar>
                             </div>
                             <p class="text-secondary">
                                 Créez gratuitement votre événement en quelques minutes, sans aucune connaissance technique&nbsp;: dates et
@@ -50,54 +50,54 @@
                                         {icon: 'lucide:file-pen', label: 'Brouillon'},
                                     ] %}
                                         <div class="col-4">
-                                            <div class="card card-sm mb-0">
+                                            <twig:Tabler:Card size="sm" class="mb-0">
                                                 <div class="card-body py-2 px-1">
-                                                    <twig:Icon name="{{ field.icon }}" class="text-primary d-block mx-auto mb-1" />
+                                                    <twig:Tabler:Icon name="{{ field.icon }}" class="text-primary d-block mx-auto mb-1" />
                                                     {{ field.label }}
                                                 </div>
-                                            </div>
+                                            </twig:Tabler:Card>
                                         </div>
                                     {% endfor %}
                                 </div>
                             </div>
-                        </div>
+                        </twig:Tabler:Card:Body>
                     </article>
                 </div>
 
                 <div class="col-md-6">
                     <article class="card card-lg card-night border-0 h-100 mb-0" data-bs-theme="dark">
-                        <div class="card-body d-flex flex-column">
+                        <twig:Tabler:Card:Body class="d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <span class="avatar bg-primary text-white fw-bold">02</span>
+                                <twig:Tabler:Avatar class="bg-primary text-white fw-bold">02</twig:Tabler:Avatar>
                                 <h2 class="h1 text-start flex-fill mb-0">Communiquez</h2>
-                                <span class="avatar bg-primary text-white"><twig:Icon name="lucide:megaphone" /></span>
+                                <twig:Tabler:Avatar class="bg-primary text-white"><twig:Tabler:Icon name="lucide:megaphone" /></twig:Tabler:Avatar>
                             </div>
                             <p class="text-secondary">
                                 Votre événement a sa propre page, avec son affiche et ses liens de réservation. Il rejoint l'agenda de sa
                                 ville et la recherche, et sa page est balisée pour que Google la reconnaisse comme un événement. Vos visiteurs
                                 la partagent en un clic sur les réseaux sociaux, et les membres de By Night l'ajoutent à leurs favoris.
                             </p>
-                            <div class="card card-sm mb-0 mt-auto">
+                            <twig:Tabler:Card size="sm" class="mb-0 mt-auto">
                                 <div class="card-body d-flex align-items-center gap-3">
-                                    <twig:Icon name="lucide:share-2" class="icon-lg text-primary" />
+                                    <twig:Tabler:Icon name="lucide:share-2" class="icon-lg text-primary" />
                                     <div class="flex-fill">
                                         <div class="fw-semibold">Diffusion automatique</div>
                                         <div class="text-secondary small">Agenda de la ville, recherche & Google</div>
                                     </div>
-                                    <twig:Icon name="lucide:circle-check" class="icon-lg text-teal" />
+                                    <twig:Tabler:Icon name="lucide:circle-check" class="icon-lg text-teal" />
                                 </div>
-                            </div>
-                        </div>
+                            </twig:Tabler:Card>
+                        </twig:Tabler:Card:Body>
                     </article>
                 </div>
 
                 <div class="col-md-6">
                     <article class="card card-lg h-100 mb-0">
-                        <div class="card-body d-flex flex-column">
+                        <twig:Tabler:Card:Body class="d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <span class="avatar bg-teal-lt fw-bold">03</span>
+                                <twig:Tabler:Avatar color="teal" class="fw-bold">03</twig:Tabler:Avatar>
                                 <h2 class="h1 text-start flex-fill mb-0">Contrôlez</h2>
-                                <span class="avatar bg-teal-lt"><twig:Icon name="lucide:layout-dashboard" /></span>
+                                <twig:Tabler:Avatar color="teal"><twig:Tabler:Icon name="lucide:layout-dashboard" /></twig:Tabler:Avatar>
                             </div>
                             <p class="text-secondary">
                                 Gardez la main sur vos événements à tout moment&nbsp;: corrigez leur fiche, masquez-les le temps de les
@@ -105,37 +105,37 @@
                                 communauté.
                             </p>
                             <div class="d-flex flex-wrap gap-2 mt-auto">
-                                <span class="badge bg-secondary-lt"><twig:Icon name="lucide:pencil" /> Modification à tout moment</span>
-                                <span class="badge bg-secondary-lt"><twig:Icon name="lucide:eye-off" /> Visible ou masqué</span>
-                                <span class="badge bg-secondary-lt"><twig:Icon name="lucide:calendar-x" /> Reporté, annulé ou complet</span>
+                                <twig:Tabler:Badge variant="secondary" light icon="lucide:pencil">Modification à tout moment</twig:Tabler:Badge>
+                                <twig:Tabler:Badge variant="secondary" light icon="lucide:eye-off">Visible ou masqué</twig:Tabler:Badge>
+                                <twig:Tabler:Badge variant="secondary" light icon="lucide:calendar-x">Reporté, annulé ou complet</twig:Tabler:Badge>
                             </div>
-                        </div>
+                        </twig:Tabler:Card:Body>
                     </article>
                 </div>
 
                 <div class="col-md-6">
                     <article class="card card-lg h-100 mb-0">
-                        <div class="card-body d-flex flex-column">
+                        <twig:Tabler:Card:Body class="d-flex flex-column">
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <span class="avatar bg-yellow-lt fw-bold">04</span>
+                                <twig:Tabler:Avatar color="yellow" class="fw-bold">04</twig:Tabler:Avatar>
                                 <h2 class="h1 text-start flex-fill mb-0">Suivez</h2>
-                                <span class="avatar bg-yellow-lt"><twig:Icon name="lucide:chart-line" /></span>
+                                <twig:Tabler:Avatar color="yellow"><twig:Tabler:Icon name="lucide:chart-line" /></twig:Tabler:Avatar>
                             </div>
                             <p class="text-secondary">
                                 Votre espace «&nbsp;Mes événements&nbsp;» rassemble tout ce que vous avez publié, en ligne ou masqué, et la
                                 page de chaque événement affiche le nombre de membres qui l'ont ajouté à leurs favoris.
                             </p>
-                            <a class="card card-sm card-link-pop text-reset form-panel border-0 mb-0 mt-auto" href="{{ path('app_personal_space_events') }}">
+                            <twig:Tabler:Card size="sm" link="pop" href="{{ path('app_personal_space_events') }}" class="text-reset form-panel border-0 mb-0 mt-auto">
                                 <div class="card-body d-flex align-items-center gap-3">
-                                    <span class="avatar bg-white text-primary"><twig:Icon name="lucide:calendar-check" /></span>
+                                    <twig:Tabler:Avatar class="bg-white text-primary"><twig:Tabler:Icon name="lucide:calendar-check" /></twig:Tabler:Avatar>
                                     <div class="flex-fill">
                                         <div class="subheader">Votre espace</div>
                                         <div class="fw-semibold">Mes événements</div>
                                     </div>
-                                    <twig:Icon name="lucide:arrow-right" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:arrow-right" class="text-primary" />
                                 </div>
-                            </a>
-                        </div>
+                            </twig:Tabler:Card>
+                        </twig:Tabler:Card:Body>
                     </article>
                 </div>
             </div>
@@ -144,8 +144,8 @@
 
     <section class="pb-5">
         <div class="container-lg">
-            <div class="card card-lg form-panel border-0 mb-0">
-                <div class="card-body">
+            <twig:Tabler:Card size="lg" class="form-panel border-0 mb-0">
+                <twig:Tabler:Card:Body>
                     <div class="row g-4 g-lg-5 align-items-center">
                         <div class="col-lg-6">
                             <twig:Section:Eyebrow icon="lucide:badge-check">Une solution pensée pour tous les organisateurs</twig:Section:Eyebrow>
@@ -161,7 +161,7 @@
                                     'Plusieurs dates et horaires pour un même événement',
                                 ] %}
                                     <li class="d-flex align-items-center gap-2">
-                                        <span class="avatar avatar-xs rounded-circle bg-teal-lt flex-shrink-0"><twig:Icon name="lucide:check" /></span>
+                                        <twig:Tabler:Avatar color="teal" size="xs" rounded class="flex-shrink-0"><twig:Tabler:Icon name="lucide:check" /></twig:Tabler:Avatar>
                                         {{ feature }}
                                     </li>
                                 {% endfor %}
@@ -178,31 +178,31 @@
                                     </div>
                                 {% endfor %}
                                 <div class="col-12">
-                                    <div class="card card-sm shadow-sm mb-0" id="member-totals">
-                                        <div class="card-body d-flex align-items-center gap-3">
+                                    <twig:Tabler:Card size="sm" class="shadow-sm mb-0" id="member-totals">
+                                        <twig:Tabler:Card:Body class="d-flex align-items-center gap-3">
                                             <div class="flex-fill">
                                                 <div class="fw-semibold">{{ '{count, plural, one {# événement publié} other {# événements publiés}}'|trans({count: members.events}, 'messages+intl-icu') }}</div>
                                                 <div class="text-secondary small">{{ '{count, plural, one {par # membre} other {par # membres}}'|trans({count: members.organizers}, 'messages+intl-icu') }}, en plus des agendas importés</div>
                                             </div>
-                                            <twig:Icon name="lucide:party-popper" class="icon-lg text-primary" />
-                                        </div>
-                                    </div>
+                                            <twig:Tabler:Icon name="lucide:party-popper" class="icon-lg text-primary" />
+                                        </twig:Tabler:Card:Body>
+                                    </twig:Tabler:Card>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </twig:Tabler:Card:Body>
+            </twig:Tabler:Card>
         </div>
     </section>
 
     <section class="pb-5">
         <div class="container-lg">
-            <div class="card card-lg card-sunset border-0 text-white mb-0">
-                <div class="card-body py-lg-6">
+            <twig:Tabler:Card size="lg" class="card-sunset border-0 text-white mb-0">
+                <twig:Tabler:Card:Body class="py-lg-6">
                     <div class="row">
                         <div class="col-lg-8">
-                            <span class="badge bg-white text-primary mb-3"><twig:Icon name="lucide:party-popper" /> C'est gratuit et sans engagement</span>
+                            <twig:Tabler:Badge variant="" class="bg-white text-primary mb-3" icon="lucide:party-popper">C'est gratuit et sans engagement</twig:Tabler:Badge>
                             <h2 class="h1 text-start text-white mb-3">Prêt à donner vie à votre prochain événement&nbsp;?</h2>
                             <p class="lead mb-4">
                                 Rejoignez les {{ '{count, plural, one {# membre} other {# membres}}'|trans({count: members.organizers}, 'messages+intl-icu') }}
@@ -210,18 +210,18 @@
                             </p>
                             <div class="d-flex flex-wrap align-items-center gap-3">
                                 <a class="btn btn-lg bg-white text-primary" href="{{ path('app_personal_space_event_new') }}">
-                                    <twig:Icon name="lucide:circle-plus" />
+                                    <twig:Tabler:Icon name="lucide:circle-plus" />
                                     Publier un événement gratuitement
                                 </a>
                                 <a class="link-light fw-semibold" href="mailto:support@by-night.fr">
-                                    <twig:Icon name="lucide:circle-help" />
+                                    <twig:Tabler:Icon name="lucide:circle-help" />
                                     Une question&nbsp;? Écrivez-nous
                                 </a>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </twig:Tabler:Card:Body>
+            </twig:Tabler:Card>
         </div>
     </section>
 {% endblock %}

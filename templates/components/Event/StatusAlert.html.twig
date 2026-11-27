@@ -4,31 +4,30 @@
 {% props event, prefix = null, full = false %}
 {% if event.status or event.statusMessage %}
     {% set statusIcon = 'lucide:triangle-alert' %}
-    {% set alertClass = 'alert-warning' %}
+    {% set variant = 'warning' %}
     {% if event.status %}
         {% if event.status == enum('App\\Enum\\EventStatus').Cancelled %}
             {% set statusIcon = 'lucide:ban' %}
-            {% set alertClass = 'alert-danger' %}
+            {% set variant = 'danger' %}
         {% elseif event.status == enum('App\\Enum\\EventStatus').Postponed %}
             {% set statusIcon = 'lucide:calendar-clock' %}
-            {% set alertClass = 'alert-warning' %}
+            {% set variant = 'warning' %}
         {% elseif event.status == enum('App\\Enum\\EventStatus').SoldOut %}
             {% set statusIcon = 'lucide:ticket-x' %}
-            {% set alertClass = 'alert-info' %}
+            {% set variant = 'info' %}
         {% elseif event.status == enum('App\\Enum\\EventStatus').Rescheduled %}
             {% set statusIcon = 'lucide:calendar-check' %}
-            {% set alertClass = 'alert-warning' %}
+            {% set variant = 'warning' %}
         {% elseif event.status == enum('App\\Enum\\EventStatus').MovedOnline %}
             {% set statusIcon = 'lucide:monitor-smartphone' %}
-            {% set alertClass = 'alert-info' %}
+            {% set variant = 'info' %}
         {% elseif event.status == enum('App\\Enum\\EventStatus').Removed %}
             {% set statusIcon = 'lucide:calendar-x' %}
-            {% set alertClass = 'alert-danger' %}
+            {% set variant = 'danger' %}
         {% endif %}
     {% endif %}
-    <div {{ attributes.defaults({class: 'alert ' ~ alertClass ~ ' mb-0'}) }}>
-        <twig:Icon name="{{ statusIcon }}" />
+    <twig:Tabler:Alert variant="{{ variant }}" icon="{{ statusIcon }}" {{ ...attributes.defaults({class: 'mb-0'}) }}>
         {# A feed may give a whole announcement: Sowprog cancel reasons run to 924 characters #}
-        <span>{% if prefix %}{{ prefix }}{% endif %}{% if not event.statusMessage %}{{ event.status.label }}{% elseif full %}{{ event.statusMessage|nl2br }}{% else %}{{ event.statusMessage|excerpt(100) }}{% endif %}</span>
-    </div>
+        <twig:block name="description">{% if prefix %}{{ prefix }}{% endif %}{% if not event.statusMessage %}{{ event.status.label }}{% elseif full %}{{ event.statusMessage|nl2br }}{% else %}{{ event.statusMessage|excerpt(100) }}{% endif %}</twig:block>
+    </twig:Tabler:Alert>
 {% endif %}

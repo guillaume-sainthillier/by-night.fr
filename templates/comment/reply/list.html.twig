@@ -3,9 +3,9 @@
 {% endfor %}
 
 {% if comments.hasNextPage %}
-    <div class="load-more mt-2 ms-4 text-start" data-url="{{ path('app_comment_reponse_list', {id: mainComment.id, page: (comments.currentPage + 1)}) }}">
-        <button type="button" class="btn ms-4">
+    <div class="load-more mt-2 ms-4 text-start" data-comment-page="{{ comments.currentPage + 1 }}">
+        <twig:Tabler:Button variant="default" type="button" class="ms-4">
             Plus de réponses
-        </button>
+        </twig:Tabler:Button>
     </div>
 {% endif %}

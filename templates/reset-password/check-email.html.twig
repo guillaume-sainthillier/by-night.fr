@@ -11,14 +11,14 @@
 
 {% block reset_body %}
     <p class="small text-secondary d-flex gap-2">
-        <twig:Icon name="lucide:info" class="flex-shrink-0 mt-1" />
+        <twig:Tabler:Icon name="lucide:info" class="flex-shrink-0 mt-1" />
         <span>
             Ce lien est valable {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
             Rien reçu&nbsp;? Regardez dans vos courriers indésirables, puis demandez un nouveau lien.
         </span>
     </p>
     <a class="btn w-100" href="{{ path('app_forgot_password_request') }}">
-        <twig:Icon name="lucide:send" />
+        <twig:Tabler:Icon name="lucide:send" />
         Recevoir un nouveau lien
     </a>
 {% endblock %}

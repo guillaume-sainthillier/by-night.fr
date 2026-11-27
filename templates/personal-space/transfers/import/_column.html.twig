@@ -3,7 +3,7 @@
 <div class="py-2 border-bottom">
     <dt class="fw-bold">
         {{ column.label }}
-        {% if column.required %}<span class="badge bg-red-lt ms-1">obligatoire</span>{% endif %}
+        {% if column.required %}<twig:Tabler:Badge variant="" class="bg-red-lt ms-1">obligatoire</twig:Tabler:Badge>{% endif %}
     </dt>
     <dd class="text-secondary small mb-0">{{ column.help }}</dd>
 </div>

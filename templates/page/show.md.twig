@@ -1,0 +1,4 @@
+{# @var page \App\Entity\Page #}
+# {{ page.title }}
+
+{{ include('page/_content.md.twig', {page: page})|trim }}

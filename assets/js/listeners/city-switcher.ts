@@ -1,4 +1,5 @@
 import { defineListener } from '@silarhi/app-js'
+import { path } from '@/js/router'
 
 /**
  * The header's city switcher (fragments/header.html.twig): the field of its dropdown suggests the cities as one types,
@@ -8,16 +9,11 @@ import { defineListener } from '@silarhi/app-js'
 export default defineListener<HTMLInputElement>({
     selector: 'input[data-city-switcher]',
     connect(input) {
-        const { citiesUrl = '', locationUrl = '' } = input.dataset
         const dropdown = input.closest('.dropdown')
         let created = false
 
-        // A city under its country keeps the slash of its slug ("suisse/geneve"): each segment is encoded
-        const open = (slug: string) => {
-            window.location.assign(
-                locationUrl.replace('__LOCATION__', slug.split('/').map(encodeURIComponent).join('/'))
-            )
-        }
+        // A city under its country keeps the slash of its slug ("suisse/geneve"), as path() does in Twig
+        const open = (slug: string) => window.location.assign(path('app_location_index', { location: slug }))
 
         const create = async () => {
             if (created) {
@@ -27,7 +23,7 @@ export default defineListener<HTMLInputElement>({
             const { create: createAutocomplete } = await import('@/js/services/ui/AutocompleteService')
             createAutocomplete({
                 element: input,
-                url: citiesUrl,
+                url: (q: string) => path('api_cities', { _query: { q } }),
                 onSelection: (city: { slug: string }) => open(city.slug),
             })
         }

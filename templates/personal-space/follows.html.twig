@@ -15,23 +15,22 @@
     </p>
 
     {% if not alerts %}
-        <div class="alert alert-info">
-            <twig:Icon name="lucide:bell-off" />
-            <div>Vous avez désactivé ces e-mails. <a href="{{ path('app_user_edit') }}">Les réactiver depuis votre compte</a>.</div>
-        </div>
+        <twig:Tabler:Alert variant="info" icon="lucide:bell-off">
+            <twig:block name="description">Vous avez désactivé ces e-mails. <a href="{{ path('app_user_edit') }}">Les réactiver depuis votre compte</a>.</twig:block>
+        </twig:Tabler:Alert>
     {% endif %}
 
     {% if follows %}
-        <div class="card">
-            <div class="list-group list-group-flush" id="follows">
+        <twig:Tabler:Card>
+            <twig:Tabler:ListGroup flush id="follows">
                 {% for follow in follows %}
                     {% set publisher = follow.publisher %}
                     {% set place = follow.place %}
-                    <div class="list-group-item d-flex flex-wrap align-items-center gap-3">
+                    <twig:Tabler:ListGroup:Item class="d-flex flex-wrap align-items-center gap-3">
                         {% if publisher %}
                             <twig:Publisher:Avatar publisher="{{ publisher }}" size="{{ 40 }}" class="avatar rounded flex-shrink-0" />
                         {% else %}
-                            <span class="avatar bg-teal-lt flex-shrink-0"><twig:Icon name="lucide:landmark" /></span>
+                            <twig:Tabler:Avatar color="teal" class="flex-shrink-0"><twig:Tabler:Icon name="lucide:landmark" /></twig:Tabler:Avatar>
                         {% endif %}
                         <div class="flex-fill min-w-0">
                             {% if publisher %}
@@ -43,19 +42,19 @@
                             {% endif %}
                         </div>
                         <twig:FollowButton target="{{ follow.target }}" small="{{ true }}" />
-                    </div>
+                    </twig:Tabler:ListGroup:Item>
                 {% endfor %}
-            </div>
-        </div>
+            </twig:Tabler:ListGroup>
+        </twig:Tabler:Card>
     {% else %}
-        <div class="card">
-            <div class="empty">
-                <div class="empty-icon"><twig:Icon name="lucide:bell" /></div>
-                <p class="empty-title">Vous ne suivez personne pour l'instant</p>
-                <p class="empty-subtitle text-secondary">
+        <twig:Tabler:Card>
+            <twig:Tabler:Empty>
+                <twig:Tabler:Empty:Icon><twig:Tabler:Icon name="lucide:bell" /></twig:Tabler:Empty:Icon>
+                <twig:Tabler:Empty:Title>Vous ne suivez personne pour l'instant</twig:Tabler:Empty:Title>
+                <twig:Tabler:Empty:Subtitle>
                     Sur la page d'un organisateur ou d'un lieu, «&nbsp;Suivre&nbsp;» vous prévient de ses nouveaux événements.
-                </p>
-            </div>
-        </div>
+                </twig:Tabler:Empty:Subtitle>
+            </twig:Tabler:Empty>
+        </twig:Tabler:Card>
     {% endif %}
 {%- endblock %}

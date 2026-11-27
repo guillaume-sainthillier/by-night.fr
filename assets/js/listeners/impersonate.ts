@@ -1,5 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
 import Swal from 'sweetalert2'
+import { path } from '@/js/router'
 import { create } from '@/js/services/ui/AutocompleteService'
 
 /**
@@ -11,7 +12,6 @@ export default defineListener<HTMLElement>({
         const onClick = async (e: MouseEvent) => {
             e.preventDefault()
 
-            const apiUrl = el.dataset.url ?? ''
             let autocomplete: ReturnType<typeof create> | null = null
 
             const result = await Swal.fire<string>({
@@ -26,7 +26,7 @@ export default defineListener<HTMLElement>({
                 didOpen() {
                     autocomplete = create({
                         element: '#swal2-input',
-                        url: apiUrl,
+                        url: (q) => path('api_users_autocomplete', { _query: { q } }),
                         valueField: 'username',
                         labelField: 'username',
                         minLength: 2,

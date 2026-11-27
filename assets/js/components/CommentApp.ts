@@ -1,7 +1,10 @@
-import { getHtml, postForm } from '@silarhi/app-js/http'
+import { formView, showViolations } from '@silarhi/app-js/form'
+import { getHtml, postForm, violationsOf } from '@silarhi/app-js/http'
 import { renderIcon } from '@silarhi/ux-icons-js'
 import type { SweetAlertIcon } from 'sweetalert2'
+import type { CommentForm } from '@/js/forms/CommentForm'
 import { LucideLoader2Icon } from '@/js/icons'
+import { path } from '@/js/router'
 import type ToastManager from '@/js/services/modals/ToastManager'
 import { loadingButtons, resetButtons } from '@/js/utils/buttons'
 import { plural } from '@/js/utils/plural'
@@ -9,14 +12,16 @@ import { plural } from '@/js/utils/plural'
 /**
  * What CommentController::new answers to a comment posted: the comment rendered, or the form with its errors
  */
-type CommentResponse =
-    | { success: true; comment: string; count: number; header: string }
-    | { success: false; post: string }
+type CommentResponse = { success: true; comment: string; count: number; header: string }
 
 /**
  * What ReplyController::new answers to a reply posted: the reply rendered, or the form with its errors
  */
-type ReplyResponse = { success: true; comment: string; reply_count: number } | { success: false; post: string }
+type ReplyResponse = { success: true; comment: string; reply_count: number }
+
+/** The comment of a comment or reply form (CommentType), read through its form view */
+const commentField = (form: HTMLFormElement | null) =>
+    form ? formView<CommentForm>(form).field('comment').element : null
 
 export default class CommentApp {
     options = {
@@ -84,6 +89,22 @@ export default class CommentApp {
         }
     }
 
+    /**
+     * The next page a "load more" block asks for (`data-comment-page`): the replies of its thread, else the comments of the
+     * event (`data-event-id` of the comments block)
+     */
+    get_load_more_url(loadMore: HTMLElement): string {
+        const page = loadMore.dataset.commentPage ?? ''
+        const thread = loadMore.closest<HTMLElement>(this.options.css_main_reply_block)
+        if (thread) {
+            return path('app_comment_reponse_list', { id: thread.dataset.commentId ?? '', page })
+        }
+
+        const comments = loadMore.closest<HTMLElement>(this.options.css_main_block_comments)
+
+        return path('app_comment_list', { id: comments?.dataset.eventId ?? '', page })
+    }
+
     init_load_more_comments(comments: ParentNode) {
         this.on_click(comments, this.options.css_load_more_comments, async (loadMore) => {
             const btn = loadMore.querySelector<HTMLButtonElement>('.btn')
@@ -98,7 +119,7 @@ export default class CommentApp {
 
             let html: string
             try {
-                html = await getHtml(loadMore.dataset.url ?? '')
+                html = await getHtml(this.get_load_more_url(loadMore))
             } catch {
                 if (btn) {
                     btn.innerHTML = originalText
@@ -146,7 +167,8 @@ export default class CommentApp {
             postAnswerContainer.classList.remove('is-visible')
             let html: string
             try {
-                html = await getHtml(link.dataset.url ?? '')
+                const thread = link.closest<HTMLElement>(this.options.css_main_reply_block)
+                html = await getHtml(path('app_comment_reponse_new', { id: thread?.dataset.commentId ?? '' }))
             } catch {
                 link.innerHTML = originalHtml
                 this.showToast('error', 'Une erreur est survenue')
@@ -162,7 +184,7 @@ export default class CommentApp {
                 postAnswerContainer.classList.add('is-visible')
                 // Focus on textarea after animation starts
                 setTimeout(() => {
-                    postAnswerContainer.querySelector('textarea')?.focus()
+                    commentField(postAnswerContainer.querySelector('form'))?.focus()
                 }, 150)
             })
         })
@@ -193,20 +215,29 @@ export default class CommentApp {
         })
 
         const form = answerPostContainer.querySelector('form')
+        let clearViolations = () => {}
         form?.addEventListener('submit', async (event) => {
             event.preventDefault()
-            const textarea = form.querySelector('textarea')
+            const textarea = commentField(form)
             const mainAnswerContainer = answerPostContainer.closest<HTMLElement>(this.options.css_main_reply_block)
             if (!mainAnswerContainer) {
                 return
             }
             loadingButtons(form)
+            clearViolations()
 
             let response: ReplyResponse | null
             try {
                 response = await postForm<ReplyResponse>(form.action, form)
-            } catch {
-                this.showToast('error', 'Une erreur est survenue')
+            } catch (error) {
+                // Refused (a 422): its errors on the fields of the form
+                const violations = violationsOf(error)
+                if (violations.length > 0) {
+                    clearViolations = showViolations(formView(form), violations)
+                    this.showToast('error', "Erreur lors de l'envoi de la réponse")
+                } else {
+                    this.showToast('error', 'Une erreur est survenue')
+                }
                 return
             } finally {
                 resetButtons(form)
@@ -248,33 +279,32 @@ export default class CommentApp {
 
                 // Update reply count
                 this.update_reply_count(mainAnswerContainer, String(response.reply_count))
-            } else if (response) {
-                // Error - show toast notification
-                this.showToast('error', "Erreur lors de l'envoi de la réponse")
-
-                // Replace form content with error form
-                answerPostContainer.innerHTML = response.post
-
-                // Re-initialize form handlers and page events
-                window.App.mount(answerPostContainer)
-                this.init_reply_form(answerPostContainer)
             }
         })
     }
 
     init_new_comment(comment: HTMLElement) {
         for (const form of comment.querySelectorAll('form')) {
-            const textarea = form.querySelector('textarea')
+            const textarea = commentField(form)
 
+            let clearViolations = () => {}
             form.addEventListener('submit', async (event) => {
                 event.preventDefault()
                 loadingButtons(comment)
+                clearViolations()
 
                 let response: CommentResponse | null
                 try {
                     response = await postForm<CommentResponse>(form.action, form)
-                } catch {
-                    this.showToast('error', 'Une erreur est survenue')
+                } catch (error) {
+                    // Refused (a 422): its errors on the fields of the form
+                    const violations = violationsOf(error)
+                    if (violations.length > 0) {
+                        clearViolations = showViolations(formView(form), violations)
+                        this.showToast('error', "Erreur lors de l'envoi du commentaire")
+                    } else {
+                        this.showToast('error', 'Une erreur est survenue')
+                    }
                     return
                 } finally {
                     resetButtons(comment)
@@ -344,16 +374,6 @@ export default class CommentApp {
                         // Remove animation class after animation completes
                         setTimeout(() => newComment.classList.remove('message-sent'), 500)
                     }, 100)
-                } else {
-                    // Error - show toast notification
-                    this.showToast('error', "Erreur lors de l'envoi du commentaire")
-
-                    // Replace form content with error form
-                    postCommentContainer.innerHTML = response.post
-
-                    // Re-initialize form handlers and page events
-                    window.App.mount(postCommentContainer)
-                    this.init_new_comment(postCommentContainer)
                 }
             })
         }

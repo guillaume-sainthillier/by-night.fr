@@ -12,29 +12,19 @@ namespace App\Security\Voter;
 
 use App\Entity\EventExport;
 use App\Entity\User;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Vote;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Silarhi\VoterBundle\Attribute\Grants;
 
 /**
  * A member's event export and its file are theirs alone: they hold their events' contacts and drafts. Administrators
  * included, as for the member's other private data.
- *
- * @extends Voter<string, EventExport>
  */
-final class ExportVoter extends Voter
+final class ExportVoter extends AbstractMemberVoter
 {
     public const string VIEW = 'event_export.view';
 
-    protected function supports(string $attribute, mixed $subject): bool
+    #[Grants(self::VIEW)]
+    private function canView(EventExport $subject, User $user): bool
     {
-        return self::VIEW === $attribute && $subject instanceof EventExport;
-    }
-
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
-    {
-        $user = $token->getUser();
-
-        return $user instanceof User && null !== $user->getId() && $subject->getUser()?->getId() === $user->getId();
+        return null !== $user->getId() && $subject->getUser()?->getId() === $user->getId();
     }
 }

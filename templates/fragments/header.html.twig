@@ -1,7 +1,7 @@
 <header class="navbar navbar-expand-lg sticky-top" data-bs-theme="light">
     <div class="{{ container_class }}">
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbar-main" aria-label="Ouvrir le menu">
-            <twig:Icon name="lucide:menu" />
+            <twig:Tabler:Icon name="lucide:menu" />
         </button>
         <a href="{{ path('app_index') }}" title="By Night&nbsp;: agenda des sorties, concerts et spectacles en France" class="navbar-brand site-brand flex-shrink-0">
             {# Loaded at once, but without taking the high fetch priority from the page's LCP picture #}
@@ -17,7 +17,7 @@
                 <li class="nav-item">
                     {# Opens the search panel; the search page until the script runs #}
                     <a class="nav-link" href="{{ path('app_search_index') }}" id="autocomplete-mobile-toggler" aria-label="Rechercher">
-                        <twig:Icon name="lucide:search" />
+                        <twig:Tabler:Icon name="lucide:search" />
                     </a>
                 </li>
                 {{ include('fragments/_header-publisher-dropdown.html.twig', {show_name: false}) }}
@@ -39,16 +39,14 @@
                     {# The city switcher: its field suggests the cities as one types, and opens the one picked
                        (city-switcher.js) #}
                     {% set switcher %}
-                        <div class="dropdown-menu dropdown-menu-arrow city-switcher p-3">
+                        <twig:Tabler:Dropdown:Menu arrow class="city-switcher p-3">
                             <label class="form-label" for="city-switcher">{{ city ? 'Changer de ville' : 'Où sortir ?' }}</label>
                             <div class="input-icon">
-                                <span class="input-icon-addon"><twig:Icon name="lucide:search" /></span>
+                                <span class="input-icon-addon"><twig:Tabler:Icon name="lucide:search" /></span>
                                 <input type="text" id="city-switcher" class="form-control" placeholder="Toulouse, Lyon, Genève…"
-                                       data-city-switcher
-                                       data-cities-url="{{ url('api_cities', {q: '__QUERY__'}) }}"
-                                       data-location-url="{{ path('app_location_index', {location: '__LOCATION__'}) }}">
+                                       data-city-switcher>
                             </div>
-                        </div>
+                        </twig:Tabler:Dropdown:Menu>
                     {% endset %}
                     {% if city %}
                         {# The city's page is its agenda: its link is the current one there, and on the type, venue and category
@@ -58,7 +56,7 @@
                         {% set inAgenda = onCityPage or (inCity and (app.current_route ?? '') starts with 'app_agenda_') %}
                         <li class="nav-item dropdown flex-row flex-wrap flex-lg-nowrap align-items-center justify-content-start">
                             <a class="nav-link{{ inAgenda ? ' active' }}" href="{{ path('app_location_index', {location: city.slug}) }}" title="Que faire {{ city.name|at_place }}&nbsp;?"{% if onCityPage %} aria-current="page"{% endif %}>
-                                <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
+                                <span class="nav-link-icon"><twig:Tabler:Icon name="lucide:map-pin" /></span>
                                 <span class="nav-link-title">{{ city.name }}</span>
                             </a>
                             <button type="button" class="nav-link dropdown-toggle dropdown-toggle-split px-1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="Changer de ville" title="Changer de ville"></button>
@@ -67,7 +65,7 @@
                     {% else %}
                         <li class="nav-item dropdown">
                             <button type="button" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                <span class="nav-link-icon"><twig:Icon name="lucide:map-pin" /></span>
+                                <span class="nav-link-icon"><twig:Tabler:Icon name="lucide:map-pin" /></span>
                                 <span class="nav-link-title">Choisir une ville</span>
                             </button>
                             {{ switcher }}
@@ -96,17 +94,17 @@
                     </div>
                 {% endif %}
 
-                <div id="autocomplete"class="mx-lg-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0" data-search-url="{{ path('api_search', city ? {city: city.slug} : {}) }}" data-suggestions-url="{{ path('api_search_suggestions', city ? {city: city.slug} : {}) }}" data-search-page-url="{{ path('app_search_index', city ? {city: city.slug} : {}) }}"></div>
+                <div id="autocomplete" class="mx-lg-auto d-flex flex-lg-grow-1 min-w-0 order-first order-lg-0 mb-2 mb-lg-0"{% if city %} data-city="{{ city.slug }}"{% endif %}></div>
 
                 {% if is_granted('ROLE_ADMIN') %}
                     <ul class="navbar-nav align-items-start align-items-lg-center">
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <a class="dropdown-item" href="{{ path('admin') }}">Administration</a>
-                                <a class="dropdown-item" href="{{ path('app_administration_info_index') }}">Réseaux sociaux</a>
-                                <a class="dropdown-item js-impersonate" href="#" data-url="{{ url('api_users_autocomplete', {q: '__QUERY__'}) }}">Impersonation</a>
-                            </div>
+                            <twig:Tabler:Dropdown:Menu end arrow>
+                                <twig:Tabler:Dropdown:Item href="{{ path('admin') }}">Administration</twig:Tabler:Dropdown:Item>
+                                <twig:Tabler:Dropdown:Item href="{{ path('app_administration_info_index') }}">Réseaux sociaux</twig:Tabler:Dropdown:Item>
+                                <twig:Tabler:Dropdown:Item href="#" class="js-impersonate">Impersonation</twig:Tabler:Dropdown:Item>
+                            </twig:Tabler:Dropdown:Menu>
                         </li>
                     </ul>
                 {% endif %}
@@ -129,7 +127,7 @@
                 </ul>
                 <div class="vr d-none d-lg-block"></div>
                 <a class="btn btn-primary site-header-cta" title="Publiez votre événement gratuitement" aria-label="Publier un événement" href="{{ path('app_personal_space_event_new') }}">
-                    <twig:Icon name="lucide:circle-plus" />
+                    <twig:Tabler:Icon name="lucide:circle-plus" />
                     {# Icon only from lg to xxl, where the header is tightest: at 1280px and 1366px, two of the most common
                        desktop widths, the label cut the city picker and the search field short #}
                     <span class="d-lg-none d-xxl-inline">Publier un événement</span>

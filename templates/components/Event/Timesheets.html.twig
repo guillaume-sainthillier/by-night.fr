@@ -29,7 +29,7 @@
     {% if past is not empty %}
         <details class="timesheets-fold">
             <summary class="btn btn-sm btn-outline-secondary">
-                <twig:Icon name="lucide:chevron-right" />
+                <twig:Tabler:Icon name="lucide:chevron-right" />
                 <span class="timesheets-fold-show">{{ '{count, plural, one {Voir la date passée} other {Voir les # dates passées}}'|trans({count: past|length}, 'messages+intl-icu') }}</span>
                 <span class="timesheets-fold-hide">{{ '{count, plural, one {Masquer la date passée} other {Masquer les # dates passées}}'|trans({count: past|length}, 'messages+intl-icu') }}</span>
             </summary>
@@ -46,7 +46,7 @@
     {% if later is not empty %}
         <details class="timesheets-fold">
             <summary class="btn btn-sm btn-outline-secondary">
-                <twig:Icon name="lucide:chevron-right" />
+                <twig:Tabler:Icon name="lucide:chevron-right" />
                 <span class="timesheets-fold-show">{{ '{count, plural, one {Voir la date suivante} other {Voir les # dates suivantes}}'|trans({count: later|length}, 'messages+intl-icu') }}</span>
                 <span class="timesheets-fold-hide">{{ '{count, plural, one {Masquer la date suivante} other {Masquer les # dates suivantes}}'|trans({count: later|length}, 'messages+intl-icu') }}</span>
             </summary>

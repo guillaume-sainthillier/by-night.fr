@@ -42,9 +42,9 @@
                                 </label>
                             </td>
                             <td><code>{{ place.slug }}</code></td>
-                            <td>{{ place.city ?? '—' }} {% if place.country %}<small class="text-muted">({{ place.country.id }})</small>{% endif %}</td>
-                            <td>{{ regions[loop.index0] ?? '—' }}</td>
-                            <td>{{ [place.street, place.cityPostalCode, place.cityName]|filter(v => v)|join(', ') ?: '—' }}</td>
+                            <td>{{ place.city ?? '-' }} {% if place.country %}<small class="text-muted">({{ place.country.id }})</small>{% endif %}</td>
+                            <td>{{ regions[loop.index0] ?? '-' }}</td>
+                            <td>{{ [place.street, place.cityPostalCode, place.cityName]|filter(v => v)|join(', ') ?: '-' }}</td>
                             <td class="text-end">{{ eventCounts[place.id] ?? 0 }}</td>
                             <td class="text-end">{{ place.upcomingEvents }}</td>
                             <td class="text-end">{{ place.metadatas|length }}</td>

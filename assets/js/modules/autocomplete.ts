@@ -11,24 +11,11 @@ export default defineModule(function autocomplete() {
         return
     }
 
-    const { searchUrl: globalSearchUrl, searchPageUrl, suggestionsUrl } = autocompleteEl.dataset
-    if (!globalSearchUrl) {
-        console.error('Search URL not found in autocomplete element')
-        return
-    }
-
-    if (!searchPageUrl) {
-        console.error('Search page URL not found in autocomplete element')
-        return
-    }
-
     const result = initAutocomplete({
         autocompleteSelector: '#autocomplete',
-        suggestionsUrl,
+        city: autocompleteEl.dataset.city ?? null,
         searchPlaceholder: 'Recherche',
         inputPlaceholder: 'Rechercher des événements, villes, membres…',
-        globalSearchUrl,
-        searchPageUrl,
         enableHotkeys: !isTouchDevice(),
     })
 

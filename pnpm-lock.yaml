@@ -213,11 +213,11 @@ importers:
         specifier: ^11.17.0
         version: 11.17.0
       '@silarhi/app-js':
-        specifier: ^0.11.0
-        version: 0.11.0
+        specifier: ^0.12.0
+        version: 0.12.0
       '@silarhi/ux-icons-js':
-        specifier: ^0.3.2
-        version: 0.3.2(preact@11.2.0)
+        specifier: ^0.4.0
+        version: 0.4.0(preact@11.2.0)
       '@tabler/core':
         specifier: ^1.7.5
         version: 1.7.5(vanilla-calendar-pro@3.4.2)
@@ -267,6 +267,9 @@ importers:
       '@symfony/reprise':
         specifier: ^1.4.0
         version: 1.4.0(@hotwired/stimulus@3.2.2)(rolldown@1.2.19)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0)(sass@1.108.2)(yaml@2.9.1))
+      '@symfony/ux-router':
+        specifier: file:vendor/symfony/ux-router/assets
+        version: file:vendor/symfony/ux-router/assets
       '@types/google.maps':
         specifier: ^3.67.0
         version: 3.67.0
@@ -1040,8 +1043,8 @@ packages:
     resolution: {integrity: sha512-TUunibV0YUkcoVNRBPbY171n4yDn6OqZjzmDqWyZfl7vBchnglslwj4CkBaHyQfZJMfytx5Uput6vlqnfkLJCw==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@silarhi/app-js@0.11.0':
-    resolution: {integrity: sha512-y7Dg5OdD2Z3kkyTvL42shnbd0Fqqyhe4xk+Su8BKA/ecaQrQmb+v/cS1yQK4SB2tgkcCchae3WMBdwTKtUwZqg==}
+  '@silarhi/app-js@0.12.0':
+    resolution: {integrity: sha512-AlbNX78sq5p/kNpxsS/sVTSQYQwh327lXGCNxKZO2ihpCrj5j4yUdvyPiMi4xJeNGQEzMsDRlicQjJxoFW/Mqg==}
 
   '@silarhi/cap-bundle@file:vendor/silarhi/cap-bundle/assets':
     resolution: {directory: vendor/silarhi/cap-bundle/assets, type: directory}
@@ -1051,8 +1054,8 @@ packages:
       '@hotwired/stimulus':
         optional: true
 
-  '@silarhi/ux-icons-js@0.3.2':
-    resolution: {integrity: sha512-uE46x1zuEY8knhSLsh81BErEeWSEwMK6ERPcZysqlNyXiRYz6i9SdAE3IIZtYPscdAi09qZeAoupcbqynS+GmQ==}
+  '@silarhi/ux-icons-js@0.4.0':
+    resolution: {integrity: sha512-pE/ggQFHKmmJPCHqrr3WMaFhVUuk4mCcMmqCHk9vLXUcm9DnLQVNWWXyGxLZB4NRgEKk9Jpq1rPfRdejjT4rkQ==}
     peerDependencies:
       preact: ^10.0 || ^11.0
       react: ^18.0 || ^19.0
@@ -1079,6 +1082,9 @@ packages:
         optional: true
       vite:
         optional: true
+
+  '@symfony/ux-router@file:vendor/symfony/ux-router/assets':
+    resolution: {directory: vendor/symfony/ux-router/assets, type: directory}
 
   '@tabler/core@1.7.5':
     resolution: {integrity: sha512-lqR2kfrxvH6q0fESm4ABJk3lhUJGQ/tBtiNi4oSCvDgMNljStTLpY38F+e5EtaUqufpbZq8MIxN94QK8cTApAA==}
@@ -2521,13 +2527,13 @@ snapshots:
       '@sentry/browser-utils': 11.17.0
       '@sentry/core': 11.17.0
 
-  '@silarhi/app-js@0.11.0': {}
+  '@silarhi/app-js@0.12.0': {}
 
   '@silarhi/cap-bundle@file:vendor/silarhi/cap-bundle/assets(@hotwired/stimulus@3.2.2)':
     optionalDependencies:
       '@hotwired/stimulus': 3.2.2
 
-  '@silarhi/ux-icons-js@0.3.2(preact@11.2.0)':
+  '@silarhi/ux-icons-js@0.4.0(preact@11.2.0)':
     optionalDependencies:
       preact: 11.2.0
 
@@ -2546,6 +2552,8 @@ snapshots:
       - rollup
       - unloader
       - webpack
+
+  '@symfony/ux-router@file:vendor/symfony/ux-router/assets': {}
 
   '@tabler/core@1.7.5(vanilla-calendar-pro@3.4.2)':
     dependencies:

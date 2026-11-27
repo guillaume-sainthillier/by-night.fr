@@ -136,29 +136,29 @@
 
                 {# A venue's events in the visitor's calendar (PlaceFeedController) #}
                 {% if place %}
-                    <div class="card">
-                        <div class="card-body">
+                    <twig:Tabler:Card>
+                        <twig:Tabler:Card:Body>
                             <h2 class="h3 text-start mb-2">
-                                <twig:Icon name="lucide:calendar-sync" />
+                                <twig:Tabler:Icon name="lucide:calendar-sync" />
                                 L'agenda {{ placeName|of_place }} dans votre calendrier
                             </h2>
                             <p class="text-secondary small">Ses nouveaux événements et leurs changements s'y ajoutent d'eux-mêmes.</p>
                             <twig:CalendarSubscribe:Buttons url="{{ url('app_place_calendar', {location: place.locationSlug, placeSlug: place.slug}) }}" name="{{ placeName }}" small="{{ true }}" />
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 {% endif %}
 
-                <div class="card bg-primary-lt border-0">
-                    <div class="card-body">
+                <twig:Tabler:Card class="bg-primary-lt border-0">
+                    <twig:Tabler:Card:Body>
                         <twig:Section:Eyebrow icon="lucide:megaphone" badge="{{ true }}">Organisateurs</twig:Section:Eyebrow>
                         <h2 class="h2 text-start text-body mb-2">Vous organisez un événement {{ location.atName }}&nbsp;?</h2>
                         <p class="text-secondary">Concert, expo, marché ou soirée&nbsp;: publiez-le gratuitement, il rejoint cet agenda.</p>
                         <a class="btn btn-primary w-100" href="{{ path('app_personal_space_event_new') }}" title="Publiez votre événement gratuitement">
-                            <twig:Icon name="lucide:circle-plus" />
+                            <twig:Tabler:Icon name="lucide:circle-plus" />
                             Publier un événement
                         </a>
-                    </div>
-                </div>
+                    </twig:Tabler:Card:Body>
+                </twig:Tabler:Card>
 
                 {% if social_manager.facebookIdPage %}
                     {{ include('location/widget/facebook.html.twig') }}
@@ -167,31 +167,32 @@
 
             <div class="col-lg-8">
                 {# A card on a larger screen only: on a phone, the title and the date shortcuts open the page #}
-                <div class="card agenda-header-card mb-4">
-                    <div class="card-body p-lg-4">
+                {# block() inside the card's content would look in the card's template #}
+                {% set page_title %}{{ block('page_title') }}{% endset %}
+                <twig:Tabler:Card class="agenda-header-card mb-4">
+                    <twig:Tabler:Card:Body class="p-lg-4">
                         {# The hero of the first page says the department and the count already #}
                         {% if not intro %}
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                                 {% if location.isCity and location.city.parent %}
-                                    <span class="badge bg-teal-lt">
-                                        <twig:Icon name="lucide:map-pin" />
+                                    <twig:Tabler:Badge variant="" class="bg-teal-lt" icon="lucide:map-pin">
                                         {{ location.city|department }}
-                                    </span>
+                                    </twig:Tabler:Badge>
                                 {% elseif location.isCountry %}
-                                    <span class="badge bg-secondary-lt">
+                                    <twig:Tabler:Badge variant="secondary" light>
                                         <twig:Flag code="{{ location.country.id }}" size="{{ 16 }}" />
                                         {{ location.country.displayName }}
-                                    </span>
+                                    </twig:Tabler:Badge>
                                 {% endif %}
-                                <span class="badge bg-secondary-lt">
+                                <twig:Tabler:Badge variant="secondary" light>
                                     {{ '{count, plural, =0 {Aucune sortie} one {# sortie} other {# sorties}}'|trans({count: events.nbResults}, 'messages+intl-icu') }}
-                                </span>
+                                </twig:Tabler:Badge>
                             </div>
                         {% endif %}
                         {% if intro %}
                             <h2 class="h1 text-start mb-2">L'agenda des sorties {{ location.atName }}</h2>
                         {% else %}
-                            <h1 class="text-start mb-2">{{ block('page_title') }}</h1>
+                            <h1 class="text-start mb-2">{{ page_title }}</h1>
                         {% endif %}
                         {# The title says it on a phone, where the date shortcuts must come into sight #}
                         {# A venue's page: the visitor follows it, to hear of its new events #}
@@ -221,13 +222,13 @@
                                 {% for filter in removable %}
                                     <twig:Chip href="{{ filter.href }}" active="{{ true }}" class="btn-sm" title="Retirer ce filtre">
                                         {{ filter.label }}
-                                        <twig:Icon name="lucide:x" class="icon-end" />
+                                        <twig:Tabler:Icon name="lucide:x" class="icon-end" />
                                     </twig:Chip>
                                 {% endfor %}
                             </div>
                         {% endif %}
-                    </div>
-                </div>
+                    </twig:Tabler:Card:Body>
+                </twig:Tabler:Card>
 
                 {% if events.nbResults == 0 %}
                     {# The way out of an empty page: the whole agenda, unless this is it, and the search of the whole site #}
@@ -241,9 +242,8 @@
                             {% set wider = wider|merge([{preset: other, count: count}]) %}
                         {% endif %}
                     {% endfor %}
-                    <div class="alert alert-info" id="agenda-empty">
-                        <twig:Icon name="lucide:info" />
-                        <div>
+                    <twig:Tabler:Alert variant="info" icon="lucide:info" id="agenda-empty">
+                        <twig:block name="description">
                             {% if wider %}
                                 Aucune sortie ne correspond à ces dates. D'autres dates en ont&nbsp;:
                                 <div class="d-flex flex-wrap gap-2 mt-2" id="agenda-wider">
@@ -262,17 +262,17 @@
                             <div class="d-flex flex-wrap gap-2 mt-2">
                                 {% if fullAgenda != app.request.requestUri %}
                                     <a class="btn btn-sm" href="{{ fullAgenda }}">
-                                        <twig:Icon name="lucide:x" />
+                                        <twig:Tabler:Icon name="lucide:x" />
                                         Voir toutes les sorties {{ location.atName }}
                                     </a>
                                 {% endif %}
                                 <a class="btn btn-sm" href="{{ path('app_search_index', search.term ? {q: search.term} : {}) }}" rel="nofollow">
-                                    <twig:Icon name="lucide:search" />
+                                    <twig:Tabler:Icon name="lucide:search" />
                                     Rechercher sur tout le site
                                 </a>
                             </div>
-                        </div>
-                    </div>
+                        </twig:block>
+                    </twig:Tabler:Alert>
                 {% endif %}
 
                 {{ include('location/agenda/_map.html.twig') }}
@@ -281,9 +281,9 @@
                     {% set day = section.day|date('Y-m-d') %}
                     {% set days = ((section.day|date('U') - 'today'|date('U')) / 86400)|round %}
                     <section class="mb-4">
-                        <div class="card card-sm bg-secondary-lt border-0 mb-3">
-                            <div class="card-body d-flex flex-wrap align-items-center gap-2">
-                                <twig:Icon name="lucide:calendar-days" class="text-primary" />
+                        <twig:Tabler:Card size="sm" class="bg-secondary-lt border-0 mb-3">
+                            <twig:Tabler:Card:Body class="d-flex flex-wrap align-items-center gap-2">
+                                <twig:Tabler:Icon name="lucide:calendar-days" class="text-primary" />
                                 <h2 class="h3 text-start text-body m-0">
                                     <time datetime="{{ day }}">{{ section.day|format_date(pattern: 'EEEE d MMMM y')|ucfirst }}</time>
                                 </h2>
@@ -298,15 +298,15 @@
                                 <span class="ms-auto">
                                     {# Nothing for a day gone by, which only dates searched in the past list #}
                                     {% if days == 0 %}
-                                        <span class="badge bg-primary text-white">Aujourd'hui</span>
+                                        <twig:Tabler:Badge variant="primary">Aujourd'hui</twig:Tabler:Badge>
                                     {% elseif days == 1 %}
-                                        <span class="badge bg-primary-lt">Demain</span>
+                                        <twig:Tabler:Badge variant="primary" light>Demain</twig:Tabler:Badge>
                                     {% elseif days > 1 %}
-                                        <span class="badge bg-secondary-lt" title="Dans {{ days }} jours">J-{{ days }}</span>
+                                        <twig:Tabler:Badge variant="secondary" light title="Dans {{ days }} jours">J-{{ days }}</twig:Tabler:Badge>
                                     {% endif %}
                                 </span>
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
                         <div class="row row-cards">
                             {% for event in section.events %}
                                 <div class="col-md-6 col-xl-4">
@@ -319,15 +319,15 @@
                 {% endfor %}
 
                 {% if events.haveToPaginate %}
-                    <div class="card">
-                        <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <twig:Tabler:Card>
+                        <twig:Tabler:Card:Body class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                             <span class="text-secondary">
                                 Sorties <strong>{{ events.currentPageOffsetStart }} à {{ events.currentPageOffsetEnd }}</strong>
                                 sur <strong>{{ events.nbResults|format_number() }}</strong>
                             </span>
                             {{ pagerfanta(events, {omitFirstPage: true, proximity: 1}) }}
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 {% endif %}
             </div>
         </div>

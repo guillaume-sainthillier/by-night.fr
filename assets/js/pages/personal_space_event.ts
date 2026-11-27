@@ -1,11 +1,14 @@
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
-import { byId, definePage } from '@silarhi/app-js'
+import { definePage } from '@silarhi/app-js'
+import { FormDefinition, type FormView, formView } from '@silarhi/app-js/form'
 import TomSelect from 'tom-select'
 import type { TomLoadCallback, TomOption } from 'tom-select/dist/esm/types/core.js'
+import type { EventForm } from '@/js/forms/EventForm'
 import initEventDateMode from '@/js/listeners/event-date-mode'
 import initEventScheduler from '@/js/listeners/event-scheduler'
 import initTimesheetHoursSync from '@/js/listeners/timesheet-hours-sync'
 import initTimesheetRows from '@/js/listeners/timesheet-rows'
+import { path } from '@/js/router'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 import { create as createDatepicker } from '@/js/services/ui/DatepickerService'
 import { create as createTags } from '@/js/services/ui/TagsService'
@@ -13,77 +16,58 @@ import { create as createTimepicker } from '@/js/services/ui/TimepickerService'
 import * as tomSelectFr from '@/js/services/ui/tomSelectFr'
 import { create as createWysiwyg } from '@/js/services/ui/WysiwygService'
 
-function initDatepickers(container: ParentNode = document) {
-    container.querySelectorAll<HTMLInputElement>('input.shorcuts_date').forEach((el) => {
-        createDatepicker({
-            element: el,
-            fromInput: byId(el.dataset.from ?? '', HTMLInputElement),
-            toInput: byId(el.dataset.to ?? '', HTMLInputElement),
-            singleDate: el.dataset.singleDate === 'true',
-        })
+/** The dates of the event, or of one of its rows (a DateRangeType) */
+function initDatepicker(dateRange: FormView<EventForm['dateRange']>) {
+    const element = dateRange.field('range').element
+    if (!element) return
+
+    createDatepicker({
+        element,
+        fromInput: dateRange.field('from').element,
+        toInput: dateRange.field('to').element,
+        singleDate: element.dataset.singleDate === 'true',
     })
 }
 
 // The hours of the event and of each date (TimeType fields)
-function initTimepickers(container: ParentNode = document) {
-    container.querySelectorAll<HTMLInputElement>('input[type="time"]').forEach((el) => {
-        createTimepicker({ element: el })
+function initTimepicker(element: HTMLInputElement | null) {
+    if (element) createTimepicker({ element })
+}
+
+function initThemes(element: HTMLInputElement | null) {
+    if (!element) return
+
+    createTags({
+        element,
+        url: (q) => path('api_tags', { _query: { q } }),
+        allowNew: element.dataset.tagsAllowNew === 'true',
+        maxItems: parseInt(element.dataset.tagsMaxItems ?? '', 10) || null,
+        separator: element.dataset.tagsSeparator || ',',
+        placeholder: element.getAttribute('placeholder') || '',
+        valueField: 'name',
+        labelField: 'name',
     })
 }
 
-function initTagInputs(container: ParentNode = document) {
-    container.querySelectorAll<HTMLInputElement>('.js-tags-input:not(.tomselected)').forEach((el) => {
-        createTags({
-            element: el,
-            url: el.dataset.tagsUrl,
-            allowNew: el.dataset.tagsAllowNew === 'true',
-            maxItems: parseInt(el.dataset.tagsMaxItems ?? '', 10) || null,
-            separator: el.dataset.tagsSeparator || ',',
-            placeholder: el.getAttribute('placeholder') || '',
-            valueField: 'name',
-            labelField: 'name',
-        })
-    })
-}
+function initCategory(element: HTMLInputElement | null) {
+    if (!element) return
 
-function initCategoryInputs(container: ParentNode = document) {
-    container.querySelectorAll<HTMLInputElement>('.js-category-input').forEach((el) => {
-        const url = el.dataset.autocompleteUrl
-        if (!url) return
-
-        createAutocomplete({
-            element: el,
-            url,
-            valueField: 'name',
-            labelField: 'name',
-            placeholder: el.getAttribute('placeholder') || '',
-        })
-    })
-}
-
-function initWysiwygs(container: ParentNode = document) {
-    container.querySelectorAll<HTMLTextAreaElement>('textarea.wysiwyg').forEach((el) => {
-        createWysiwyg({ element: el })
+    createAutocomplete({
+        element,
+        url: (q) => path('api_tags', { _query: { q } }),
+        valueField: 'name',
+        labelField: 'name',
+        placeholder: element.getAttribute('placeholder') || '',
     })
 }
 
 // The status message only details a status: hidden while the event is "Programmé" (the empty choice), and disabled so
 // that it is not sent, since the event page would still show a message saved without a status
-function initStatusMessage() {
-    const status = document.getElementById('app_event_status')
-    const message = document.getElementById('app_event_statusMessage')
-    if (!(status instanceof HTMLSelectElement) || !(message instanceof HTMLInputElement)) return
+function initStatusMessage(form: FormView<EventForm>) {
+    const definition = new FormDefinition({ form })
+    definition.when('status').equals(null, '').hide('statusMessage').disable('statusMessage')
 
-    const row = message.closest<HTMLElement>('.form-group')
-    if (!row) return
-    const toggle = () => {
-        const scheduled = status.value === ''
-        row.hidden = scheduled
-        message.disabled = scheduled
-    }
-
-    toggle()
-    status.addEventListener('change', toggle)
+    return definition.apply()
 }
 
 /** An option of the place name's list: a prediction of the Places API, split on its first comma */
@@ -104,45 +88,59 @@ type Escape = (text: string) => string
 /** The parts of an address, from the Places API (New) or from the geocoder */
 type AddressComponent = google.maps.places.AddressComponent | google.maps.GeocoderAddressComponent
 
-export default definePage(({ app }) => {
-    initDatepickers()
-    initTimepickers()
-    initTagInputs()
-    initCategoryInputs()
-    initWysiwygs()
-    initStatusMessage()
+export default definePage<{ form: string }>(({ app, container, form: id }) => {
+    const form = formView<EventForm>(id)
+    const timesheets = form.get('timesheets')
 
-    // Initialize event scheduler
-    initEventScheduler(document.body, app)
-    initEventDateMode(document.body, app)
+    initDatepicker(form.get('dateRange'))
+    initTimepicker(form.field('startTime').element)
+    initTimepicker(form.field('endTime').element)
+    initThemes(form.field('themes').element)
+    initCategory(form.field('category').element)
+    const description = form.field('description').element
+    if (description) createWysiwyg({ element: description })
+    const stopStatusMessage = initStatusMessage(form)
 
-    // Initialize timesheet hours sync
-    initTimesheetHoursSync(document.body)
-    initTimesheetRows(document.body)
+    initEventScheduler(form, container, app)
+    initEventDateMode(form, container, app)
 
-    // Reinitialize date and time pickers when new timesheet items are added
-    const timesheetsCollection = document.getElementById('app_event_timesheets')
-    if (timesheetsCollection) {
-        timesheetsCollection.addEventListener('collection.added', (e) => {
-            const newItem = e.detail?.item
-            if (newItem) {
-                initDatepickers(newItem)
-                initTimepickers(newItem)
-            }
-        })
+    // The rows' placeholders follow the event's hours, then each row, the existing ones and those added, gets its
+    // pickers: after the placeholders, which a time picker only fills when empty
+    initTimesheetHoursSync(form, app)
+    initTimesheetRows(form, container, app)
+    const stopRows = app.get('collectionManager').each(timesheets, ({ form: item }) => {
+        initDatepicker(item.get('dateRange'))
+        initTimepicker(item.field('startTime').element)
+        initTimepicker(item.field('endTime').element)
+    })
+
+    const eventAddress = form.field('address').element
+    const eventPlaceName = form.field('place.name').element
+    // The place's fields the map and the address search fill, silently as before (no rule reads them)
+    const field = (
+        path: 'place.latitude' | 'place.longitude' | 'place.street' | 'place.city.name' | 'place.city.postalCode'
+    ) => {
+        const target = form.field(path)
+        return {
+            get value() {
+                return target.value
+            },
+            set value(value: string) {
+                target.setValue(value, { silent: true })
+            },
+        }
     }
-
-    const eventAddress = document.querySelector<HTMLInputElement>('#app_event_address')
-    const eventPlaceName = document.querySelector<HTMLInputElement>('#app_event_place_name')
-    // The place's fields the map and the address search fill (a field the form lacks is left alone)
-    const field = (id: string): { value: string } =>
-        document.querySelector<HTMLInputElement | HTMLSelectElement>(`#${id}`) ?? { value: '' }
-    const eventPlaceLatitude = field('app_event_place_latitude')
-    const eventPlaceLongitude = field('app_event_place_longitude')
-    const eventPlaceStreet = field('app_event_place_street')
-    const eventPlaceCityName = field('app_event_place_city_name')
-    const eventPlaceCityPostalCode = field('app_event_place_city_postalCode')
-    const eventPlaceCountry = field('app_event_place_country')
+    const eventPlaceLatitude = field('place.latitude')
+    const eventPlaceLongitude = field('place.longitude')
+    const eventPlaceStreet = field('place.street')
+    const eventPlaceCityName = field('place.city.name')
+    const eventPlaceCityPostalCode = field('place.city.postalCode')
+    const country = form.field('place.country')
+    const eventPlaceCountry = {
+        set value(value: string) {
+            country.setValue(value, { silent: true })
+        },
+    }
 
     // Below the fields it reads: called above them, it met them in their temporal dead zone (a ReferenceError the
     // async function turned into a rejection, so the map and the address search never started)
@@ -397,5 +395,10 @@ export default definePage(({ app }) => {
             map.setCenter({ lat, lng })
             marker.position = { lat, lng }
         }
+    }
+
+    return () => {
+        stopStatusMessage()
+        stopRows()
     }
 })

@@ -2,12 +2,12 @@
 <div class="chat-item reply-thread" data-comment-id="{{ comment.id }}">
     <div class="comment{{ isCurrentUser ? ' comment-me' }}">
         <div class="d-flex align-items-center gap-2 mb-2">
-            <span class="avatar avatar-sm">
+            <twig:Tabler:Avatar size="sm">
                 <twig:User:Thumb user="{{ comment.user }}" width="{{ 32 }}" height="{{ 32 }}" />
-            </span>
+            </twig:Tabler:Avatar>
             <a class="fw-semibold text-reset text-truncate" href="{{ path('app_user_index', {id: comment.user.id, slug: comment.user.slug}) }}">{{ comment.user.username }}</a>
             {% if comment.user.verified %}
-                <twig:Icon name="lucide:badge-check" class="text-primary flex-shrink-0" title="Membre vérifié" />
+                <twig:Tabler:Icon name="lucide:badge-check" class="text-primary flex-shrink-0" title="Membre vérifié" />
             {% endif %}
             <span class="ms-auto small text-secondary text-nowrap" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">{{ comment.createdAt|diff_date }}</span>
         </div>
@@ -15,9 +15,9 @@
             {{ comment.comment|striptags('<i><b>')|nl2br|parse_tags|raw }}
         </div>
         {% if is_granted('ROLE_USER') %}
-            <button class="btn btn-sm btn-ghost-secondary reply-link mt-2" data-url="{{ path('app_comment_reponse_new', {id: comment.id}) }}">
-                <twig:Icon name="lucide:reply" class="icon-inline" /> Répondre
-            </button>
+            <twig:Tabler:Button variant="secondary" appearance="ghost" size="sm" type="submit" class="reply-link mt-2">
+                <twig:Tabler:Icon name="lucide:reply" class="icon-inline" /> Répondre
+            </twig:Tabler:Button>
         {% endif %}
     </div>
     {# Reply form container #}
@@ -33,10 +33,10 @@
 
             {# Show "Load more" if there are more than 5 replies #}
             {% if childrenSlice|length > 5 %}
-                <div class="load-more mt-2 text-start" data-url="{{ path('app_comment_reponse_list', {id: comment.id, page: 2}) }}">
-                    <button type="button" class="btn btn-sm">
+                <div class="load-more mt-2 text-start" data-comment-page="2">
+                    <twig:Tabler:Button variant="default" size="sm" type="button">
                         Plus de réponses
-                    </button>
+                    </twig:Tabler:Button>
                 </div>
             {% endif %}
         </div>

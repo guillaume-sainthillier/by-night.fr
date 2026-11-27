@@ -67,7 +67,7 @@ final class AppContextTest extends AppWebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('#navbar-main .dropdown-toggle[aria-label="Changer de ville"]');
         // The field suggests the cities, and opens the page of the one picked (city-switcher.js)
-        self::assertSelectorExists('#navbar-main input[data-city-switcher][data-location-url="/__LOCATION__"]');
+        self::assertSelectorExists('#navbar-main input[data-city-switcher]');
     }
 
     public function testAVisitorWithoutCityIsOfferedToChooseOne(): void

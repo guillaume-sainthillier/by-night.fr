@@ -1,6 +1,12 @@
 {% use 'form_div_layout.html.twig' with checkbox_widget as base_checkbox_widget %}
-{% use 'bootstrap_5_layout.html.twig' %}
-{% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label %}
+{% use 'bootstrap_5_layout.html.twig' with form_label as inline_form_label, form_help as bootstrap_form_help %}
+{# Last, so that its blocks win: Bootstrap 5's theme with the widgets of tabler-ux-components (icon, stepper, choice_style, switch) #}
+{% use '@TablerUxComponents/form/tabler_layout.html.twig' %}
+
+{# Bootstrap's help: the Tabler theme writes .form-hint, an alias Tabler 1.7 deprecates and _core.scss leaves out ($enable-deprecated) #}
+{%- block form_help -%}
+    {{- block('bootstrap_form_help') -}}
+{%- endblock form_help -%}
 
 {# Stateless CSRF protection - add Stimulus controller to CSRF token field #}
 {%- block csrf_token_widget -%}
@@ -37,7 +43,7 @@
 
             <div class="dropzone-placeholder">
                 <div class="dropzone-icon">
-                    <twig:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
+                    <twig:Tabler:Icon name="{{ has_existing_image ? 'lucide:replace' : 'lucide:image-up' }}" />
                 </div>
                 <div class="dropzone-text">
                     {% if has_existing_image %}
@@ -99,9 +105,7 @@
         </div>
         {% if not disabled and allow_delete %}
             <div class="col-auto">
-                <button class="btn btn-icon btn-ghost-danger remove-collection" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
-                    <twig:Icon name="lucide:trash-2" />
-                </button>
+                <twig:Tabler:Button variant="danger" appearance="ghost" iconOnly icon="lucide:trash-2" tooltip="Supprimer" class="remove-collection" data-item=".collection-item" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" />
             </div>
         {% endif %}
     </div>
@@ -114,9 +118,7 @@
                 {% with child.vars %}{{ label }}{% endwith %}
             </button>
             {% if not disabled and allow_delete %}
-                <button class="btn btn-sm btn-icon btn-outline-danger remove-collection me-2" data-item=".collection-item" type="button" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" data-bs-toggle="tooltip" title="Supprimer">
-                    <twig:Icon name="lucide:x" />
-                </button>
+                <twig:Tabler:Button variant="danger" appearance="outline" size="sm" iconOnly icon="lucide:x" tooltip="Supprimer" class="remove-collection me-2" data-item=".collection-item" data-confirm-message="{{ delete_entry_confirm_label|default('Supprimer la ligne ?') }}" />
             {% endif %}
         </div>
         <div id="collapse-{{ child.vars.id }}" class="accordion-collapse collapse show">
@@ -153,7 +155,7 @@
         </div>
         {% if not disabled and allow_add %}
             <button type="button" class="add-collection btn btn-with-icon mt-2">
-                <span><twig:Icon name="lucide:plus" /></span>
+                <span><twig:Tabler:Icon name="lucide:plus" /></span>
                 {{ add_entry_label|default('Ajouter une ligne') }}
             </button>
         {% endif %}
@@ -200,7 +202,7 @@
             {{- form_widget(first, {attr: first.vars.attr|merge({'aria-describedby': rules_id})}) -}}
         </twig:PasswordInput>
         {{- form_errors(first) -}}
-        <div class="mt-2" data-password-meter="{{ first.vars.id }}">
+        <div class="mt-2" data-password-meter>
             <div class="progress progress-sm mb-2" role="progressbar" aria-label="Sécurité du mot de passe" aria-valuemin="0" aria-valuemax="{{ password_rules|length }}" aria-valuenow="0">
                 <div class="progress-bar" style="width: 0"></div>
             </div>
@@ -209,8 +211,8 @@
                 <ul class="list-inline mb-0 text-secondary" id="{{ rules_id }}">
                     {%- for rule in password_rules %}
                         <li class="list-inline-item me-2" data-password-meter-rule="{{ rule.pattern }}">
-                            <span class="text-secondary" data-password-meter-rule-icon="unmet"><twig:Icon name="lucide:circle" class="icon-inline" /></span>
-                            <span class="text-success d-none" data-password-meter-rule-icon="met"><twig:Icon name="lucide:circle-check" class="icon-inline" /></span>
+                            <span class="text-secondary" data-password-meter-rule-icon="unmet"><twig:Tabler:Icon name="lucide:circle" class="icon-inline" /></span>
+                            <span class="text-success d-none" data-password-meter-rule-icon="met"><twig:Tabler:Icon name="lucide:circle-check" class="icon-inline" /></span>
                             {{ rule.label }}
                         </li>
                     {%- endfor %}
@@ -239,7 +241,7 @@
     {%- if not valid -%}
         {%- set name_attr = name_attr|merge({class: (name_attr.class|default('') ~ ' is-invalid')|trim}) -%}
     {%- endif -%}
-    <div class="form-group" data-city-picker="{{ path('api_cities', {q: '__QUERY__'}) }}">
+    <div class="form-group" data-city-picker>
         {{- form_label(name, label) -}}
         <twig:InputIcon iconPrepend="lucide:map-pin">
             {{- form_widget(name, {attr: name_attr}) -}}

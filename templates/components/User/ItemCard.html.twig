@@ -1,14 +1,14 @@
 {# @var user \App\Entity\User #}
 {% props user %}
 
-<div class="card card-user card-layout mb-0">
+<twig:Tabler:Card class="card-user card-layout mb-0">
     <div class="card-img-container">
         <div class="image-container">
             <twig:User:Thumb user="{{ user }}" width="{{ 360 }}" />
         </div>
     </div>
     <div class="card-content">
-        <div class="card-body">
+        <twig:Tabler:Card:Body>
             <h3 class="h4">
                 <a href="{{ path('app_user_index', {id: user.id, slug: user.slug}) }}">
                     {{ user.username }}
@@ -18,7 +18,7 @@
                 Membre depuis le
                 <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
             </p>
-        </div>
+        </twig:Tabler:Card:Body>
         <twig:User:Socials user="{{ user }}" />
     </div>
-</div>
+</twig:Tabler:Card>

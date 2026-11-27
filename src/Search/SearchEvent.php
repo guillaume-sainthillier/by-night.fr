@@ -16,10 +16,15 @@ use App\Enum\AgendaType;
 use App\Enum\DateRangePreset;
 use App\Enum\PricePreset;
 use DateTimeInterface;
+use Silarhi\AppJsBundle\Attribute\ConstantsToJs;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ConstantsToJs]
 final class SearchEvent
 {
+    /** The radius around a city, in km, when none is picked */
+    public const int DEFAULT_RANGE = 25;
+
     /** The widest radius around a city, in km: the last stop of the agenda's radius slider */
     public const int MAX_RANGE = 100;
 
@@ -37,7 +42,7 @@ final class SearchEvent
     #[Assert\NotBlank]
     #[Assert\GreaterThan(0)]
     #[Assert\LessThanOrEqual(self::MAX_RANGE)]
-    private ?int $range = 25;
+    private ?int $range = self::DEFAULT_RANGE;
 
     private ?int $tagId = null;
 

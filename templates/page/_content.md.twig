@@ -1,0 +1,3 @@
+{# @var page \App\Entity\Page #}
+{# The body of the Markdown version, without its title: llms-full.txt writes the title itself #}
+{{ page.content|html_to_markdown }}

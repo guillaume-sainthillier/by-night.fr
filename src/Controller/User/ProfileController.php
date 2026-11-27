@@ -95,7 +95,7 @@ final class ProfileController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/mail-de-verification', name: 'app_send_verification_email', methods: ['POST'])]
+    #[Route(path: '/mail-de-verification', name: 'app_send_verification_email', options: ['expose' => true], methods: ['POST'])]
     public function verifyUserEmail(EmailVerifier $emailVerifier): Response
     {
         $emailVerifier->sendEmailConfirmation($this->getAppUser());

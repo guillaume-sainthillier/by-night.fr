@@ -2,14 +2,7 @@
    step). Going needs an account: logged out, it opens the login dialog (modals block), the login page without the
    script #}
 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-    <button type="button" class="btn participate btn-like-event {{ trendsData.participate ? 'btn-primary' }}{{ (class ?? null) ? ' ' ~ class }}"
-            data-href="{{ path('api_event_participation', {id: event.id}) }}"{% if intent ?? true %} data-intent="participer"{% endif %}>
-        <twig:Icon name="lucide:heart" />
-        J'y vais&nbsp;!
-    </button>
+    <twig:Tabler:Button variant="{{ trendsData.participate ? 'primary' : 'default' }}" icon="lucide:heart" class="participate btn-like-event {{ class ?? '' }}" data-event-id="{{ event.id }}" data-intent="{{ (intent ?? true) ? 'participer' : false }}">J'y vais&nbsp;!</twig:Tabler:Button>
 {% else %}
-    <a class="btn participate{{ (class ?? null) ? ' ' ~ class }}" rel="nofollow" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" data-bs-toggle="modal" data-bs-target="#login-dialog" title="Connectez-vous pour indiquer que vous y allez">
-        <twig:Icon name="lucide:heart" />
-        J'y vais&nbsp;!
-    </a>
+    <twig:Tabler:Button variant="default" href="{{ path('app_login', {_target_path: goingAfterLogin}) }}" modal="login-dialog" tooltip="Connectez-vous pour indiquer que vous y allez" icon="lucide:heart" class="participate {{ class ?? '' }}" rel="nofollow">J'y vais&nbsp;!</twig:Tabler:Button>
 {% endif %}

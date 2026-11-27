@@ -16,11 +16,13 @@ const { state, sendJson } = vi.hoisted(() => {
         going: boolean
         participations: number
     }
-    const state: { requests: unknown[]; response: Response | Error } = {
+    const state: { urls: string[]; requests: unknown[]; response: Response | Error } = {
+        urls: [],
         requests: [],
         response: { going: true, participations: 1 },
     }
-    const sendJson = async (_method: string, _url: string, data: unknown) => {
+    const sendJson = async (_method: string, url: string, data: unknown) => {
+        state.urls.push(url)
         state.requests.push(data)
         if (state.response instanceof Error) {
             throw state.response
@@ -35,7 +37,7 @@ vi.mock('@silarhi/app-js/http', () => ({ sendJson }))
 const connect = ({ intent, active = false }: { intent?: string; active?: boolean } = {}) => {
     const classes = new Set(active ? ['btn-primary'] : [])
     const button = {
-        dataset: { href: '/api/events/42/participation', ...(intent ? { intent } : {}) },
+        dataset: { eventId: '42', ...(intent ? { intent } : {}) },
         classes,
         classList: {
             contains: (name: string) => classes.has(name),
@@ -69,6 +71,7 @@ const visit = (hash: string) => {
 
 beforeEach(() => {
     vi.stubGlobal('document', { querySelectorAll: () => [] })
+    state.urls = []
     state.requests = []
     state.response = { going: true, participations: 1 }
 })
@@ -84,6 +87,7 @@ describe('like listener', () => {
 
         await button.click?.()
 
+        expect(state.urls).toEqual(['/api/events/42/participation'])
         expect(state.requests).toEqual([{ going: true }])
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(toastManager.createToast).toHaveBeenCalledWith('success', 'Ajouté à vos sorties')
@@ -91,8 +95,8 @@ describe('like listener', () => {
 
     test('keeps the other buttons of the event in step', async () => {
         visit('')
-        const other = { dataset: { href: '/api/events/42/participation' }, classList: { toggle: vi.fn() } }
-        const elsewhere = { dataset: { href: '/api/events/7/participation' }, classList: { toggle: vi.fn() } }
+        const other = { dataset: { eventId: '42' }, classList: { toggle: vi.fn() } }
+        const elsewhere = { dataset: { eventId: '7' }, classList: { toggle: vi.fn() } }
         vi.stubGlobal('document', { querySelectorAll: () => [other, elsewhere] })
         const { button } = connect()
 

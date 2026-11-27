@@ -9,10 +9,10 @@
 
 {% block body -%}
     <div class="container-lg py-5 text-center">
-        <div class="alert alert-success d-inline-flex align-items-center gap-2">
-            <twig:Icon name="lucide:check" />
+        <twig:Tabler:Alert variant="success" class="d-inline-flex align-items-center gap-2">
+            <twig:Tabler:Icon name="lucide:check" />
             Bienvenue {{ userInformation.name }}
-        </div>
+        </twig:Tabler:Alert>
         <p class="text-secondary d-flex align-items-center justify-content-center gap-2 mb-0">
             <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
             {# The way on, should the redirection below not run #}

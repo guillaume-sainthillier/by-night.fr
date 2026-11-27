@@ -34,7 +34,6 @@ const element = <P extends object>(properties: P) => {
 const connect = () => {
     const dropdown = element({})
     const input = element({
-        dataset: { citiesUrl: '/api/cities?q=__QUERY__', locationUrl: '/__LOCATION__' },
         closest: (selector: string) => (selector === '.dropdown' ? dropdown : null),
         focus: vi.fn(),
     })
@@ -61,9 +60,8 @@ describe('city-switcher listener', () => {
         await input.listeners.focus?.()
 
         expect(createAutocomplete).toHaveBeenCalledOnce()
-        expect(createAutocomplete).toHaveBeenCalledWith(
-            expect.objectContaining({ element: input, url: '/api/cities?q=__QUERY__' })
-        )
+        expect(createAutocomplete).toHaveBeenCalledWith(expect.objectContaining({ element: input }))
+        expect(createAutocomplete.mock.calls[0][0].url('saint é')).toBe('/api/cities?q=saint%20%C3%A9')
     })
 
     test.each([

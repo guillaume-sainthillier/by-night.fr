@@ -28,10 +28,7 @@
                     <label class="form-label" for="mcp-url">Adresse du serveur</label>
                     <div class="input-group input-group-lg" id="adresse">
                         <input class="form-control font-monospace" id="mcp-url" type="text" value="{{ mcp_url }}" readonly>
-                        <button class="btn btn-primary" type="button" data-copy-url="{{ mcp_url }}" data-copy-message="Adresse copiée !">
-                            <twig:Icon name="lucide:copy" />
-                            Copier
-                        </button>
+                        <twig:Tabler:Button variant="primary" type="button" icon="lucide:copy" data-copy-url="{{ mcp_url }}" data-copy-message="Adresse copiée !">Copier</twig:Tabler:Button>
                     </div>
                     <p class="small text-secondary mt-2 mb-0">Model Context Protocol, transport HTTP (Streamable HTTP).</p>
                 </div>
@@ -41,12 +38,12 @@
                         'Une expo gratuite à Lyon demain ?',
                         'Que faire en famille à Bruxelles dimanche ?',
                     ] %}
-                        <div class="card card-sm shadow-sm mb-0">
-                            <div class="card-body d-flex align-items-center gap-3">
-                                <span class="avatar bg-primary-lt flex-shrink-0"><twig:Icon name="lucide:message-square" /></span>
+                        <twig:Tabler:Card size="sm" class="shadow-sm mb-0">
+                            <twig:Tabler:Card:Body class="d-flex align-items-center gap-3">
+                                <twig:Tabler:Avatar variant="primary" class="flex-shrink-0"><twig:Tabler:Icon name="lucide:message-square" /></twig:Tabler:Avatar>
                                 <div class="fw-semibold">«&nbsp;{{ question }}&nbsp;»</div>
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
                     {% endfor %}
                 </div>
             </div>
@@ -61,14 +58,14 @@
                 {icon: 'lucide:ticket', tone: 'yellow', name: 'get_event', title: 'Le détail d\'une sortie', text: 'Ses dates et horaires, le lieu, les prix, sa présentation et le lien de sa page.'},
             ] %}
                 <div class="col-md-4">
-                    <div class="card card-layout mb-0">
-                        <div class="card-body">
-                            <span class="avatar bg-{{ tool.tone }}-lt mb-3"><twig:Icon name="{{ tool.icon }}" /></span>
+                    <twig:Tabler:Card class="card-layout mb-0">
+                        <twig:Tabler:Card:Body>
+                            <twig:Tabler:Avatar class="bg-{{ tool.tone }}-lt mb-3"><twig:Tabler:Icon name="{{ tool.icon }}" /></twig:Tabler:Avatar>
                             <h3 class="h4 mb-1">{{ tool.title }}</h3>
                             <p class="text-secondary mb-2">{{ tool.text }}</p>
                             <code class="small">{{ tool.name }}</code>
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 </div>
             {% endfor %}
         </div>
@@ -82,26 +79,26 @@
                 {id: 'le-chat', name: 'Le Chat', steps: ['Ouvrez « Connecteurs ».', 'Ajoutez un connecteur MCP personnalisé.', 'Collez l\'adresse du serveur.']},
             ] %}
                 <div class="col-md-6 col-lg-4">
-                    <div class="card card-layout mb-0" id="{{ assistant.id }}">
-                        <div class="card-body">
+                    <twig:Tabler:Card class="card-layout mb-0" id="{{ assistant.id }}">
+                        <twig:Tabler:Card:Body>
                             <h3 class="h4 mb-3">{{ assistant.name }}</h3>
                             <ol class="mb-0 ps-3 vstack gap-2">
                                 {% for step in assistant.steps %}
                                     <li>{{ step }}</li>
                                 {% endfor %}
                             </ol>
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 </div>
             {% endfor %}
             <div class="col-12">
-                <div class="card card-layout mb-0" id="developpeurs">
-                    <div class="card-body">
+                <twig:Tabler:Card class="card-layout mb-0" id="developpeurs">
+                    <twig:Tabler:Card:Body>
                         <h3 class="h4 mb-2">Claude Code, Cursor, VS Code et les autres clients</h3>
                         <p class="text-secondary">Tout client qui parle MCP en HTTP accepte l'adresse telle quelle, par exemple&nbsp;:</p>
                         <pre class="mb-0"><code>claude mcp add --transport http by-night {{ mcp_url }}</code></pre>
-                    </div>
-                </div>
+                    </twig:Tabler:Card:Body>
+                </twig:Tabler:Card>
             </div>
         </div>
     </twig:Section>
@@ -115,15 +112,15 @@
                 {icon: 'lucide:circle-help', tone: 'purple', title: 'Les textes sont en français', text: 'Ceux des sorties, tels que leurs organisateurs les ont écrits. Votre assistant les traduit si vous lui parlez dans une autre langue.'},
             ] %}
                 <div class="col-md-6">
-                    <div class="card card-sm mb-0">
-                        <div class="card-body d-flex gap-3">
-                            <span class="avatar bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Icon name="{{ fact.icon }}" /></span>
+                    <twig:Tabler:Card size="sm" class="mb-0">
+                        <twig:Tabler:Card:Body class="d-flex gap-3">
+                            <twig:Tabler:Avatar class="bg-{{ fact.tone }}-lt flex-shrink-0"><twig:Tabler:Icon name="{{ fact.icon }}" /></twig:Tabler:Avatar>
                             <div>
                                 <div class="fw-semibold mb-1">{{ fact.title }}</div>
                                 <div class="text-secondary">{{ fact.text }}</div>
                             </div>
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Body>
+                    </twig:Tabler:Card>
                 </div>
             {% endfor %}
         </div>

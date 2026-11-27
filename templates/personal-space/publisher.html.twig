@@ -23,7 +23,7 @@
             </p>
             {% if publisher.id %}
                 <a class="btn btn-outline-secondary btn-lg" href="{{ path('app_publisher_index', {slug: publisher.slug}) }}">
-                    <twig:Icon name="lucide:external-link" />
+                    <twig:Tabler:Icon name="lucide:external-link" />
                     Voir ma page
                 </a>
             {% endif %}
@@ -55,10 +55,9 @@
                 </twig:FormCard>
 
                 <div class="text-end mb-5">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        <twig:Icon name="lucide:save" />
+                    <twig:Tabler:Button variant="primary" size="lg" type="submit" icon="lucide:save">
                         Enregistrer
-                    </button>
+                    </twig:Tabler:Button>
                 </div>
             {{ form_end(form) }}
 
@@ -72,10 +71,9 @@
                         <label class="form-label" for="widget-code">Collez ce code dans une page de votre site</label>
                         <div class="input-group mb-2">
                             <textarea class="form-control font-monospace small" id="widget-code" rows="3" readonly>{{ widgetCode }}</textarea>
-                            <button type="button" class="btn" data-copy-url="{{ widgetCode }}" data-copy-message="Code copié !">
-                                <twig:Icon name="lucide:copy" />
+                            <twig:Tabler:Button variant="default" type="button" data-copy="{{ widgetCode }}" data-copy-message="Code copié !" icon="lucide:copy">
                                 Copier
-                            </button>
+                            </twig:Tabler:Button>
                         </div>
                         <p class="form-hint mb-4">
                             Ajoutez <code>?limit=10</code> à l'adresse pour en lister davantage (20 au plus), <code>?theme=dark</code> pour un site aux couleurs sombres.
@@ -93,35 +91,31 @@
             <section id="supprimer" class="mb-5">
                 <twig:FormCard icon="lucide:trash-2" tone="danger" title="Supprimer cette page" description="La page, ses imports et ses exports, sans retour possible." badge="Action définitive" badgeTone="danger">
                     {% if jobRunning %}
-                        <div class="alert alert-info mb-0">
-                            <twig:Icon name="lucide:info" />
-                            <div>Un import ou un export de cette page est en cours&nbsp;: attendez qu'il se termine pour la supprimer.</div>
-                        </div>
+                        <twig:Tabler:Alert variant="info" icon="lucide:info" class="mb-0">
+                            <twig:block name="description">Un import ou un export de cette page est en cours&nbsp;: attendez qu'il se termine pour la supprimer.</twig:block>
+                        </twig:Tabler:Alert>
                     {% elseif deleteForm is null %}
-                        <div class="alert alert-info mb-0">
-                            <twig:Icon name="lucide:info" />
-                            <div>
+                        <twig:Tabler:Alert variant="info" icon="lucide:info" class="mb-0">
+                            <twig:block name="description">
                                 C'est votre seule page organisateur&nbsp;: ses {{ events }} événement{{ events > 1 ? 's' }} n'auraient nulle part où aller.
                                 <a href="{{ path('app_publisher_new', {suite: 'page'}) }}">Créez une autre page</a> pour les y déplacer, ou <a href="{{ path('app_event_list') }}">supprimez-les</a> d'abord.
-                            </div>
-                        </div>
+                            </twig:block>
+                        </twig:Tabler:Alert>
                     {% else %}
                         {{ form_start(deleteForm) }}
-                            <div class="alert alert-warning">
-                                <twig:Icon name="lucide:triangle-alert" />
-                                <div>
+                            <twig:Tabler:Alert variant="warning" icon="lucide:triangle-alert">
+                                <twig:block name="description">
                                     <strong>Attention&nbsp;:</strong> la page est supprimée dès votre confirmation, avec ses imports et ses exports.
                                     {% if deleteForm.heir is defined %}Ses événements sont déplacés vers la page de votre choix, qui reprend son adresse, ou supprimés avec elle.{% endif %}
-                                </div>
-                            </div>
+                                </twig:block>
+                            </twig:Tabler:Alert>
                             {% if deleteForm.heir is defined %}
                                 {{ form_row(deleteForm.heir) }}
                             {% endif %}
                             {{ form_row(deleteForm.name) }}
-                            <button type="submit" class="btn btn-danger">
-                                <twig:Icon name="lucide:trash-2" />
+                            <twig:Tabler:Button variant="danger" type="submit" icon="lucide:trash-2">
                                 Supprimer la page
-                            </button>
+                            </twig:Tabler:Button>
                         {{ form_end(deleteForm) }}
                     {% endif %}
                 </twig:FormCard>

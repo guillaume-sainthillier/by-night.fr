@@ -427,6 +427,9 @@
             "config/packages/sentry.yaml"
         ]
     },
+    "silarhi/app-js-bundle": {
+        "version": "v0.9.0"
+    },
     "silarhi/cap-bundle": {
         "version": "v0.4.0"
     },
@@ -436,8 +439,14 @@
     "silarhi/picasso-bundle": {
         "version": "v2.7.0"
     },
+    "silarhi/tabler-ux-components": {
+        "version": "v0.9.0"
+    },
     "silarhi/ux-icons-js-bundle": {
         "version": "v0.3.2"
+    },
+    "silarhi/voter-bundle": {
+        "version": "v0.1.0"
     },
     "stof/doctrine-extensions-bundle": {
         "version": "1.15",
@@ -875,6 +884,20 @@
         "files": [
             "assets/icons/symfony.svg",
             "config/packages/ux_icons.yaml"
+        ]
+    },
+    "symfony/ux-router": {
+        "version": "3.8",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.6",
+            "ref": "8e8e4645ff232d470c00bc08b7e1e77c17dd0dd4"
+        },
+        "files": [
+            "assets/router.js",
+            "config/packages/ux_router.yaml",
+            "var/routes/index.js"
         ]
     },
     "symfony/ux-twig-component": {

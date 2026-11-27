@@ -12,16 +12,15 @@ namespace App\Security\Voter;
 
 use App\Entity\Event;
 use App\Entity\User;
-use LogicException;
+use Silarhi\VoterBundle\Attribute\Grants;
+use Silarhi\VoterBundle\Voter\AbstractRuleVoter;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authorization\Voter\Vote;
-use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 /**
- * @extends Voter<string, Event>
+ * Not a member's voter: a published event is seen by visitors too.
  */
-final class EventVoter extends Voter
+final class EventVoter extends AbstractRuleVoter
 {
     public const string CREATE = 'event.create';
 
@@ -36,59 +35,37 @@ final class EventVoter extends Voter
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
+    #[Grants(self::CREATE)]
+    private function canCreate(TokenInterface $token): bool
     {
-        // An event its source no longer lists is a draft for the listings only: its page stays open
-        if (self::VIEW === $attribute && (!$subject->isDraft() || $subject->isRemovedAtSource())) {
-            return true;
-        }
-
         $user = $token->getUser();
-
         if (!$user instanceof User) {
             return false;
         }
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        return $this->security->isGranted('ROLE_ADMIN') || ($user->isEnabled() && $user->isVerified());
+    }
+
+    #[Grants(self::VIEW)]
+    private function canView(Event $subject, TokenInterface $token): bool
+    {
+        // An event its source no longer lists is a draft for the listings only: its page stays open
+        if (!$subject->isDraft() || $subject->isRemovedAtSource()) {
             return true;
         }
 
-        return match ($attribute) {
-            self::CREATE => $this->canCreate($user),
-            self::VIEW, self::EDIT => $this->canEdit($subject, $user),
-            self::DELETE => $this->canDelete($subject, $user),
-            default => throw new LogicException('This code should not be reached!'),
-        };
+        return $this->canEdit($subject, $token);
     }
 
-    private function canCreate(User $user): bool
+    #[Grants(self::EDIT)]
+    #[Grants(self::DELETE)]
+    private function canEdit(Event $subject, TokenInterface $token): bool
     {
-        return $user->isEnabled() && $user->isVerified();
-    }
+        $user = $token->getUser();
+        if (!$user instanceof User) {
+            return false;
+        }
 
-    private function canEdit(Event $event, User $user): bool
-    {
-        return $event->getPublisher()?->isManagedBy($user) ?? false;
-    }
-
-    private function canDelete(Event $event, User $user): bool
-    {
-        return $this->canEdit($event, $user);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function supports(string $attribute, mixed $subject): bool
-    {
-        return \in_array($attribute, [
-            self::CREATE,
-            self::VIEW,
-            self::EDIT,
-            self::DELETE,
-        ], true);
+        return $this->security->isGranted('ROLE_ADMIN') || ($subject->getPublisher()?->isManagedBy($user) ?? false);
     }
 }

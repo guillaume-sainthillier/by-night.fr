@@ -37,19 +37,19 @@
                 <h1 class="mb-2">{{ event.name }}</h1>
                 <p class="lead text-secondary mb-4">Combien de personnes ont vu sa page, et cliqué pour réserver.</p>
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
-                    <twig:Icon name="lucide:eye" />
+                    <twig:Tabler:Icon name="lucide:eye" />
                     Voir l'événement
                 </a>
                 <a class="btn btn-outline-secondary" href="{{ path('app_event_edit', {id: event.id}) }}">
-                    <twig:Icon name="lucide:pencil" />
+                    <twig:Tabler:Icon name="lucide:pencil" />
                     Modifier
                 </a>
             </section>
 
             {# The period: a shortcut, as the agenda's dates (location/agenda/_dates.html.twig) but looking back, or dates
                picked, which assets/js/pages/event_stats.js sends as soon as they are chosen #}
-            <div class="card mb-4">
-                <div class="card-body d-flex flex-column flex-md-row align-items-md-center gap-3">
+            <twig:Tabler:Card class="mb-4">
+                <twig:Tabler:Card:Body class="d-flex flex-column flex-md-row align-items-md-center gap-3">
                     <div class="d-flex flex-wrap align-items-center gap-2" id="event-stats-periods" role="group" aria-label="{{ 'Période'|trans }}">
                         {% for period in enum_cases('App\\Enum\\AudiencePeriod') %}
                             <twig:Chip href="{{ path('app_event_stats', {id: event.id, period: period.value}) }}" active="{{ query.preset is same as(period) }}" class="btn-sm text-nowrap">
@@ -61,45 +61,45 @@
                     {{ form_widget(form.period) }}
                     <div class="d-flex align-items-center gap-2">
                         <twig:InputIcon class="flex-grow-1" iconPrepend="lucide:calendar-range">
-                            {# Its own attributes kept: the picker finds it by "shorcuts_date" and its data-from/data-to (DateRangeType) #}
+                            {# Its own attributes kept ("shorcuts_date" styles it); the picker reads the dates through the form's view (pages/event_stats.ts) #}
                             {{ form_widget(form.dateRange.range, {attr: form.dateRange.range.vars.attr|merge({class: 'form-control form-control-sm shorcuts_date' ~ (query.preset ? '' : ' border-primary'), 'aria-label': 'Choisir des dates'})}) }}
                         </twig:InputIcon>
                         {{ form_widget(form.dateRange.from) }}
                         {{ form_widget(form.dateRange.to) }}
-                        <noscript><button type="submit" class="btn btn-sm">Afficher</button></noscript>
+                        <noscript><twig:Tabler:Button variant="default" size="sm" type="submit">Afficher</twig:Tabler:Button></noscript>
                     </div>
                     {{ form_end(form, {render_rest: false}) }}
-                </div>
-            </div>
+                </twig:Tabler:Card:Body>
+            </twig:Tabler:Card>
 
             <div class="row row-cards mb-4">
                 {% for tile in tiles %}
                     <div class="col-6 col-lg-3">
-                        <div class="card card-sm h-100 mb-0">
-                            <div class="card-body d-flex align-items-center justify-content-between gap-3">
+                        <twig:Tabler:Card size="sm" class="h-100 mb-0">
+                            <twig:Tabler:Card:Body class="d-flex align-items-center justify-content-between gap-3">
                                 <div class="min-w-0">
                                     <div class="subheader">{{ tile.label }}</div>
                                     <div class="h1 text-start mb-0">{{ tile.value }}</div>
                                     <div class="small text-secondary">{{ tile.hint }}</div>
                                 </div>
-                                <span class="avatar bg-{{ tile.tone }}-lt d-none d-sm-inline-flex flex-shrink-0">
-                                    <twig:Icon name="{{ tile.icon }}" />
-                                </span>
-                            </div>
-                        </div>
+                                <twig:Tabler:Avatar class="bg-{{ tile.tone }}-lt d-none d-sm-inline-flex flex-shrink-0">
+                                    <twig:Tabler:Icon name="{{ tile.icon }}" />
+                                </twig:Tabler:Avatar>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
                     </div>
                 {% endfor %}
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header flex-wrap gap-2">
+            <twig:Tabler:Card class="mb-4">
+                <twig:Tabler:Card:Header class="flex-wrap gap-2">
                     <h2 class="card-title text-start mb-0">{{ audience.range.label }}</h2>
                     <div class="ms-auto d-flex align-items-center gap-3 small text-secondary" aria-hidden="true">
                         <span class="d-inline-flex align-items-center gap-1"><span class="d-inline-block rounded-pill bg-primary" style="width: 1rem; height: 3px"></span>Visiteurs</span>
                         <span class="d-inline-flex align-items-center gap-1"><span class="d-inline-block rounded-pill bg-teal" style="width: 1rem; height: 3px"></span>Clics billetterie</span>
                     </div>
-                </div>
-                <div class="card-body">
+                </twig:Tabler:Card:Header>
+                <twig:Tabler:Card:Body>
                     {% if sum.visitors > 0 or sum.ticketClicks > 0 %}
                         {% set chart = audience.chart() %}
                         {# Drawn server side (App\Analytics\AudienceChart) and stretched to the card: the lines keep their
@@ -135,46 +135,44 @@
                             </div>
                         </div>
                     {% else %}
-                        <div class="empty py-4">
-                            <div class="empty-icon"><twig:Icon name="lucide:chart-line" /></div>
-                            <p class="empty-title">{{ 'Pas de visite sur cette période'|trans }}</p>
-                            <p class="empty-subtitle text-secondary">
+                        <twig:Tabler:Empty class="py-4">
+                            <twig:Tabler:Empty:Icon><twig:Tabler:Icon name="lucide:chart-line" /></twig:Tabler:Empty:Icon>
+                            <twig:Tabler:Empty:Title>{{ 'Pas de visite sur cette période'|trans }}</twig:Tabler:Empty:Title>
+                            <twig:Tabler:Empty:Subtitle>
                                 {{ "Les visites de sa page s'affichent ici, au plus tard une heure après. Essayez une période plus longue."|trans }}
-                            </p>
-                        </div>
+                            </twig:Tabler:Empty:Subtitle>
+                        </twig:Tabler:Empty>
                     {% endif %}
-                </div>
+                </twig:Tabler:Card:Body>
                 {% if sum.visitors > 0 or sum.ticketClicks > 0 %}
                     {# The table spans the card (card-table), as the legal pages' tables: only its summary is padded #}
                     <details class="border-top" id="event-stats-days">
                         <summary class="card-body py-3 text-secondary">Le détail jour par jour</summary>
-                        <div class="table-responsive">
-                            <table class="table card-table table-vcenter">
-                                <thead>
+                        <twig:Tabler:Table card vcenter>
+                            <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th class="text-end">Visiteurs</th>
+                                <th class="text-end">Clics billetterie</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for row in audience.days|reverse %}
                                 <tr>
-                                    <th>Jour</th>
-                                    <th class="text-end">Visiteurs</th>
-                                    <th class="text-end">Clics billetterie</th>
+                                    <td>{{ row.day|format_date('full') }}</td>
+                                    <td class="text-end">{{ row.visitors|format_number() }}</td>
+                                    <td class="text-end">{{ row.ticketClicks|format_number() }}</td>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                {% for row in audience.days|reverse %}
-                                    <tr>
-                                        <td>{{ row.day|format_date('full') }}</td>
-                                        <td class="text-end">{{ row.visitors|format_number() }}</td>
-                                        <td class="text-end">{{ row.ticketClicks|format_number() }}</td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                            {% endfor %}
+                            </tbody>
+                        </twig:Tabler:Table>
                     </details>
                 {% endif %}
-            </div>
+            </twig:Tabler:Card>
 
-            <div class="card mb-0">
-                <div class="card-body d-flex align-items-start gap-3">
-                    <span class="avatar bg-secondary-lt flex-shrink-0"><twig:Icon name="lucide:info" /></span>
+            <twig:Tabler:Card class="mb-0">
+                <twig:Tabler:Card:Body class="d-flex align-items-start gap-3">
+                    <twig:Tabler:Avatar variant="secondary" class="flex-shrink-0"><twig:Tabler:Icon name="lucide:info" /></twig:Tabler:Avatar>
                     <div class="text-secondary small">
                         <p class="mb-2">
                             <strong>Visiteurs</strong>&nbsp;: les personnes qui ont ouvert la page de l'événement, chacune comptée une fois par jour.
@@ -189,8 +187,8 @@
                             Mesuré sans cookie et mis à jour toutes les heures. Les robots ne sont pas comptés, ni les visiteurs qui bloquent toute mesure d'audience&nbsp;: les chiffres réels peuvent être un peu plus élevés.
                         </p>
                     </div>
-                </div>
-            </div>
+                </twig:Tabler:Card:Body>
+            </twig:Tabler:Card>
         </div>
     </div>
 {%- endblock %}

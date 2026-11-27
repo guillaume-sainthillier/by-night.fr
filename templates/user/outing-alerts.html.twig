@@ -7,36 +7,35 @@
 {% endblock %}
 
 {% block body -%}
-    <div class="card">
-        <div class="empty">
+    <twig:Tabler:Card>
+        <twig:Tabler:Empty>
             {% if unsubscribed %}
-                <div class="empty-icon"><twig:Icon name="lucide:bell-off" /></div>
-                <p class="empty-title">Vous ne serez plus prévenu des changements de vos sorties</p>
-                <p class="empty-subtitle text-secondary">
+                <twig:Tabler:Empty:Icon><twig:Tabler:Icon name="lucide:bell-off" /></twig:Tabler:Empty:Icon>
+                <twig:Tabler:Empty:Title>Vous ne serez plus prévenu des changements de vos sorties</twig:Tabler:Empty:Title>
+                <twig:Tabler:Empty:Subtitle>
                     Vous pouvez les réactiver à tout moment depuis votre profil.
-                </p>
-                <div class="empty-action">
+                </twig:Tabler:Empty:Subtitle>
+                <twig:Tabler:Empty:Action>
                     <a class="btn" href="{{ path('app_user_edit') }}">
-                        <twig:Icon name="lucide:user" />
+                        <twig:Tabler:Icon name="lucide:user" />
                         Mon profil
                     </a>
-                </div>
+                </twig:Tabler:Empty:Action>
             {% else %}
-                <div class="empty-icon"><twig:Icon name="lucide:bell" /></div>
-                <p class="empty-title">Ne plus être prévenu des changements de vos sorties&nbsp;?</p>
-                <p class="empty-subtitle text-secondary">
+                <twig:Tabler:Empty:Icon><twig:Tabler:Icon name="lucide:bell" /></twig:Tabler:Empty:Icon>
+                <twig:Tabler:Empty:Title>Ne plus être prévenu des changements de vos sorties&nbsp;?</twig:Tabler:Empty:Title>
+                <twig:Tabler:Empty:Subtitle>
                     Quand un événement où vous avez dit «&nbsp;J'y vais&nbsp;!&nbsp;» est annulé, change de dates ou de
                     lieu, nous vous l'écrivons. Vous ne recevrez plus ces e-mails.
-                </p>
-                <div class="empty-action">
+                </twig:Tabler:Empty:Subtitle>
+                <twig:Tabler:Empty:Action>
                     <form method="post" action="{{ app.request.requestUri }}">
-                        <button type="submit" class="btn btn-primary">
-                            <twig:Icon name="lucide:bell-off" />
+                        <twig:Tabler:Button variant="primary" type="submit" icon="lucide:bell-off">
                             Ne plus être prévenu
-                        </button>
+                        </twig:Tabler:Button>
                     </form>
-                </div>
+                </twig:Tabler:Empty:Action>
             {% endif %}
-        </div>
-    </div>
+        </twig:Tabler:Empty>
+    </twig:Tabler:Card>
 {%- endblock %}

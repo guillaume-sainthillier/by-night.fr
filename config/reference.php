@@ -2555,6 +2555,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     resolve_metadata?: bool|Param, // Whether to resolve image metadata (dimensions) from the source by default. Filesystem loaders default to true. // Default: false
  *     preload?: bool|Param, // Preload priority images through a Link header (and 103 Early Hints when sent). Needs symfony/web-link, does nothing without it. // Default: true
+ *     placeholder_onload?: bool|Param, // Remove the placeholder of a loaded image with an inline onload handler. Turn off under a Content-Security-Policy forbidding inline handlers, and render picasso_placeholder_script() in the <head> instead. // Default: true
  *     collector?: bool|Param, // Enable the web profiler data collector for Picasso. Disabled by default; turn on in dev to debug image rendering. // Default: false
  *     default_placeholder?: scalar|Param|null, // Default placeholder name. Auto-detected when only one is configured. // Default: null
  *     placeholders?: array<string, array{ // Default: []
@@ -2569,6 +2570,17 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         components_y?: int|Param, // Vertical BlurHash components (1–9). // Default: 3
  *         driver?: scalar|Param|null, // Image processing driver for BlurHash (gd or imagick). // Default: "gd"
  *         service?: scalar|Param|null, // Service ID for custom placeholders (type: service). // Default: null
+ *     }>,
+ *     presets?: array<string, array{ // Default: []
+ *         width?: int|Param, // Display width. // Default: null
+ *         height?: int|Param, // Display height. // Default: null
+ *         sizes?: scalar|Param|null, // Responsive sizes attribute. // Default: null
+ *         quality?: int|Param, // Quality (1–100). // Default: null
+ *         fit?: scalar|Param|null, // Fit mode (contain, cover, crop, fill, crop-<x>-<y>…). // Default: null
+ *         placeholder?: scalar|Param|null, // true or false to enable or disable the placeholder, or a placeholder name. // Default: null
+ *         loader?: scalar|Param|null, // Loader name. // Default: null
+ *         transformer?: scalar|Param|null, // Transformer name. // Default: null
+ *         modifiers?: array<string, scalar|Param|null>,
  *     }>,
  *     loaders?: array<string, array{ // Default: []
  *         enabled?: bool|Param, // Default: true
@@ -2594,6 +2606,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         cache?: scalar|Param|null, // Glide cache target. Either a local path or a Flysystem storage name (resolved via FlysystemRegistry). // Default: null
  *         driver?: scalar|Param|null, // Default: "gd"
  *         max_image_size?: int|Param, // Max image size for glide. // Default: null
+ *         watermarks?: scalar|Param|null, // Glide: directory or Flysystem storage name holding the watermark images the "mark" modifier names. // Default: null
  *         base_url?: scalar|Param|null, // Imgix: source domain (e.g. https://my-source.imgix.net). Glide: optional scheme and host prepended to generated image URLs, e.g. a CDN (https://img.example.com). // Default: null
  *         api_key?: scalar|Param|null, // Imgix API key for cache purge operations. // Default: null
  *         http_client?: scalar|Param|null, // PSR-18 HTTP client service ID for imgix purge. // Default: null
@@ -2644,6 +2657,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     dump_directory?: scalar|Param|null, // Where llms-txt:dump writes the file, and where the controller looks for it before building it on the fly. // Default: "%kernel.project_dir%/public"
  *     content_type?: scalar|Param|null, // The Content-Type served by the controller. "text/markdown" is more accurate, but browsers download it instead of showing it. // Default: "text/plain; charset=UTF-8"
  *     max_age?: int|Param, // The Cache-Control max-age of the controller responses, in seconds. // Default: 3600
+ *     full?: bool|array{ // llms-full.txt: the Markdown of the pages whose links have a "content", served at /llms-full.txt and dumped with llms.txt.
+ *         enabled?: bool|Param, // Default: false
+ *     },
+ *     markdown_versions?: bool|array{ // The Markdown versions of the pages: the routes whose "_format" requirement lists "md" answer Markdown to an Accept header preferring it, and link to it. Registers the "md" format, and stops Twig from escaping HTML in *.md.twig.
+ *         enabled?: bool|Param, // Default: false
+ *     },
  *     discovery?: array{
  *         link_header?: bool|Param, // Adds the file to the Link header of the HTML pages, through WebLink: needs symfony/web-link and "framework.web_link". // Default: false
  *         rel?: scalar|Param|null, // The relation of the Link header and of the llms_txt_link() tag. // Default: "llms-txt"
@@ -2852,6 +2871,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type SilarhiUxIconsJsConfig = array{
  *     dump_directory?: scalar|Param|null, // The directory where the JavaScript module is dumped. // Default: "%kernel.project_dir%/var/icons"
  *     dump_typescript?: bool|Param, // Whether TypeScript types are dumped alongside the icons. Disable this if you do not use TypeScript (e.g. in production when using AssetMapper). // Default: true
+ *     dump_loaders?: bool|Param, // Whether "loaders.js" and one module per icon are dumped, to load an icon by a name known only at runtime ("loadIcon()", "UXLazyIcon", "<ux-icon>"). Disable this if you only import the icons by their export name. // Default: true
+ *     icons?: list<scalar|Param|null>,
  *     scan_directories?: list<scalar|Param|null>,
  * }
  * @psalm-type TfaWebauthnConfig = array{
@@ -3272,7 +3293,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     endpoint?: scalar|Param|null, // The API endpoint of the site key, as the browser reaches it: https://<your-instance>/<site-key>/ // Default: "%env(CAP_ENDPOINT)%"
  *     secret_key?: scalar|Param|null, // The secret key of the site key (not the ADMIN_KEY of the dashboard). // Default: "%env(CAP_SECRET_KEY)%"
  *     verify_url?: scalar|Param|null, // The /siteverify URL, as the server reaches it (e.g. http://cap:3000/<site-key>/siteverify in Docker). Defaults to <endpoint>siteverify. // Default: null
+ *     site_keys?: array<string, array{ // Default: []
+ *         endpoint?: scalar|Param|null,
+ *         secret_key?: scalar|Param|null,
+ *         verify_url?: scalar|Param|null, // Default: null
+ *     }>,
  *     enabled?: bool|Param, // false renders no widget and accepts every submission: for the test environment. // Default: true
+ *     test_tokens?: list<scalar|Param|null>,
+ *     profiler?: bool|Param, // Adds a Cap panel to the Symfony profiler: the tokens verified during the request and the answer of the Cap server. // Default: false
  *     http_client?: scalar|Param|null, // PSR-18 HTTP client service ID calling /siteverify. Defaults to Symfony's psr18.http_client. // Default: null
  *     request_factory?: scalar|Param|null, // PSR-17 request factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
  *     stream_factory?: scalar|Param|null, // PSR-17 stream factory service ID. Defaults to the HTTP client (psr18.http_client is one). // Default: null
@@ -3380,6 +3408,27 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     }>,
  * }
+ * @psalm-type UxRouterConfig = array{
+ *     dump_directory?: scalar|Param|null, // The directory where routes and TypeScript types are dumped. // Default: "%kernel.project_dir%/var/routes"
+ *     dump_typescript?: bool|Param, // Control whether TypeScript types are dumped alongside routes. Disable this if you do not use TypeScript (e.g. in production when using AssetMapper). // Default: true
+ *     routes?: Param|string|list<scalar|Param|null>,
+ * }
+ * @psalm-type SilarhiAppJsConfig = array{
+ *     enums?: array{
+ *         output_dir?: scalar|Param|null, // The directory of the dumped enums, owned by app-js:dump-enums. // Default: "%kernel.project_dir%/assets/js/enums"
+ *         format?: "ts"|"js"|Param, // ts: .ts modules, js: .js modules (the same code). // Default: "ts"
+ *         paths?: array<string, scalar|Param|null>,
+ *     },
+ *     constants?: array{
+ *         output_dir?: scalar|Param|null, // The directory of the dumped constants, owned by app-js:dump-constants. // Default: "%kernel.project_dir%/assets/js/constants"
+ *         format?: "ts"|"js"|Param, // ts: .ts modules, js: .js modules (the same code). // Default: "ts"
+ *         paths?: array<string, scalar|Param|null>,
+ *     },
+ *     forms?: array{
+ *         output_dir?: scalar|Param|null, // The directory of the dumped form shapes, owned by app-js:dump-forms. // Default: "%kernel.project_dir%/assets/js/forms"
+ *         format?: "ts"|"js"|Param, // ts: .ts files, js: .d.ts declarations for JSDoc (a shape is a type only). // Default: "ts"
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -3416,6 +3465,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     tfa_webauthn?: TfaWebauthnConfig,
  *     cap?: CapConfig,
  *     mcp?: McpConfig,
+ *     ux_router?: UxRouterConfig,
+ *     silarhi_app_js?: SilarhiAppJsConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -3457,6 +3508,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         doctrine_doctor?: DoctrineDoctorConfig,
  *         cap?: CapConfig,
  *         mcp?: McpConfig,
+ *         ux_router?: UxRouterConfig,
+ *         silarhi_app_js?: SilarhiAppJsConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -3495,6 +3548,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         tfa_webauthn?: TfaWebauthnConfig,
  *         cap?: CapConfig,
  *         mcp?: McpConfig,
+ *         ux_router?: UxRouterConfig,
+ *         silarhi_app_js?: SilarhiAppJsConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -3537,6 +3592,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         doctrine_doctor?: DoctrineDoctorConfig,
  *         cap?: CapConfig,
  *         mcp?: McpConfig,
+ *         ux_router?: UxRouterConfig,
+ *         silarhi_app_js?: SilarhiAppJsConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

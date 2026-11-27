@@ -11,35 +11,30 @@
 {% block page_actions %}
     <div class="col-md-auto">
         {% if event.draft %}
-            <span class="badge bg-secondary-lt">Brouillon</span>
+            <twig:Tabler:Badge variant="secondary" light>Brouillon</twig:Tabler:Badge>
         {% else %}
-            <span class="badge bg-teal-lt">En ligne</span>
+            <twig:Tabler:Badge variant="" class="bg-teal-lt">En ligne</twig:Tabler:Badge>
         {% endif %}
     </div>
 {% endblock %}
 
 {% block form_actions_extra %}
-    <div class="dropdown dropup">
-        <button type="button" class="btn btn-icon btn-ghost-secondary" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Plus d'actions" title="Plus d'actions">
-            <twig:Icon name="lucide:ellipsis-vertical" />
-        </button>
-        <div class="dropdown-menu dropdown-menu-end">
-            <a class="dropdown-item" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
-                <twig:Icon name="lucide:eye" class="dropdown-item-icon" />
+    <twig:Tabler:Dropdown direction="up">
+        <twig:Tabler:Button variant="secondary" appearance="ghost" iconOnly type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Plus d'actions" title="Plus d'actions" icon="lucide:ellipsis-vertical" />
+        <twig:Tabler:Dropdown:Menu end>
+            <twig:Tabler:Dropdown:Item icon="lucide:eye" href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}">
                 Voir l'événement
-            </a>
-            <a class="dropdown-item" href="{{ path('app_event_stats', {id: event.id}) }}">
-                <twig:Icon name="lucide:chart-column" class="dropdown-item-icon" />
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Item icon="lucide:chart-column" href="{{ path('app_event_stats', {id: event.id}) }}">
                 Statistiques
-            </a>
-            <div class="dropdown-divider"></div>
+            </twig:Tabler:Dropdown:Item>
+            <twig:Tabler:Dropdown:Divider />
             {# Submits the delete form below, which cannot be nested in the event form #}
-            <button type="submit" form="event-delete-form" class="dropdown-item text-danger">
-                <twig:Icon name="lucide:trash-2" class="dropdown-item-icon" />
+            <twig:Tabler:Dropdown:Item tag="button" icon="lucide:trash-2" type="submit" form="event-delete-form" class="text-danger">
                 Supprimer l'événement
-            </button>
-        </div>
-    </div>
+            </twig:Tabler:Dropdown:Item>
+        </twig:Tabler:Dropdown:Menu>
+    </twig:Tabler:Dropdown>
 {% endblock %}
 
 {# Only a draft goes online: a published event was already checked, or comes from a source #}
@@ -50,10 +45,9 @@
     {% if event.draft %}
         {{ parent() }}
     {% else %}
-        <button type="submit" class="btn btn-lg btn-primary">
-            <twig:Icon name="lucide:save" />
+        <twig:Tabler:Button variant="primary" size="lg" type="submit" icon="lucide:save">
             Enregistrer
-        </button>
+        </twig:Tabler:Button>
     {% endif %}
 {% endblock %}
 

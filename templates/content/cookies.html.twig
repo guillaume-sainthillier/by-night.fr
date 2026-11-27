@@ -34,39 +34,37 @@
     <twig:Legal:Section id="necessaires" title="{{ legal_sections[1].title }}" number="{{ 1 }}">
         <p>Indispensables au site, ils ne demandent pas votre accord.</p>
         <twig:block name="table">
-            <div class="table-responsive">
-                <table class="table card-table table-vcenter">
-                    <thead>
-                        <tr>
-                            <th>Cookie</th>
-                            <th>Rôle</th>
-                            <th>Durée</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>PHPSESSID</code></td>
-                            <td>Maintient votre session, par exemple une fois connecté.</td>
-                            <td>Jusqu'à la fermeture du navigateur</td>
-                        </tr>
-                        <tr>
-                            <td><code>REMEMBERME</code></td>
-                            <td>Vous garde connecté si vous avez coché « Se souvenir de moi ».</td>
-                            <td>1 an</td>
-                        </tr>
-                        <tr>
-                            <td><code>__Host-…</code></td>
-                            <td>Protège les formulaires contre les envois frauduleux.</td>
-                            <td>Jusqu'à la fermeture du navigateur</td>
-                        </tr>
-                        <tr>
-                            <td><code>FCCDCF</code> et cookies associés</td>
-                            <td>Enregistrent vos choix sur les cookies (plateforme de consentement de Google).</td>
-                            <td>Fixée par Google</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <twig:Tabler:Table card vcenter>
+                <thead>
+                    <tr>
+                        <th>Cookie</th>
+                        <th>Rôle</th>
+                        <th>Durée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PHPSESSID</code></td>
+                        <td>Maintient votre session, par exemple une fois connecté.</td>
+                        <td>Jusqu'à la fermeture du navigateur</td>
+                    </tr>
+                    <tr>
+                        <td><code>REMEMBERME</code></td>
+                        <td>Vous garde connecté si vous avez coché « Se souvenir de moi ».</td>
+                        <td>1 an</td>
+                    </tr>
+                    <tr>
+                        <td><code>__Host-…</code></td>
+                        <td>Protège les formulaires contre les envois frauduleux.</td>
+                        <td>Jusqu'à la fermeture du navigateur</td>
+                    </tr>
+                    <tr>
+                        <td><code>FCCDCF</code> et cookies associés</td>
+                        <td>Enregistrent vos choix sur les cookies (plateforme de consentement de Google).</td>
+                        <td>Fixée par Google</td>
+                    </tr>
+                </tbody>
+            </twig:Tabler:Table>
         </twig:block>
         <twig:block name="after">
             <p>
@@ -94,24 +92,22 @@
             liens de billetterie d'un événement ; l'organisateur d'un événement voit ces chiffres, jamais qui les fait.
         </p>
         <twig:block name="table">
-            <div class="table-responsive">
-                <table class="table card-table table-vcenter">
-                    <thead>
-                        <tr>
-                            <th>Cookie</th>
-                            <th>Rôle</th>
-                            <th>Durée</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>_ga</code>, <code>_ga_…</code></td>
-                            <td>Distinguent les visiteurs et leurs visites (Google Analytics).</td>
-                            <td>2 ans au plus</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <twig:Tabler:Table card vcenter>
+                <thead>
+                    <tr>
+                        <th>Cookie</th>
+                        <th>Rôle</th>
+                        <th>Durée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>_ga</code>, <code>_ga_…</code></td>
+                        <td>Distinguent les visiteurs et leurs visites (Google Analytics).</td>
+                        <td>2 ans au plus</td>
+                    </tr>
+                </tbody>
+            </twig:Tabler:Table>
         </twig:block>
     </twig:Legal:Section>
 
@@ -137,54 +133,52 @@
             navigateur dès qu'ils sont chargés. C'est pourquoi la plupart ne se chargent que lorsque vous le demandez.
         </p>
         <twig:block name="table">
-            <div class="table-responsive">
-                <table class="table card-table table-vcenter">
-                    <thead>
-                        <tr>
-                            <th>Service</th>
-                            <th>Où et quand</th>
-                            <th>Fournisseur</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Google Maps</td>
-                            <td>
-                                Sur la page d'un événement, seulement quand vous cliquez sur « Afficher la carte », et sur le
-                                formulaire de création d'événement, pour localiser le lieu.
-                            </td>
-                            <td>Google</td>
-                        </tr>
-                        <tr>
-                            <td>Carte OpenFreeMap</td>
-                            <td>
-                                Sur les agendas, seulement quand vous cliquez sur « Voir sur la carte » : le fond de carte est
-                                téléchargé depuis tiles.openfreemap.org, qui ne dépose pas de cookie.
-                            </td>
-                            <td>Hyperknot (OpenFreeMap)</td>
-                        </tr>
-                        <tr>
-                            <td>Vidéos YouTube</td>
-                            <td>
-                                Dans certaines descriptions d'événements, seulement quand vous cliquez sur la vidéo. Elles sont
-                                servies depuis youtube-nocookie.com, le mode de confidentialité renforcée de YouTube, qui ne dépose
-                                pas de cookie avant la lecture.
-                            </td>
-                            <td>Google</td>
-                        </tr>
-                        <tr>
-                            <td>Page Facebook de By Night</td>
-                            <td>Sur les agendas, seulement quand vous cliquez sur « Afficher la page Facebook ».</td>
-                            <td>Meta</td>
-                        </tr>
-                        <tr>
-                            <td>Connexion avec Facebook, Google ou X</td>
-                            <td>Uniquement si vous choisissez de vous connecter avec l'un de ces réseaux.</td>
-                            <td>Meta, Google, X</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <twig:Tabler:Table card vcenter>
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Où et quand</th>
+                        <th>Fournisseur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Google Maps</td>
+                        <td>
+                            Sur la page d'un événement, seulement quand vous cliquez sur « Afficher la carte », et sur le
+                            formulaire de création d'événement, pour localiser le lieu.
+                        </td>
+                        <td>Google</td>
+                    </tr>
+                    <tr>
+                        <td>Carte OpenFreeMap</td>
+                        <td>
+                            Sur les agendas, seulement quand vous cliquez sur « Voir sur la carte » : le fond de carte est
+                            téléchargé depuis tiles.openfreemap.org, qui ne dépose pas de cookie.
+                        </td>
+                        <td>Hyperknot (OpenFreeMap)</td>
+                    </tr>
+                    <tr>
+                        <td>Vidéos YouTube</td>
+                        <td>
+                            Dans certaines descriptions d'événements, seulement quand vous cliquez sur la vidéo. Elles sont
+                            servies depuis youtube-nocookie.com, le mode de confidentialité renforcée de YouTube, qui ne dépose
+                            pas de cookie avant la lecture.
+                        </td>
+                        <td>Google</td>
+                    </tr>
+                    <tr>
+                        <td>Page Facebook de By Night</td>
+                        <td>Sur les agendas, seulement quand vous cliquez sur « Afficher la page Facebook ».</td>
+                        <td>Meta</td>
+                    </tr>
+                    <tr>
+                        <td>Connexion avec Facebook, Google ou X</td>
+                        <td>Uniquement si vous choisissez de vous connecter avec l'un de ces réseaux.</td>
+                        <td>Meta, Google, X</td>
+                    </tr>
+                </tbody>
+            </twig:Tabler:Table>
         </twig:block>
         <twig:block name="after">
             <p>

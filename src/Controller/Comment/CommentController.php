@@ -16,6 +16,7 @@ use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use App\Security\Voter\EventVoter;
+use Silarhi\AppJsBundle\Http\FormViolationsResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +31,7 @@ final class CommentController extends BaseController
 {
     public const int COMMENTS_PER_PAGE = 10;
 
-    #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
+    #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', options: ['expose' => true], methods: ['GET'])]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comments = $this->createMultipleEagerLoadingPaginator(
@@ -85,6 +86,11 @@ final class CommentController extends BaseController
                     'comments' => $comments,
                 ]),
             ]);
+        }
+
+        // A refused comment: its errors by field, which the page shows on the form (CommentApp)
+        if ($form->isSubmitted()) {
+            return new FormViolationsResponse($form);
         }
 
         return new JsonResponse([

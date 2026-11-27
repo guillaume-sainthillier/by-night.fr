@@ -68,15 +68,16 @@
                         </div>
                     {% endfor %}
                     <div class="col">
-                        <a class="card card-layout card-link-pop bg-primary text-white h-100 mb-0" href="{{ path('app_location_index', {location: location.city.country.slug}) }}" title="Que faire {{ location.city.country.atDisplayName }}&nbsp;?">
-                            <div class="card-body">
+                        {# A plain card: Tabler:Card takes `title` for its header, this one is the link's tooltip #}
+                        <a href="{{ path('app_location_index', {location: location.city.country.slug}) }}" title="Que faire {{ location.city.country.atDisplayName }}&nbsp;?" class="card card-link card-link-pop card-layout bg-primary text-white h-100 mb-0">
+                            <twig:Tabler:Card:Body>
                                 <twig:Flag code="{{ location.city.country.id }}" size="{{ 28 }}" class="mb-2" />
-                                <h3 class="card-title mb-0">{{ location.city.country.displayName }}</h3>
-                            </div>
-                            <div class="card-footer card-footer-transparent text-white d-flex align-items-center justify-content-between small fw-bold">
+                                <twig:Tabler:Card:Title class="mb-0">{{ location.city.country.displayName }}</twig:Tabler:Card:Title>
+                            </twig:Tabler:Card:Body>
+                            <twig:Tabler:Card:Footer class="card-footer-transparent text-white d-flex align-items-center justify-content-between small fw-bold">
                                 <span>Tout le pays</span>
-                                <twig:Icon name="lucide:arrow-right" />
-                            </div>
+                                <twig:Tabler:Icon name="lucide:arrow-right" />
+                            </twig:Tabler:Card:Footer>
                         </a>
                     </div>
                 </div>

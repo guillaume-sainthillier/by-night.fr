@@ -1,5 +1,7 @@
 import type { App } from '@silarhi/app-js'
 import { findAll, findOne, on } from '@silarhi/app-js'
+import type { FormView } from '@silarhi/app-js/form'
+import type { EventForm } from '@/js/forms/EventForm'
 import { plural } from '@/js/utils/plural'
 
 /**
@@ -7,10 +9,10 @@ import { plural } from '@/js/utils/plural'
  * the generator and the list of dates for a single date. Going back to a single date empties the list, once the member
  * agrees, since its hidden dates would still be sent.
  */
-export default function initEventDateMode(container: HTMLElement, app: App) {
+export default function initEventDateMode(form: FormView<EventForm>, container: ParentNode, app: App) {
     const card = findOne('[data-date-mode]', container)
-    const collection = findOne('#app_event_timesheets', container)
-    if (!card || !collection) return
+    const collection = form.get('timesheets')
+    if (!card) return
 
     const choices = findAll('[data-date-mode-choice]', card)
     const select = (mode: string | undefined) => {
@@ -25,7 +27,7 @@ export default function initEventDateMode(container: HTMLElement, app: App) {
     const choose = async (mode: string | undefined) => {
         if (mode === card.dataset.dateMode) return
 
-        const count = findAll('.collection-item', collection).length
+        const count = collection.children.length
         if (mode === 'single' && count > 0) {
             const confirmed = await app.get('modalManager').createConfirm({
                 title: 'Garder une seule date ?',

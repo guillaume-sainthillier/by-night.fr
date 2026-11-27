@@ -1,6 +1,7 @@
 import { defineListener } from '@silarhi/app-js'
 import { errorBody, sendJson } from '@silarhi/app-js/http'
 import { Alert, Modal } from '@tabler/core'
+import { MESSAGE_MIN_LENGTH } from '@/js/constants/FeedbackInput'
 
 /**
  * The body of a refused message: the message of an HTTP error, or the validation's violations.
@@ -35,8 +36,8 @@ export default defineListener<HTMLElement>({
             e.preventDefault()
 
             const message = messageInput.value.trim()
-            if (message.length < 10) {
-                showError('Votre message doit faire au moins 10 caractères')
+            if (message.length < MESSAGE_MIN_LENGTH) {
+                showError(`Votre message doit faire au moins ${MESSAGE_MIN_LENGTH} caractères`)
                 return
             }
 

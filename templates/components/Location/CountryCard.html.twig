@@ -10,18 +10,18 @@
 {% set url = path('app_location_index', {location: country.slug}) %}
 {% if featured %}
     <a href="{{ url }}" title="Que faire {{ country.atDisplayName }}&nbsp;?" {{ attributes.defaults({class: 'card card-lg card-layout text-reset h-100 mb-0'}) }}>
-        <div class="card-body d-flex flex-column justify-content-between gap-4">
+        <twig:Tabler:Card:Body class="d-flex flex-column justify-content-between gap-4">
             <div class="d-flex flex-column flex-sm-row align-items-sm-start justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-3">
                     <twig:Flag code="{{ country.id }}" size="{{ 52 }}" />
                     <h3 class="h1 mb-0">{{ country.displayName }}</h3>
                 </div>
-                <div class="card card-sm bg-light flex-shrink-0 text-sm-end mb-0">
+                <twig:Tabler:Card size="sm" class="bg-light flex-shrink-0 text-sm-end mb-0">
                     <div class="card-body">
                         <div class="h2 text-primary mb-0">{{ events|format_number() }}</div>
                         <div class="subheader">{{ '{count, plural, one {sortie à venir} other {sorties à venir}}'|trans({count: events}, 'messages+intl-icu') }}</div>
                     </div>
-                </div>
+                </twig:Tabler:Card>
             </div>
             {# The copy and the button side by side from xxl only: at 1280px the copy was squeezed onto six lines #}
             <div class="d-flex flex-column flex-xxl-row align-items-sm-start align-items-xxl-center justify-content-between gap-3">
@@ -37,14 +37,14 @@
                 </p>
                 <span class="btn btn-primary btn-lg flex-shrink-0">
                     Voir l'agenda {{ country.atDisplayName }}
-                    <twig:Icon name="lucide:arrow-right" class="icon-end" />
+                    <twig:Tabler:Icon name="lucide:arrow-right" class="icon-end" />
                 </span>
             </div>
-        </div>
+        </twig:Tabler:Card:Body>
     </a>
 {% else %}
     <a href="{{ url }}" title="Que faire {{ country.atDisplayName }}&nbsp;?" {{ attributes.defaults({class: 'card card-layout card-link-pop text-reset h-100 mb-0'}) }}>
-        <div class="card-body">
+        <twig:Tabler:Card:Body>
             <div class="d-flex align-items-start gap-3">
                 <twig:Flag code="{{ country.id }}" size="{{ 32 }}" class="mt-1" />
                 <div class="min-w-0 flex-fill">
@@ -52,20 +52,20 @@
                        off a narrow card #}
                     <div class="d-flex flex-wrap align-items-start justify-content-between gap-1">
                         <h3 class="h2 mb-0">{{ country.displayName }}</h3>
-                        <span class="badge bg-secondary-lt flex-shrink-0">
+                        <twig:Tabler:Badge variant="secondary" light class="flex-shrink-0">
                             {{- '{count, plural, one {# sortie} other {# sorties}}'|trans({count: events}, 'messages+intl-icu') -}}
-                        </span>
+                        </twig:Tabler:Badge>
                     </div>
                     {% if cities %}
                         <p class="text-secondary mt-2 mb-0">{{ cities|slice(0, 3)|join(', ') }}</p>
                     {% endif %}
                 </div>
             </div>
-        </div>
-        <div class="card-footer d-flex align-items-center justify-content-between gap-3">
+        </twig:Tabler:Card:Body>
+        <twig:Tabler:Card:Footer class="d-flex align-items-center justify-content-between gap-3">
             {# Wraps: cut off, most headlines lost their last words #}
             <span class="text-secondary small">{{ country.headline ?? 'Concerts, expos & sorties' }}</span>
-            <span class="small fw-bold text-primary flex-shrink-0"><twig:Icon name="lucide:arrow-right" /></span>
-        </div>
+            <span class="small fw-bold text-primary flex-shrink-0"><twig:Tabler:Icon name="lucide:arrow-right" /></span>
+        </twig:Tabler:Card:Footer>
     </a>
 {% endif %}

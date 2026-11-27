@@ -14,6 +14,7 @@ use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\Property\RemoveDefaultValueFromAssignedPropertyRector;
 use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Renaming\Rector\MethodCall\RenameMethodRector;
+use Silarhi\VoterBundle\Rector\Set\VoterSetList;
 
 return RectorConfig::configure()
     ->withImportNames(removeUnusedImports: true)
@@ -34,6 +35,8 @@ return RectorConfig::configure()
     )
     ->withComposerBased()
     ->withSets([
+        // The dead-code set, but for the #[Grants] methods of the voters, which only silarhi/voter-bundle calls
+        VoterSetList::DEAD_CODE,
         Zenstruck\Foundry\Utils\Rector\FoundrySetList::FOUNDRY_2_7,
         Zenstruck\Foundry\Utils\Rector\FoundrySetList::FOUNDRY_2_9,
     ])

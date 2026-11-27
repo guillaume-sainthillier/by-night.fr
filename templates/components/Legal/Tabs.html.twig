@@ -10,7 +10,7 @@
 <nav {{ attributes.defaults({class: 'hstack flex-wrap gap-2', 'aria-label': 'Documents juridiques'}) }}>
     {% for page in pages %}
         <a class="btn btn-pill btn-sm text-nowrap {{ page.route == current ? 'btn-primary' }}" href="{{ path(page.route) }}"{% if page.route == current %} aria-current="page"{% endif %}>
-            <twig:Icon name="{{ page.icon }}" />
+            <twig:Tabler:Icon name="{{ page.icon }}" />
             {{ page.label }}
         </a>
     {% endfor %}

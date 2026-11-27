@@ -4,9 +4,9 @@
 <div class="chat-item reply-item">
     <div class="row align-items-end">
         <div class="col-auto">
-            <div class="avatar avatar-sm">
+            <twig:Tabler:Avatar size="sm">
                 <twig:User:Thumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" />
-            </div>
+            </twig:Tabler:Avatar>
         </div>
         <div class="col-lg-8">
             <div class="chat-bubble chat-bubble-me chat-bubble-reply chat-bubble-form">
@@ -26,8 +26,8 @@
                     }) }}
                 </div>
                 <div class="chat-bubble-actions">
-                    <button type="submit" class="btn btn-sm btn-primary">Envoyer</button>
-                    <button type="button" class="btn btn-sm cancel-reply">Annuler</button>
+                    <twig:Tabler:Button variant="primary" size="sm" type="submit">Envoyer</twig:Tabler:Button>
+                    <twig:Tabler:Button variant="default" size="sm" type="button" class="cancel-reply">Annuler</twig:Tabler:Button>
                 </div>
             </div>
         </div>

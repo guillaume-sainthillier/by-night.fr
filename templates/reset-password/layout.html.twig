@@ -24,9 +24,11 @@
                 <div class="card card-lg mb-3">
                     <div class="card-body p-4 p-md-5">
                         <div class="text-center mb-4">
-                            <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
-                                <twig:Icon name="{{ block('reset_icon') }}" />
-                            </span>
+                            {# block() inside the avatar's content would look in the avatar's template #}
+                            {% set reset_icon = block('reset_icon') %}
+                            <twig:Tabler:Avatar size="lg" rounded variant="primary" class="mb-3">
+                                <twig:Tabler:Icon name="{{ reset_icon }}" />
+                            </twig:Tabler:Avatar>
                             <h1 class="mb-2">{% block reset_title '' %}</h1>
                             <p class="text-secondary mb-0">{% block reset_intro '' %}</p>
                         </div>
@@ -34,17 +36,17 @@
                     </div>
                     <div class="card-footer text-center">
                         <a class="fw-bold" href="{{ path('app_login') }}" title="Connectez-vous à votre compte">
-                            <twig:Icon name="lucide:arrow-left" />
+                            <twig:Tabler:Icon name="lucide:arrow-left" />
                             Revenir à la page de connexion
                         </a>
                     </div>
                 </div>
 
-                <div class="card bg-teal-lt border-0 mb-0">
-                    <div class="card-body d-flex align-items-start gap-3">
-                        <span class="avatar avatar-sm bg-white text-teal flex-shrink-0">
-                            <twig:Icon name="lucide:life-buoy" />
-                        </span>
+                <twig:Tabler:Card class="bg-teal-lt border-0 mb-0">
+                    <twig:Tabler:Card:Body class="d-flex align-items-start gap-3">
+                        <twig:Tabler:Avatar size="sm" class="bg-white text-teal flex-shrink-0">
+                            <twig:Tabler:Icon name="lucide:life-buoy" />
+                        </twig:Tabler:Avatar>
                         <div>
                             <h2 class="card-title text-start mb-1">Besoin d'aide&nbsp;?</h2>
                             <p class="small mb-2">
@@ -52,11 +54,11 @@
                             </p>
                             <a class="small fw-bold" href="mailto:support@by-night.fr" title="Un problème, une question&nbsp;? Contactez-nous">
                                 Contacter le support
-                                <twig:Icon name="lucide:arrow-right" />
+                                <twig:Tabler:Icon name="lucide:arrow-right" />
                             </a>
                         </div>
-                    </div>
-                </div>
+                    </twig:Tabler:Card:Body>
+                </twig:Tabler:Card>
             </div>
         </div>
     </div>

@@ -1,5 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
 import { sendJson } from '@silarhi/app-js/http'
+import { path } from '@/js/router'
 import { plural } from '@/js/utils/plural'
 
 /** The answer of PUT /api/publishers/{id}/follow and /api/places/{id}/follow */
@@ -18,13 +19,14 @@ const ACTIVE_CLASS = 'btn-primary'
 export default defineListener<HTMLButtonElement>({
     selector: '.btn-follow',
     connect(button, { app }) {
-        const { href = '', intent } = button.dataset
+        const { follow: kind, followId: id = '', intent } = button.dataset
+        const route = kind === 'place' ? 'api_place_follow' : 'api_publisher_follow'
 
         const follow = async () => {
             button.disabled = true
             let state: FollowResponse | null
             try {
-                state = await sendJson<FollowResponse>('PUT', href, {
+                state = await sendJson<FollowResponse>('PUT', path(route, { id }), {
                     following: !button.classList.contains(ACTIVE_CLASS),
                 })
             } catch {

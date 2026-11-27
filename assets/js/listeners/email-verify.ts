@@ -1,6 +1,7 @@
 import { defineListener } from '@silarhi/app-js'
 import { postForm } from '@silarhi/app-js/http'
 import { Alert } from '@tabler/core'
+import { path } from '@/js/router'
 
 /**
  * Send a verification email when the element is clicked, then dismiss its
@@ -11,9 +12,8 @@ export default defineListener<HTMLAnchorElement | HTMLButtonElement>({
     connect(element, { app }) {
         const onClick = async (e: Event) => {
             e.preventDefault()
-            const url = element.getAttribute('href') || element.dataset.href || ''
             try {
-                await postForm(url)
+                await postForm(path('app_send_verification_email'))
             } catch {
                 app.get('toastManager').createToast('error', "L'e-mail n'a pas pu être envoyé, veuillez réessayer.")
                 return

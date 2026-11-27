@@ -1,6 +1,6 @@
 {# An import of the member's events, in the history: its file, its events, where it stands #}
 {# @var import \App\Entity\EventImport #}
-<a class="list-group-item list-group-item-action" href="{{ path('app_event_import_show', {id: import.id}) }}">
+<twig:Tabler:ListGroup:Item href="{{ path('app_event_import_show', {id: import.id}) }}">
     <div class="row align-items-center g-3">
         <div class="col text-truncate">
             <div class="fw-bold text-truncate">{{ import.originalName }}</div>
@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="col-auto">
-            <span class="badge bg-{{ import.status.color }}-lt">{{ import.status.label }}</span>
+            <twig:Tabler:Badge variant="" class="bg-{{ import.status.color }}-lt">{{ import.status.label }}</twig:Tabler:Badge>
         </div>
     </div>
-</a>
+</twig:Tabler:ListGroup:Item>

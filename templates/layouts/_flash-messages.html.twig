@@ -3,18 +3,18 @@
 {% if app.request.hasPreviousSession %}
     {% for key, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ key == 'error' ? 'danger' : key }}">
+            <twig:Tabler:Alert variant="{{ key == 'error' ? 'danger' : key }}">
                 <div class="{{ container_class }}">
                     {% if key == 'info' %}
-                        <twig:Icon name="lucide:info" />
+                        <twig:Tabler:Icon name="lucide:info" />
                     {% elseif key == 'error' %}
-                        <twig:Icon name="lucide:triangle-alert" />
+                        <twig:Tabler:Icon name="lucide:triangle-alert" />
                     {% elseif key == 'success' %}
-                        <twig:Icon name="lucide:check" />
+                        <twig:Tabler:Icon name="lucide:check" />
                     {% endif %}
                     {{ message|trans|raw }}
                 </div>
-            </div>
+            </twig:Tabler:Alert>
         {% endfor %}
     {% endfor %}
 {% endif %}

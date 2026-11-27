@@ -34,33 +34,32 @@
         <div class="image-container position-relative">
             <twig:Event:Thumb event="{{ event }}" width="{{ 360 }}" priority="{{ priority }}" />
             {% if session or price %}
-                <div class="card-img-overlay {{ compact ? 'd-none d-md-flex' : 'd-flex' }} align-items-start justify-content-between gap-2 p-3">
+                <twig:Tabler:Card:ImgOverlay class="{{ compact ? 'd-none d-md-flex' : 'd-flex' }} align-items-start justify-content-between gap-2 p-3">
                     {% if session %}
-                        <span class="badge bg-white text-primary text-truncate min-w-0">
-                            <twig:Icon name="lucide:calendar-days" />
+                        <twig:Tabler:Badge variant="" class="bg-white text-primary text-truncate min-w-0" icon="lucide:calendar-days">
                             {{- when -}}
-                        </span>
+                        </twig:Tabler:Badge>
                     {% endif %}
                     {% if price %}
-                        <span class="badge ms-auto text-truncate {{ price.free ? 'bg-green text-white' : 'bg-white text-body' }}">{{ price.label }}</span>
+                        <twig:Tabler:Badge variant="" class="ms-auto text-truncate {{ price.free ? 'bg-green text-white' : 'bg-white text-body' }}">{{ price.label }}</twig:Tabler:Badge>
                     {% endif %}
-                </div>
+                </twig:Tabler:Card:ImgOverlay>
             {% endif %}
         </div>
     </div>
     <div class="card-content">
-        <div class="card-body">
+        <twig:Tabler:Card:Body>
             {% if event.category %}
                 <div class="subheader text-{{ tone }} mb-1">{{ event.category.name }}</div>
             {% endif %}
-            <h3 class="card-title line-clamp-2 {{ compact ? 'mb-1 mb-md-2' : 'mb-2' }}">
+            <twig:Tabler:Card:Title class="line-clamp-2 {{ compact ? 'mb-1 mb-md-2' : 'mb-2' }}">
                 <a href="{{ path('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug}) }}" class="stretched-link" title="Tous les détails de {{ event.name }}">{{ event.name }}</a>
-            </h3>
+            </twig:Tabler:Card:Title>
             {% if compact and (rowWhen or price) %}
                 {# The overlay's date and price, which would hide a row's small picture #}
                 <div class="d-flex flex-wrap align-items-center gap-2 small d-md-none">
                     {% if rowWhen %}
-                        <span class="text-primary fw-medium"><twig:Icon name="{{ singleDay ? 'lucide:clock' : 'lucide:calendar-days' }}" /> {{ rowWhen }}</span>
+                        <span class="text-primary fw-medium"><twig:Tabler:Icon name="{{ singleDay ? 'lucide:clock' : 'lucide:calendar-days' }}" /> {{ rowWhen }}</span>
                     {% endif %}
                     {% if price %}
                         <span class="{{ price.free ? 'text-green fw-medium' : 'text-body' }}">{{ price.label }}</span>
@@ -70,14 +69,14 @@
             {% if event.description %}
                 <p class="text-secondary small line-clamp-2 mb-0{{ compact ? ' d-none d-md-block' }}">{{ event.description|excerpt(160) }}</p>
             {% endif %}
-        </div>
-        <div class="card-footer d-flex align-items-center justify-content-between gap-2 mt-auto">
+        </twig:Tabler:Card:Body>
+        <twig:Tabler:Card:Footer class="d-flex align-items-center justify-content-between gap-2 mt-auto">
             <span class="text-secondary small text-truncate">
                 {% if event.placeName %}
-                    <twig:Icon name="lucide:map-pin" />
+                    <twig:Tabler:Icon name="lucide:map-pin" />
                     {{ event.placeName }}{% if event.placeCity %}, {{ event.placeCity }}{% endif %}
                 {% endif %}
             </span>
-        </div>
+        </twig:Tabler:Card:Footer>
     </div>
 </article>

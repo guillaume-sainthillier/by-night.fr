@@ -9,10 +9,9 @@
 {% set withFilters = withFilters ?? true %}
 <div class="d-flex flex-wrap align-items-center gap-2{{ withFilters ? ' chips-scroll-mobile' }}"{% if withFilters %} id="agenda-dates"{% endif %} role="group" aria-label="Dates">
     {% if withFilters %}
-        <button type="button" class="btn btn-sm btn-pill d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#agenda-filters" aria-controls="agenda-filters">
-            <twig:Icon name="lucide:sliders-horizontal" />
+        <twig:Tabler:Button variant="default" size="sm" pill type="button" class="d-lg-none" icon="lucide:sliders-horizontal" offcanvas="agenda-filters">
             Filtres
-        </button>
+        </twig:Tabler:Button>
     {% endif %}
     {% for preset in enum_cases('App\\Enum\\DateRangePreset') %}
         {% set count = facets.dates[preset.value] ?? null %}

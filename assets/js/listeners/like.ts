@@ -1,5 +1,6 @@
 import { defineListener } from '@silarhi/app-js'
 import { sendJson } from '@silarhi/app-js/http'
+import { path } from '@/js/router'
 
 const options = {
     css_selector_like: '.btn-like-event',
@@ -22,14 +23,14 @@ interface ParticipationResponse {
 export default defineListener<HTMLElement>({
     selector: options.css_selector_like,
     connect(element, { app }) {
-        const { href = '' } = element.dataset
+        const { eventId = '' } = element.dataset
 
         const like = async () => {
             // A button, or a link styled as one: the attribute disables both
             element.setAttribute('disabled', 'disabled')
             let msg: ParticipationResponse | null
             try {
-                msg = await sendJson<ParticipationResponse>('PUT', href, {
+                msg = await sendJson<ParticipationResponse>('PUT', path('api_event_participation', { id: eventId }), {
                     going: !element.classList.contains(options.css_active_class),
                 })
             } catch {
@@ -46,7 +47,7 @@ export default defineListener<HTMLElement>({
             element.classList.toggle(options.css_active_class, msg.going)
             // The page's other buttons of the same event (the action bar of a phone) follow
             for (const other of document.querySelectorAll<HTMLElement>(options.css_selector_like)) {
-                if (other.dataset.href === href) {
+                if (other.dataset.eventId === eventId) {
                     other.classList.toggle(options.css_active_class, msg.going)
                 }
             }

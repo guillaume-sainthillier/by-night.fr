@@ -157,7 +157,7 @@ final class SecurityControllerTest extends AppWebTestCase
         self::assertAnySelectorTextSame('#security .badge', 'Non configurés');
         self::assertAnySelectorTextSame('#security .badge', 'Désactivée');
         self::assertAnySelectorTextSame('#security .badge', '0 clé');
-        self::assertSelectorExists('.account-tabs a[href="#security"]');
+        self::assertSelectorExists('.account-tabs [data-bs-target="#security"]');
     }
 
     public function testTheRecoveryCodesAreSavedOnceConfirmed(): void

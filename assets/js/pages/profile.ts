@@ -1,6 +1,8 @@
 import { definePage } from '@silarhi/app-js'
+import { formView } from '@silarhi/app-js/form'
 import { Tab } from '@tabler/core'
 import SocialLogin from '@/js/components/SocialLogin'
+import { path } from '@/js/router'
 import { create as createAutocomplete } from '@/js/services/ui/AutocompleteService'
 
 export default definePage(() => {
@@ -16,7 +18,8 @@ export default definePage(() => {
 // open tab survives a reload
 function initTabs() {
     const showTab = (hash: string) => {
-        const trigger = document.querySelector<HTMLElement>(`.account-tabs [href="${CSS.escape(hash)}"]`)
+        // The tabs are Tabler:SegmentedControl buttons, which name their pane in data-bs-target
+        const trigger = document.querySelector<HTMLElement>(`.account-tabs [data-bs-target="${CSS.escape(hash)}"]`)
         if (trigger) {
             const tab = Tab.getOrCreateInstance(trigger)
             if (tab instanceof Tab) {
@@ -31,7 +34,7 @@ function initTabs() {
 
     for (const trigger of document.querySelectorAll('.account-tabs [data-bs-toggle="tab"]')) {
         trigger.addEventListener('shown.bs.tab', () => {
-            window.history.replaceState(null, '', trigger.getAttribute('href'))
+            window.history.replaceState(null, '', trigger.getAttribute('data-bs-target'))
         })
     }
 
@@ -47,9 +50,10 @@ function initTabs() {
 
 // The deletion button waits for the confirmation word, which the server checks again
 function initDeleteConfirmation() {
-    const confirmation = document.querySelector<HTMLInputElement>('[data-delete-confirmation]')
     const submit = document.querySelector<HTMLButtonElement>('[data-delete-submit]')
-    if (!confirmation || !submit) {
+    // DeleteAccountFormType's confirmation, read through the view of the button's form
+    const confirmation = submit?.form ? formView(submit.form).find('confirmation')?.field().element : null
+    if (!submit || !(confirmation instanceof HTMLInputElement)) {
         return
     }
 
@@ -64,8 +68,10 @@ function initDeleteConfirmation() {
 // The chosen picture replaces the current one before the form is saved
 function initAvatarPreview() {
     const preview = document.querySelector('[data-avatar-preview]')
-    const input = preview?.closest('.card-body')?.querySelector<HTMLInputElement>('input[type="file"]')
-    if (!preview || !input) {
+    // The file of the picture field (VichImageType) the preview's card holds, read through its form view
+    const body = preview?.closest('.card-body')
+    const input = body ? formView(body).find('file')?.field().element : null
+    if (!preview || !(input instanceof HTMLInputElement)) {
         return
     }
 
@@ -86,16 +92,18 @@ function initAvatarPreview() {
 // "Ma ville" (CityPickerType): choosing a city in the list fills the hidden slug, typing again empties it
 function initCityPicker() {
     for (const picker of document.querySelectorAll<HTMLElement>('[data-city-picker]')) {
-        const element = picker.querySelector<HTMLInputElement>('input[type="text"]')
-        const url = picker.dataset.cityPicker
-        if (!element || !url) {
+        // The picker holds the fields of its CityPickerType: the city's name, and its slug
+        const city = formView(picker)
+        const element = city.field('name').element
+        const slug = city.field('slug').element
+        if (!(element instanceof HTMLInputElement)) {
             continue
         }
 
         createAutocomplete({
             element,
-            valueInput: picker.querySelector<HTMLInputElement>('input[type="hidden"]'),
-            url,
+            valueInput: slug instanceof HTMLInputElement ? slug : null,
+            url: (q) => path('api_cities', { _query: { q } }),
         })
     }
 }

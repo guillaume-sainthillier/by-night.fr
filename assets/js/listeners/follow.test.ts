@@ -16,11 +16,13 @@ const { state, sendJson } = vi.hoisted(() => {
         following: boolean
         followers: number
     }
-    const state: { requests: unknown[]; response: Response | Error | null } = {
+    const state: { urls: string[]; requests: unknown[]; response: Response | Error | null } = {
+        urls: [],
         requests: [],
         response: { following: true, followers: 1 },
     }
-    const sendJson = async (_method: string, _url: string, data: unknown) => {
+    const sendJson = async (_method: string, url: string, data: unknown) => {
+        state.urls.push(url)
         state.requests.push(data)
         if (state.response instanceof Error) {
             throw state.response
@@ -37,7 +39,7 @@ const connect = ({ active = false }: { active?: boolean } = {}) => {
     const label = { textContent: active ? 'Suivi' : 'Suivre' }
     const followers = { textContent: '' }
     const button = {
-        dataset: { href: '/api/publishers/7/follow', intent: 'suivre' },
+        dataset: { follow: 'publisher', followId: '7', intent: 'suivre' },
         classes,
         label,
         followers,
@@ -74,6 +76,7 @@ const visit = (hash: string) => {
 }
 
 beforeEach(() => {
+    state.urls = []
     state.requests = []
     state.response = { following: true, followers: 1 }
 })
@@ -90,6 +93,7 @@ describe('follow listener', () => {
 
         await button.click?.()
 
+        expect(state.urls).toEqual(['/api/publishers/7/follow'])
         expect(state.requests).toEqual([{ following: true }])
         expect(button.classes.has('btn-primary')).toBe(true)
         expect(button.label.textContent).toBe('Suivi')

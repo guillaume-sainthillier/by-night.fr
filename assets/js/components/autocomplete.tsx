@@ -18,6 +18,7 @@ import {
     LucideTriangleAlertIcon,
     LucideUserIcon,
 } from '@/js/icons'
+import { path } from '@/js/router'
 import { splitHighlights } from '@/js/utils/highlight'
 import { plural } from '@/js/utils/plural'
 import { searchPageHref } from '@/js/utils/searchPage'
@@ -60,9 +61,8 @@ export interface AutocompleteInitOptions {
     container?: ParentNode
     searchPlaceholder?: string
     inputPlaceholder?: string
-    globalSearchUrl?: string | null
-    suggestionsUrl?: string | null
-    searchPageUrl?: string | null
+    /** The slug of the page's city, whose events the search puts first */
+    city?: string | null
     enableHotkeys?: boolean
 }
 
@@ -77,9 +77,7 @@ export default function init({
     container = document,
     searchPlaceholder = 'Recherche globale',
     inputPlaceholder = 'Rechercher des événements, villes, membres…',
-    globalSearchUrl = null,
-    suggestionsUrl = null,
-    searchPageUrl = null,
+    city = null,
     enableHotkeys = true,
 }: AutocompleteInitOptions): GlobalAutocomplete | undefined {
     const autocompleteEl = container.querySelector<HTMLElement>(autocompleteSelector)
@@ -174,11 +172,9 @@ export default function init({
     // Fetched on the first opening only, and again after a failure
     let suggestions: Promise<SearchResult[]> | null = null
     const loadSuggestions = (): Promise<SearchResult[]> => {
-        if (!suggestionsUrl) {
-            return Promise.resolve([])
-        }
-
-        suggestions ??= getJson<SearchCollection>(suggestionsUrl, { headers: { Accept: 'application/ld+json' } })
+        suggestions ??= getJson<SearchCollection>(path('api_search_suggestions', { _query: { city } }), {
+            headers: { Accept: 'application/ld+json' },
+        })
             .then((response) => response.member || [])
             .catch((error) => {
                 console.error('Search suggestions error:', error)
@@ -210,9 +206,9 @@ export default function init({
             render(
                 <Fragment>
                     {children}
-                    {state.query && state.status === 'idle' && state.collections.length > 0 && searchPageUrl && (
+                    {state.query && state.status === 'idle' && state.collections.length > 0 && (
                         <div className="aa-PanelFooter">
-                            <a href={searchPageHref(searchPageUrl, state.query)} className="aa-ViewAllLink">
+                            <a href={searchPageHref(city, state.query)} className="aa-ViewAllLink">
                                 Voir tous les résultats pour «&nbsp;<strong>{state.query}</strong>&nbsp;»
                             </a>
                         </div>
@@ -280,11 +276,9 @@ export default function init({
                         <h2 className="mt-4 display-4">
                             Aucun résultat pour <strong>«&nbsp;{state.query}&nbsp;»</strong>.
                         </h2>
-                        {searchPageUrl && (
-                            <a href={searchPageHref(searchPageUrl, state.query)} className="btn btn-primary mt-3">
-                                Essayer la recherche avancée
-                            </a>
-                        )}
+                        <a href={searchPageHref(city, state.query)} className="btn btn-primary mt-3">
+                            Essayer la recherche avancée
+                        </a>
                     </div>
                 </div>,
                 root
@@ -297,7 +291,7 @@ export default function init({
                 return loadSuggestions().then((results) => toSources(results, true))
             }
 
-            return getJson<SearchCollection>(globalSearchUrl ?? '', {
+            return getJson<SearchCollection>(path('api_search', { _query: { city } }), {
                 params: { q: query },
                 headers: { Accept: 'application/ld+json' },
             })

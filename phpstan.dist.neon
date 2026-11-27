@@ -1,3 +1,9 @@
+includes:
+    # The #[Grants] methods of the voters, which only silarhi/voter-bundle calls
+    - vendor/silarhi/voter-bundle/shipmonk.neon
+    # The #[AsLlmsTxtLinkProvider] methods, which only silarhi/llms-txt-bundle calls
+    - vendor/silarhi/llms-txt-bundle/shipmonk.neon
+
 parameters:
     level: 6
     tmpDir: var/tools/phpstan

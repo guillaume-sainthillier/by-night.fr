@@ -9,10 +9,12 @@
 
 {# Connected by "Se souvenir de moi" only: every page of this tab takes a login first (SecurityController) #}
 {% if not is_granted('IS_AUTHENTICATED_FULLY') %}
-    <div class="alert alert-info" role="alert">
-        Pour modifier ces réglages, confirmez d’abord qu’il s’agit bien de vous&nbsp;:
-        <a href="{{ path('app_login', {_target_path: path('app_user_edit') ~ '#security'}) }}" class="alert-link">reconnectez-vous</a>.
-    </div>
+    <twig:Tabler:Alert variant="info">
+        <twig:block name="description">
+            Pour modifier ces réglages, confirmez d’abord qu’il s’agit bien de vous&nbsp;:
+            <twig:Tabler:Alert:Link href="{{ path('app_login', {_target_path: path('app_user_edit') ~ '#security'}) }}">reconnectez-vous</twig:Tabler:Alert:Link>.
+        </twig:block>
+    </twig:Tabler:Alert>
 {% endif %}
 
 <twig:FormCard icon="lucide:life-buoy" tone="teal" title="Codes de secours"
@@ -23,7 +25,7 @@
         {% if user.backupCodeEnabled %}
             <form method="post" action="{{ path('app_user_security_recovery_codes_delete') }}" data-confirm-message="Vos codes de secours ne vous permettront plus de vous connecter{{ user.hasSecondFactor ? ' : en cas de perte de votre second facteur, il vous restera le lien de récupération envoyé par e-mail' }}." data-confirm-button="Supprimer">
                 <input type="hidden" name="_token" value="{{ csrf_token('two-factor-recovery-codes-delete') }}">
-                <button type="submit" class="btn btn-outline-danger">Supprimer les codes</button>
+                <twig:Tabler:Button variant="danger" appearance="outline" type="submit">Supprimer les codes</twig:Tabler:Button>
             </form>
         {% endif %}
         <a href="{{ path('app_user_security_recovery_codes') }}" class="btn {{ user.backupCodeEnabled ? 'btn-outline-primary' : 'btn-primary' }}">
@@ -40,7 +42,7 @@
         {% if user.googleAuthenticatorEnabled %}
             <form method="post" action="{{ path('app_user_security_totp_disable') }}" data-confirm-message="Votre application d’authentification ne vous sera plus demandée à la connexion." data-confirm-button="Désactiver">
                 <input type="hidden" name="_token" value="{{ csrf_token('two-factor-totp-disable') }}">
-                <button type="submit" class="btn btn-outline-danger">Désactiver</button>
+                <twig:Tabler:Button variant="danger" appearance="outline" type="submit">Désactiver</twig:Tabler:Button>
             </form>
             <a href="{{ path('app_user_security_totp') }}" class="btn btn-outline-primary">Changer d’application</a>
         {% else %}
@@ -54,9 +56,9 @@
                badge="{{ user.webauthnKeys|length }} clé{{ user.webauthnKeys|length > 1 ? 's' }}"
                badgeTone="{{ user.webauthnAuthenticatorEnabled ? 'green' : 'secondary' }}">
     {% if user.webauthnKeys is not empty %}
-        <div class="list-group mb-3">
+        <twig:Tabler:ListGroup class="mb-3">
             {% for key in user.webauthnKeys %}
-                <div class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                <twig:Tabler:ListGroup:Item class="d-flex flex-wrap align-items-center gap-2">
                     <div class="flex-fill">
                         <div class="fw-bold">{{ key.name }}</div>
                         <div class="text-secondary small">
@@ -65,17 +67,16 @@
                         </div>
                     </div>
                     <a href="{{ path('app_user_security_passkey_edit', {uuid: key.uuid}) }}" class="btn btn-sm btn-icon btn-outline-secondary" title="Renommer">
-                        <twig:Icon name="lucide:pencil" /><span class="visually-hidden">Renommer {{ key.name }}</span>
+                        <twig:Tabler:Icon name="lucide:pencil" /><span class="visually-hidden">Renommer {{ key.name }}</span>
                     </a>
                     <form method="post" action="{{ path('app_user_security_passkey_delete', {uuid: key.uuid}) }}" data-confirm-message="La clé « {{ key.name }} » ne pourra plus confirmer vos connexions." data-confirm-button="Supprimer">
                         <input type="hidden" name="_token" value="{{ csrf_token('two-factor-passkey-delete') }}">
-                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Supprimer">
-                            <twig:Icon name="lucide:trash-2" /><span class="visually-hidden">Supprimer {{ key.name }}</span>
-                        </button>
+                        <twig:Tabler:Button variant="danger" appearance="outline" size="sm" iconOnly type="submit" title="Supprimer" icon="lucide:trash-2"><span class="visually-hidden">Supprimer {{ key.name }}</span>
+                        </twig:Tabler:Button>
                     </form>
-                </div>
+                </twig:Tabler:ListGroup:Item>
             {% endfor %}
-        </div>
+        </twig:Tabler:ListGroup>
     {% endif %}
     <div class="d-flex justify-content-end">
         <a href="{{ path('app_user_security_passkey_new') }}" class="btn {{ user.webauthnAuthenticatorEnabled ? 'btn-outline-primary' : 'btn-primary' }}">Ajouter une clé d’accès</a>

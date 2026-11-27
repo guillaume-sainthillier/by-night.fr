@@ -53,6 +53,49 @@ final class PageControllerTest extends AppWebTestCase
         self::assertSelectorTextSame('title', 'Mentions légales - By Night');
     }
 
+    public function testShowAnswersMarkdownAtItsMdUrl(): void
+    {
+        $client = self::createClient();
+        PageFactory::createOne([
+            'title' => 'Q&A : publier un événement',
+            'content' => '<h2>Étape 1</h2><p>Créez un <strong>compte</strong> sur <a href="https://by-night.test/inscription">By Night</a>.</p><table><thead><tr><th>Lieu</th><th>Prix</th></tr></thead><tbody><tr><td>Bikini</td><td>Gratuit</td></tr></tbody></table>',
+        ]);
+
+        $client->request('GET', '/p/q-a-publier-un-evenement.md');
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/markdown; charset=UTF-8');
+        // Nothing escaped, the tables kept
+        self::assertSame("# Q&A : publier un événement\n\n## Étape 1\n\nCréez un **compte** sur [By Night](https://by-night.test/inscription).\n\n| Lieu | Prix |\n|---|---|\n| Bikini | Gratuit |\n", $client->getInternalResponse()->getContent());
+    }
+
+    public function testShowAnswersMarkdownToAnAgentAskingForIt(): void
+    {
+        $client = self::createClient();
+        PageFactory::createOne(['title' => 'Mentions légales', 'content' => '<p>Le contenu.</p>']);
+
+        $client->request('GET', '/p/mentions-legales', server: ['HTTP_ACCEPT' => 'text/markdown, text/html;q=0.9']);
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/markdown; charset=UTF-8');
+        self::assertResponseHeaderSame('Vary', 'Accept');
+        self::assertStringStartsWith("# Mentions légales\n\nLe contenu.", $client->getInternalResponse()->getContent());
+    }
+
+    public function testTheHtmlPageLinksToItsMarkdownVersion(): void
+    {
+        $client = self::createClient();
+        PageFactory::createOne(['title' => 'Mentions légales']);
+
+        // A browser asks for text/html first
+        $client->request('GET', '/p/mentions-legales', server: ['HTTP_ACCEPT' => 'text/html,application/xhtml+xml,*/*;q=0.8']);
+
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/html; charset=UTF-8');
+        $links = preg_split('/,\s*(?=<)/', (string) $client->getResponse()->headers->get('Link'));
+        self::assertContains('<https://by-night.test/p/mentions-legales.md>; rel="alternate"; type="text/markdown"', $links);
+    }
+
     public function testUnknownSlugReturns404(): void
     {
         $client = self::createClient();

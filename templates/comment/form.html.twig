@@ -2,9 +2,9 @@
     {{ form_start(form) }}
     <div class="comment comment-form">
         <div class="d-flex align-items-center gap-2 mb-2">
-            <span class="avatar avatar-sm">
+            <twig:Tabler:Avatar size="sm">
                 <twig:User:Thumb user="{{ app.user }}" width="{{ 32 }}" height="{{ 32 }}" />
-            </span>
+            </twig:Tabler:Avatar>
             <strong>{{ app.user.username }}</strong>
         </div>
         {% block form_comment %}
@@ -16,7 +16,7 @@
             }) }}
         {% endblock %}
         <div class="text-end">
-            <button type="submit" class="btn btn-primary btn-submit">Publier mon commentaire</button>
+            <twig:Tabler:Button variant="primary" type="submit" class="btn-submit">Publier mon commentaire</twig:Tabler:Button>
         </div>
     </div>
     {{ form_end(form) }}
@@ -26,7 +26,7 @@
            this form on) #}
         <a class="btn btn-outline-primary" title="Se connecter pour laisser un commentaire" rel="nofollow"
            href="{{ login }}">
-            <twig:Icon name="lucide:message-square-plus" />
+            <twig:Tabler:Icon name="lucide:message-square-plus" />
             Se connecter pour commenter
         </a>
     </div>

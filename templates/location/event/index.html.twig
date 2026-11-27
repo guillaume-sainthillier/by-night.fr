@@ -89,15 +89,16 @@
             <header class="event-header mb-4">
                 <h1 class="text-start">{{ block('title') }}</h1>
             </header>
-            <div class="alert alert-warning">
-                <twig:Icon name="lucide:triangle-alert" />
-                Cet événement n'est pas encore publié. Il sera bientôt disponible, merci de votre patience.
-                {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    {# Its author, logged out, gets back to their preview; the visitor already has this URL #}
-                    Vous en êtes l'organisateur&nbsp;?
-                    <a rel="nofollow" href="{{ path('app_login', {_target_path: app.request.pathInfo}) }}">Connectez-vous pour le voir</a>.
-                {% endif %}
-            </div>
+            <twig:Tabler:Alert variant="warning" icon="lucide:triangle-alert">
+                <twig:block name="description">
+                    Cet événement n'est pas encore publié. Il sera bientôt disponible, merci de votre patience.
+                    {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                        {# Its author, logged out, gets back to their preview; the visitor already has this URL #}
+                        Vous en êtes l'organisateur&nbsp;?
+                        <a rel="nofollow" href="{{ path('app_login', {_target_path: app.request.pathInfo}) }}">Connectez-vous pour le voir</a>.
+                    {% endif %}
+                </twig:block>
+            </twig:Tabler:Alert>
         </div>
     {% else %}
         {% set price = event.prices|price_label(event.startingPrice) %}
@@ -125,31 +126,29 @@
             <header class="event-header mb-4">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                     {% if event.category %}
-                        <a class="badge bg-primary-lt" href="{{ path('app_agenda_by_tag', {tagSlug: event.category.slug, tagId: event.category.id, location: place.locationSlug}) }}" title="{{ event.category.name }} {{ place.location.atName }}">
+                        <twig:Tabler:Badge variant="primary" light href="{{ path('app_agenda_by_tag', {tagSlug: event.category.slug, tagId: event.category.id, location: place.locationSlug}) }}" title="{{ event.category.name }} {{ place.location.atName }}">
                             {{ event.category.name }}
-                        </a>
+                        </twig:Tabler:Badge>
                     {% endif %}
                     {% if price and price.free %}
-                        <span class="badge bg-teal-lt">
-                            <twig:Icon name="lucide:badge-check" />
+                        <twig:Tabler:Badge variant="" class="bg-teal-lt" icon="lucide:badge-check">
                             Entrée gratuite
-                        </span>
+                        </twig:Tabler:Badge>
                     {% endif %}
-                    <a class="badge bg-secondary-lt" href="{{ agenda }}" title="Sortir {{ place.location.atName }}">
-                        <twig:Icon name="lucide:map-pin" />
+                    <twig:Tabler:Badge variant="secondary" light href="{{ agenda }}" title="Sortir {{ place.location.atName }}" icon="lucide:map-pin">
                         Sortir {{ place.location.atName }}
-                    </a>
+                    </twig:Tabler:Badge>
                 </div>
                 <div class="d-flex align-items-start gap-3">
                     <h1 class="text-start">{{ block('title') }}</h1>
                     {% if is_granted('ROLE_ADMIN') %}
                         <a class="btn btn-icon btn-outline-secondary flex-shrink-0" href="{{ path('admin_event_edit', {entityId: event.id}) }}" data-bs-toggle="tooltip" title="Modifier l'événement">
-                            <twig:Icon name="lucide:pencil" />
+                            <twig:Tabler:Icon name="lucide:pencil" />
                         </a>
                     {% elseif is_granted(constant('\\App\\Security\\Voter\\EventVoter::EDIT'), event) %}
                         {# The author corrects their event from their personal space #}
                         <a class="btn btn-outline-secondary flex-shrink-0" href="{{ path('app_event_edit', {publisher: event.publisher.slug, id: event.id}) }}" title="Modifier l'événement">
-                            <twig:Icon name="lucide:pencil" />
+                            <twig:Tabler:Icon name="lucide:pencil" />
                             <span class="d-none d-sm-inline">Modifier</span>
                         </a>
                     {% endif %}
@@ -162,7 +161,7 @@
                         {% if nextSession %}
                             {% set otherSessions = event.countUpcomingSessions() - 1 %}
                             <span class="fw-semibold">
-                                <twig:Icon name="lucide:calendar-days" class="text-primary" />
+                                <twig:Tabler:Icon name="lucide:calendar-days" class="text-primary" />
                                 {{ nextSession.startAt|format_date(pattern: 'EEE d MMMM')|ucfirst }}
                                 {%- if session_start(nextSession) %} · {{ session_start(nextSession) }}{% endif %}
                                 {%- if otherSessions > 0 %}
@@ -172,7 +171,7 @@
                         {% endif %}
                         {% if event.placeName %}
                             <a class="link-secondary text-truncate mw-100" href="{{ placeAgenda }}" title="Sortir {{ event.placeName|at_place }}">
-                                <twig:Icon name="lucide:map-pin" class="text-primary" />
+                                <twig:Tabler:Icon name="lucide:map-pin" class="text-primary" />
                                 {{ event.placeName }}{% if event.placeCity %}, {{ event.placeCity }}{% endif %}
                             </a>
                         {% endif %}
@@ -182,25 +181,21 @@
 
             {# An event its source no longer lists is hidden as a draft, but has nothing to publish: its status says why #}
             {% if event.draft and not event.removedAtSource %}
-                <div class="alert alert-info" id="event-draft-notice" role="status">
+                <twig:Tabler:Alert variant="info" id="event-draft-notice" role="status">
                     <div class="d-flex flex-wrap align-items-center gap-3">
-                        <twig:Icon name="lucide:eye" class="alert-icon" />
+                        <twig:Tabler:Icon name="lucide:eye" class="alert-icon" />
                         <div class="flex-fill">
                             <div class="fw-bold">Aperçu&nbsp;: cet événement n'est pas encore publié</div>
                             Seuls son auteur et les administrateurs le voient. Publiez-le pour qu'il apparaisse dans l'agenda.
                         </div>
-                        <button type="button" class="btn btn-primary" data-publish-href="{{ path('api_event_update', {id: event.id}) }}" {% if event.publisher %}data-duplicates-href="{{ path('app_event_edit_duplicates', {publisher: event.publisher.slug, id: event.id}) }}"{% endif %}>
-                            <twig:Icon name="lucide:rocket" />
-                            Publier l'événement
-                        </button>
+                        <twig:Tabler:Button variant="primary" icon="lucide:rocket" data-publish-event="{{ event.id }}" data-publisher="{{ event.publisher?.slug }}">Publier l'événement</twig:Tabler:Button>
                     </div>
-                </div>
+                </twig:Tabler:Alert>
             {% endif %}
             {% if hasEnded %}
-                <div class="alert alert-secondary" id="event-ended">
-                    <twig:Icon name="lucide:calendar-clock" />
-                    <span>Cet événement est terminé. Retrouvez les prochaines sorties {{ place.location.atName }} dans <a href="{{ agenda }}">l'agenda</a>.</span>
-                </div>
+                <twig:Tabler:Alert variant="secondary" icon="lucide:calendar-clock" id="event-ended">
+                    <twig:block name="description">Cet événement est terminé. Retrouvez les prochaines sorties {{ place.location.atName }} dans <a href="{{ agenda }}">l'agenda</a>.</twig:block>
+                </twig:Tabler:Alert>
             {% endif %}
             {% if event.status or event.statusMessage %}
                 <twig:Event:StatusAlert event="{{ event }}" prefix="Informations de dernière minute : " full="{{ true }}" />
@@ -214,58 +209,54 @@
                    booking, and the other ticketing sites of the family, a screen and a half down #}
                 {% if bestOffer %}
                     <div class="event-layout-tickets d-lg-none">
-                        <div class="card card-layout mb-0" id="event-tickets">
-                            <div class="card-body d-grid gap-2">
+                        <twig:Tabler:Card id="event-tickets" class="card-layout mb-0">
+                            <twig:Tabler:Card:Body class="d-grid gap-2">
                                 {{ include('location/event/_tickets.html.twig') }}
-                            </div>
-                        </div>
+                            </twig:Tabler:Card:Body>
+                        </twig:Tabler:Card>
                     </div>
                 {% endif %}
 
                 <div class="event-layout-media">
-                    <div class="card card-layout overflow-visible mb-0">
+                    <twig:Tabler:Card class="card-layout overflow-visible mb-0">
                         <a class="image-gallery card-img-top d-block overflow-hidden" href="{{ original }}" title="{{ eventShortName }}">
                             <twig:Event:Poster event="{{ event }}" width="{{ 800 }}" priority="{{ true }}" id="event-poster" />
                         </a>
-                        <div class="card-footer d-flex flex-wrap align-items-center gap-2" id="event-actions" data-share>
+                        <twig:Tabler:Card:Footer id="event-actions" data-share class="d-flex flex-wrap align-items-center gap-2">
                             {{ include('location/event/_going.html.twig') }}
                             {# A phone's own share sheet (share.ts), in place of the menu and the copy #}
-                            <button type="button" class="btn" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" data-share-native-only hidden>
-                                <twig:Icon name="lucide:share-2" />
+                            <twig:Tabler:Button variant="default" type="button" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" data-share-native-only hidden icon="lucide:share-2">
                                 Partager
-                            </button>
-                            <div class="dropdown" data-share-fallback>
-                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <twig:Icon name="lucide:share-2" />
+                            </twig:Tabler:Button>
+                            <twig:Tabler:Dropdown data-share-fallback>
+                                <twig:Tabler:Dropdown:Toggle>
+                                    <twig:Tabler:Icon name="lucide:share-2" />
                                     Partager
-                                </button>
-                                <div class="dropdown-menu">
+                                </twig:Tabler:Dropdown:Toggle>
+                                <twig:Tabler:Dropdown:Menu>
                                     {% for name, social in trendsData.shares %}
-                                        <a href="{{ social }}" class="dropdown-item popup {{ name }}">
-                                            <twig:Icon name="{{ name|social_icon }}" />
+                                        <twig:Tabler:Dropdown:Item icon="{{ name|social_icon }}" href="{{ social }}" class="popup {{ name }}">
                                             {{ name|social_label }}
-                                        </a>
+                                        </twig:Tabler:Dropdown:Item>
                                     {% endfor %}
-                                    <a class="dropdown-item" href="mailto:?subject={{ eventShortName|url_encode }}&amp;body={{ eventUrl|url_encode }}">
-                                        <twig:Icon name="lucide:mail" />
+                                    <twig:Tabler:Dropdown:Item icon="lucide:mail" href="mailto:?subject={{ eventShortName|url_encode }}&amp;body={{ eventUrl|url_encode }}">
                                         Par e-mail
-                                    </a>
-                                </div>
-                                <button type="button" class="btn" data-copy-url="{{ eventUrl }}">
-                                    <twig:Icon name="lucide:link" />
+                                    </twig:Tabler:Dropdown:Item>
+                                </twig:Tabler:Dropdown:Menu>
+                                <twig:Tabler:Button variant="default" type="button" data-copy="{{ eventUrl }}" icon="lucide:link">
                                     Copier le lien
-                                </button>
-                            </div>
+                                </twig:Tabler:Button>
+                            </twig:Tabler:Dropdown>
                             {% if going or interested %}
                                 <div class="d-flex align-items-center gap-2 ms-auto small text-secondary">
                                     {% if participants %}
-                                        <div class="avatar-list avatar-list-stacked">
+                                        <twig:Tabler:Avatar:List stacked>
                                             {% for participant in participants %}
-                                                <span class="avatar avatar-xs rounded-circle">
+                                                <twig:Tabler:Avatar size="xs" rounded>
                                                     <twig:User:Thumb user="{{ participant }}" width="{{ 24 }}" height="{{ 24 }}" />
-                                                </span>
+                                                </twig:Tabler:Avatar>
                                             {% endfor %}
-                                        </div>
+                                        </twig:Tabler:Avatar:List>
                                     {% endif %}
                                     <span>
                                         {%- if going %}<strong class="text-body">{{ '{count, plural, one {# participant} other {# participants}}'|trans({count: going}, 'messages+intl-icu') }}</strong>{% endif -%}
@@ -274,18 +265,29 @@
                                     </span>
                                 </div>
                             {% endif %}
-                        </div>
-                    </div>
+                        </twig:Tabler:Card:Footer>
+                    </twig:Tabler:Card>
                 </div>
 
                 <aside class="event-layout-aside">
-                    <div class="card card-layout mb-0">
-                        <div class="card-header">
+                    {# The directions go under the map, or here when there is none #}
+                    {# Set outside the card: what is set in its content stays there, and the map's card needs them too #}
+                    {% set directions %}
+                        {% if directionsTo %}
+                            <a class="btn" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ directionsTo|url_encode }}" target="_blank" rel="noopener nofollow">
+                                <twig:Tabler:Icon name="lucide:navigation" />
+                                Itinéraire
+                            </a>
+                        {% endif %}
+                    {% endset %}
+                    {% set directionsHere = directionsTo and not mapValue %}
+                    <twig:Tabler:Card class="card-layout mb-0">
+                        <twig:Tabler:Card:Header>
                             <h2 class="subheader mb-0">Informations pratiques</h2>
-                        </div>
-                        <div class="card-body event-facts">
+                        </twig:Tabler:Card:Header>
+                        <twig:Tabler:Card:Body class="event-facts">
                             <div class="detail-item">
-                                <twig:Icon name="lucide:calendar-days" class="text-primary" />
+                                <twig:Tabler:Icon name="lucide:calendar-days" class="text-primary" />
                                 <div>
                                     <div class="subheader">Date</div>
                                     <div class="fw-semibold">
@@ -305,7 +307,7 @@
                             {% set hours = event_hours(event) %}
                             {% if hours %}
                                 <div class="detail-item">
-                                    <twig:Icon name="lucide:clock" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:clock" class="text-primary" />
                                     <div>
                                         <div class="subheader">Horaires</div>
                                         <div class="fw-semibold">{{ hours }}</div>
@@ -315,7 +317,7 @@
 
                             {% if event.timesheets|length > 1 %}
                                 <div class="detail-item">
-                                    <twig:Icon name="lucide:calendar-range" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:calendar-range" class="text-primary" />
                                     <div class="min-w-0">
                                         <div class="subheader mb-1">Détail des dates</div>
                                         <twig:Event:Timesheets event="{{ event }}" />
@@ -325,7 +327,7 @@
 
                             {% if event.placeName or event.placeCity %}
                                 <div class="detail-item">
-                                    <twig:Icon name="lucide:map-pin" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:map-pin" class="text-primary" />
                                     <div>
                                         <div class="subheader">Lieu</div>
                                         {% if event.placeName %}
@@ -343,7 +345,7 @@
 
                             {% if event.performers %}
                                 <div class="detail-item">
-                                    <twig:Icon name="lucide:music" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:music" class="text-primary" />
                                     <div>
                                         <div class="subheader">{{ '{count, plural, one {Artiste} other {Artistes}}'|trans({count: event.performers|length}, 'messages+intl-icu') }}</div>
                                         <div class="fw-semibold">{{ event.performers|join(', ') }}</div>
@@ -354,7 +356,7 @@
                             {# A ticketing site's prices are the ones of its offer, listed with the others under the booking button #}
                             {% if event.prices and not (event.affiliate and offers|length > 1) %}
                                 <div class="detail-item">
-                                    <twig:Icon name="lucide:ticket" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:ticket" class="text-primary" />
                                     <div>
                                         <div class="subheader">Tarifs</div>
                                         <div>{{ event.prices|prices_text }}</div>
@@ -364,7 +366,7 @@
 
                             {% if event.phoneContacts or event.websiteContacts or event.mailContacts or event.facebookEventId %}
                                 <div class="detail-item">
-                                    <twig:Icon name="lucide:contact" class="text-primary" />
+                                    <twig:Tabler:Icon name="lucide:contact" class="text-primary" />
                                     <div class="min-w-0">
                                         <div class="subheader">Contact</div>
                                         {% for phoneContact in event.phoneContacts %}
@@ -395,7 +397,7 @@
                                 {% if not maPatisserieDisplayed and (word in event.description|lower or word in event.name|lower) %}
                                     {% set maPatisserieDisplayed = true %}
                                     <div class="detail-item">
-                                        <twig:Icon name="lucide:cake" class="text-primary" />
+                                        <twig:Tabler:Icon name="lucide:cake" class="text-primary" />
                                         <div>
                                             <div class="subheader">Notre partenaire gourmand</div>
                                             <a href="https://mapatisserie.fr">Blog de pâtisserie</a>
@@ -403,20 +405,10 @@
                                     </div>
                                 {% endif %}
                             {% endfor %}
-                        </div>
-                        {# The directions go under the map, or here when there is none #}
-                        {% set directions %}
-                            {% if directionsTo %}
-                                <a class="btn" href="https://www.google.com/maps/dir/?api=1&amp;destination={{ directionsTo|url_encode }}" target="_blank" rel="noopener nofollow">
-                                    <twig:Icon name="lucide:navigation" />
-                                    Itinéraire
-                                </a>
-                            {% endif %}
-                        {% endset %}
-                        {% set directionsHere = directionsTo and not mapValue %}
+                        </twig:Tabler:Card:Body>
                         {% if bestOffer or directionsHere or calendarUrl %}
                             {# Holding the tickets only, it is empty on a phone, where they come under the title #}
-                            <div class="card-body {{ directionsHere or calendarUrl ? 'd-grid' : 'd-none d-lg-grid' }} gap-2">
+                            <twig:Tabler:Card:Body class="{{ directionsHere or calendarUrl ? 'd-grid' : 'd-none d-lg-grid' }} gap-2">
                                 {% if bestOffer %}
                                     <div class="d-none d-lg-grid gap-2" id="event-tickets-aside">
                                         {{ include('location/event/_tickets.html.twig', {listId: 'event-ticket-offers'}) }}
@@ -427,83 +419,83 @@
                                 {% endif %}
                                 {% if calendarUrl %}
                                     <a class="btn" href="{{ calendarUrl }}" target="_blank" rel="noopener nofollow" title="Ajouter à Google Agenda">
-                                        <twig:Icon name="lucide:calendar-plus" />
+                                        <twig:Tabler:Icon name="lucide:calendar-plus" />
                                         Ajouter à l'agenda
                                     </a>
                                 {% endif %}
-                            </div>
+                            </twig:Tabler:Card:Body>
                         {% endif %}
-                    </div>
+                    </twig:Tabler:Card>
 
                     {% if mapValue %}
-                        <div class="card card-layout mb-0">
-                            <div class="card-header">
+                        <twig:Tabler:Card class="card-layout mb-0">
+                            <twig:Tabler:Card:Header>
                                 <h2 class="subheader mb-0">Plan</h2>
                                 {% if event.placeCity %}
                                     <span class="small text-secondary ms-auto">{{ event.placeCity }}</span>
                                 {% endif %}
-                            </div>
+                            </twig:Tabler:Card:Header>
                             {# Google Maps loads on demand only: no third-party request until the visitor asks for the map #}
                             <div class="ratio ratio-4x3 bg-light{{ directionsTo ? '' : ' rounded-bottom' }}" id="googleMap">
                                 <div class="map-placeholder d-flex flex-column align-items-center justify-content-center gap-2">
-                                    <twig:Icon name="lucide:map-pin" class="map-placeholder-pin" />
-                                    <button type="button" class="btn" id="loadMap"
+                                    <twig:Tabler:Icon name="lucide:map-pin" class="map-placeholder-pin" />
+                                    <twig:Tabler:Button variant="default" type="button" id="loadMap"
                                             data-map="https://www.google.com/maps/embed/v1/place?q={{ mapValue|url_encode }}&key={{ googleMapKey }}&zoom=16">
                                         Afficher la carte
-                                    </button>
+                                    </twig:Tabler:Button>
                                 </div>
                             </div>
                             {% if directionsTo %}
-                                <div class="card-body border-top d-grid">{{ directions }}</div>
+                                <twig:Tabler:Card:Body class="border-top d-grid">{{ directions }}</twig:Tabler:Card:Body>
                             {% endif %}
-                        </div>
+                        </twig:Tabler:Card>
                     {% endif %}
                 </aside>
 
                 <div class="event-layout-main">
-                    <div class="card card-layout mb-0">
+                    <twig:Tabler:Card class="card-layout mb-0">
                         {% if event.description %}
-                            <div class="card-body">
+                            <twig:Tabler:Card:Body>
                                 <h2 class="d-flex align-items-center gap-2 mb-3">
-                                    <span class="avatar avatar-sm bg-primary-lt"><twig:Icon name="lucide:file-text" /></span>
+                                    <twig:Tabler:Avatar size="sm" variant="primary"><twig:Tabler:Icon name="lucide:file-text" /></twig:Tabler:Avatar>
                                     Description
                                 </h2>
                                 <div class="event-description">
                                     {{ eventDescription|raw }}
                                 </div>
-                            </div>
+                            </twig:Tabler:Card:Body>
                         {% endif %}
-                        <div class="card-body">
+                        <twig:Tabler:Card:Body>
                             <div class="subheader mb-2">Mots-clés</div>
                             <div class="event-tags d-flex flex-wrap gap-2">
                                 {% if place.country %}
-                                    <a class="badge bg-secondary-lt" title="Sortir {{ place.country.atDisplayName }}" href="{{ path('app_location_index', {location: place.country.slug}) }}">
+                                    <twig:Tabler:Badge variant="secondary" light title="Sortir {{ place.country.atDisplayName }}" href="{{ path('app_location_index', {location: place.country.slug}) }}">
                                         Événements {{ place.country.atDisplayName }}
-                                    </a>
+                                    </twig:Tabler:Badge>
                                 {% endif %}
                                 {% if place.location.isCity and event.placeName != place.location.name %}
-                                    <a class="badge bg-secondary-lt" title="Sortir {{ place.location.atName }}" href="{{ agenda }}">
+                                    <twig:Tabler:Badge variant="secondary" light title="Sortir {{ place.location.atName }}" href="{{ agenda }}">
                                         Événements {{ place.location.atName }}
-                                    </a>
+                                    </twig:Tabler:Badge>
                                 {% endif %}
                                 {% if event.placeName %}
-                                    <a class="badge bg-secondary-lt" title="Sortir {{ event.placeName|at_place }}" href="{{ placeAgenda }}">
+                                    <twig:Tabler:Badge variant="secondary" light title="Sortir {{ event.placeName|at_place }}" href="{{ placeAgenda }}">
                                         Événements {{ event.placeName|at_place }}
-                                    </a>
+                                    </twig:Tabler:Badge>
                                 {% endif %}
-                                {% for tag in allTags %}
-                                    <a class="badge bg-primary-lt"
-                                       title="{{ tag.name }} {{ place.location.atName }}"
-                                       href="{{ path('app_agenda_by_tag', {tagSlug: tag.slug, tagId: tag.id, location: place.locationSlug}) }}">
-                                        {{ tag.name }} {{ place.location.atName }}
-                                    </a>
+                                {# Not `tag`: the content of the badge would read its own (the element it renders) #}
+                                {% for theme in allTags %}
+                                    <twig:Tabler:Badge variant="primary" light title="{{ theme.name }} {{ place.location.atName }}"
+                                        href="{{ path('app_agenda_by_tag', {tagSlug: theme.slug, tagId: theme.id, location: place.locationSlug}) }}">
+                                        {{ theme.name }} {{ place.location.atName }}
+                                    </twig:Tabler:Badge>
                                 {% endfor %}
                             </div>
-                        </div>
+                        </twig:Tabler:Card:Body>
                         {% if event.publisher %}
-                            <div class="list-group list-group-flush">
+                            <twig:Tabler:ListGroup flush>
                                 {# Its links beside the one to its page, not inside it: the row lights up as a whole #}
-                                <div class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+                                <twig:Tabler:ListGroup:Item action class="d-flex align-items-center gap-3">
                                     <a class="d-flex align-items-center gap-2 flex-grow-1 text-reset text-decoration-none" href="{{ path('app_publisher_index', {slug: event.publisher.slug}) }}" title="Les événements de {{ event.publisher.name }}">
                                         <twig:Publisher:Avatar publisher="{{ event.publisher }}" />
                                         <span>
@@ -512,22 +504,22 @@
                                         </span>
                                     </a>
                                     <twig:Publisher:Links publisher="{{ event.publisher }}" small="{{ true }}" class="gap-1" />
-                                </div>
-                            </div>
+                                </twig:Tabler:ListGroup:Item>
+                            </twig:Tabler:ListGroup>
                         {% elseif event.user %}
-                            <div class="list-group list-group-flush">
-                                <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" title="Les événements de {{ event.user.username }}">
-                                    <span class="avatar">
+                            <twig:Tabler:ListGroup flush>
+                                <twig:Tabler:ListGroup:Item href="{{ path('app_user_index', {id: event.user.id, slug: event.user.slug}) }}" class="d-flex align-items-center gap-2">
+                                    <twig:Tabler:Avatar>
                                         <twig:User:Thumb user="{{ event.user }}" width="{{ 40 }}" height="{{ 40 }}" />
-                                    </span>
-                                    <span>
+                                    </twig:Tabler:Avatar>
+                                    <span title="Les événements de {{ event.user.username }}">
                                         <span class="subheader d-block">Publié par</span>
                                         <strong>{{ event.user.username }}</strong>
                                     </span>
-                                </a>
-                            </div>
+                                </twig:Tabler:ListGroup:Item>
+                            </twig:Tabler:ListGroup>
                         {% endif %}
-                        <div class="card-footer d-flex flex-wrap align-items-center gap-3">
+                        <twig:Tabler:Card:Footer class="d-flex flex-wrap align-items-center gap-3">
                             {% if event.source %}
                                 <div class="small text-secondary">
                                     Source&nbsp;:
@@ -539,17 +531,13 @@
                                     {% endif %}
                                 </div>
                             {% endif %}
-                            <button type="button"
-                                    class="btn btn-sm ms-auto"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalContentRemovalRequest"
-                                    data-removal-url="{{ path('api_event_removal_request', {id: event.id}) }}"
-                                    data-event-url="{{ eventUrl }}">
-                                <twig:Icon name="lucide:flag" />
+                            <twig:Tabler:Button variant="default" size="sm" type="button"
+                                    data-event-id="{{ event.id }}"
+                                    data-event-url="{{ eventUrl }}" class="ms-auto" icon="lucide:flag" modal="modalContentRemovalRequest">
                                 Signaler ce contenu
-                            </button>
-                        </div>
-                    </div>
+                            </twig:Tabler:Button>
+                        </twig:Tabler:Card:Footer>
+                    </twig:Tabler:Card>
 
                     {{ include('comment/list-and-form.html.twig', {event: event, comments: comments, form: commentForm, login: path('app_login', {_target_path: path('app_event_details', eventRoute|merge({_fragment: 'comments'}))})}) }}
                 </div>
@@ -572,15 +560,14 @@
                     {{ include('location/event/_going.html.twig', {intent: false}) }}
                     {% if bestOffer %}
                         <a href="{{ bestOffer.url }}" class="btn btn-primary flex-fill text-truncate" data-analytics-event="ticket-click" data-analytics-seller="{{ bestOffer.seller }}"{% if bestOffer.affiliate %} rel="sponsored"{% else %} target="_blank" rel="noopener nofollow"{% endif %}>
-                            <twig:Icon name="lucide:ticket" />
+                            <twig:Tabler:Icon name="lucide:ticket" />
                             Réserver
                             {%- if bestOffer.priceLabel %} · {{ bestOffer.priceLabel.label }}{% endif %}
                         </a>
                     {% else %}
-                        <button type="button" class="btn flex-fill" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}">
-                            <twig:Icon name="lucide:share-2" />
+                        <twig:Tabler:Button variant="default" type="button" data-share-url="{{ eventUrl }}" data-share-title="{{ eventShortName }}" class="flex-fill" icon="lucide:share-2">
                             Partager
-                        </button>
+                        </twig:Tabler:Button>
                     {% endif %}
                 </div>
             </div>

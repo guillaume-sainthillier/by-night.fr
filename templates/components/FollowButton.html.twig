@@ -13,16 +13,15 @@
 <div {{ attributes.defaults({class: 'd-inline-flex align-items-center gap-2'}) }}>
     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
         {% set following = is_following(target) %}
-        <button type="button" class="btn btn-follow{{ following ? ' btn-primary' }}{{ small ? ' btn-sm' }}"
-                data-href="{{ follow_path(target) }}"
-                data-intent="suivre" aria-pressed="{{ following ? 'true' : 'false' }}">
-            <twig:Icon name="lucide:bell" />
+        <twig:Tabler:Button variant="{{ following ? 'primary' : 'default' }}" size="{{ small ? 'sm' : 'md' }}" class="btn-follow"
+                data-follow="{{ follow_kind(target) }}" data-follow-id="{{ target.id }}"
+                data-intent="suivre" aria-pressed="{{ following ? 'true' : 'false' }}" icon="lucide:bell">
             <span class="btn-follow-label">{{ following ? 'Suivi' : 'Suivre' }}</span>
-        </button>
+        </twig:Tabler:Button>
     {% else %}
         {% set afterLogin = (returnPath ?? app.request.pathInfo) ~ '#suivre' %}
         <a class="btn{{ small ? ' btn-sm' }}" rel="nofollow" href="{{ path('app_login', {_target_path: afterLogin}) }}" title="Connectez-vous pour être prévenu de ses nouveaux événements">
-            <twig:Icon name="lucide:bell" />
+            <twig:Tabler:Icon name="lucide:bell" />
             Suivre
         </a>
     {% endif %}

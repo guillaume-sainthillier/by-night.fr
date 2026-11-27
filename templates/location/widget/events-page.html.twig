@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-md-5 col-lg-4 text-md-end">
                     <a class="link-primary fw-semibold tap-target" href="{{ eventPath }}">
-                        <twig:Icon name="lucide:arrow-left" />
+                        <twig:Tabler:Icon name="lucide:arrow-left" />
                         {{ event.name }}
                     </a>
                 </div>
@@ -55,23 +55,25 @@
                 <div class="d-flex justify-content-between gap-2 mt-4">
                     {% if page > 1 %}
                         <a class="btn" rel="nofollow" href="{{ path(route, routeParams|merge({page: page - 1})) }}">
-                            <twig:Icon name="lucide:chevron-left" />
+                            <twig:Tabler:Icon name="lucide:chevron-left" />
                             Précédentes
                         </a>
                     {% endif %}
                     {% if eventsData.hasNextLink %}
                         <a class="btn btn-primary ms-auto" rel="nofollow" href="{{ eventsData.hasNextLink }}">
                             Suivantes
-                            <twig:Icon name="lucide:chevron-right" />
+                            <twig:Tabler:Icon name="lucide:chevron-right" />
                         </a>
                     {% endif %}
                 </div>
             {% endif %}
         {% else %}
-            <div class="alert alert-info mb-0">
-                Pas d'autre sortie à voir ici pour l'instant.
-                <a href="{{ eventPath }}">Retour à l'événement</a>
-            </div>
+            <twig:Tabler:Alert variant="info" class="mb-0">
+                <twig:block name="description">
+                    Pas d'autre sortie à voir ici pour l'instant.
+                    <a href="{{ eventPath }}">Retour à l'événement</a>
+                </twig:block>
+            </twig:Tabler:Alert>
         {% endif %}
     </twig:Section>
 {% endblock %}

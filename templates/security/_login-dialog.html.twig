@@ -5,33 +5,31 @@
 
     {{ include('security/_login-dialog.html.twig', {id: 'login-dialog', title: '…', text: '…', targetPath: '/…#participer'}) }}
 #}
-<div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ id }}-title" aria-hidden="true">
-    {# Wide enough for the names of the social networks beside their logos #}
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            {# A direct child of the content: Tabler sets it in the corner #}
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            <div class="modal-body text-center p-4">
-                <span class="avatar avatar-lg rounded-circle bg-primary-lt mb-3">
-                    <twig:Icon name="lucide:heart" />
-                </span>
-                <h2 class="h3 mb-2" id="{{ id }}-title">{{ title }}</h2>
-                <p class="text-secondary mb-4">{{ text }}</p>
+{# Read inside the modal's content, where `id`, `title` and `text` are the modal's own props #}
+{% set login = {id: id, title: title, text: text} %}
+{# Wide enough for the names of the social networks beside their logos #}
+<twig:Tabler:Modal id="{{ id }}" centered class="fade" aria-labelledby="{{ id }}-title" aria-hidden="true">
+    {# A direct child of the content: Tabler sets it in the corner #}
+    <twig:Tabler:Modal:Close aria-label="Fermer" />
+    <twig:Tabler:Modal:Body class="text-center p-4">
+        <twig:Tabler:Avatar size="lg" rounded variant="primary" class="mb-3">
+            <twig:Tabler:Icon name="lucide:heart" />
+        </twig:Tabler:Avatar>
+        <h2 class="h3 mb-2" id="{{ login.id }}-title">{{ login.title }}</h2>
+        <p class="text-secondary mb-4">{{ login.text }}</p>
 
-                <twig:Auth:SocialButtons title="Connectez-vous avec" targetPath="{{ targetPath }}" />
-                <twig:Auth:TermsNotice class="mt-2" />
+        <twig:Auth:SocialButtons title="Connectez-vous avec" targetPath="{{ targetPath }}" />
+        <twig:Auth:TermsNotice class="mt-2" />
 
-                <div class="hr-text">ou</div>
+        <div class="hr-text">ou</div>
 
-                <a class="btn btn-primary w-100" rel="nofollow" href="{{ path('app_login', {_target_path: targetPath}) }}">
-                    <twig:Icon name="lucide:mail" />
-                    Se connecter avec mon e-mail
-                </a>
-                <p class="small text-secondary mt-3 mb-0">
-                    Pas encore de compte&nbsp;?
-                    <a class="fw-bold" rel="nofollow" href="{{ path('app_register', {_target_path: targetPath}) }}">Créer un compte gratuitement</a>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
+        <a class="btn btn-primary w-100" rel="nofollow" href="{{ path('app_login', {_target_path: targetPath}) }}">
+            <twig:Tabler:Icon name="lucide:mail" />
+            Se connecter avec mon e-mail
+        </a>
+        <p class="small text-secondary mt-3 mb-0">
+            Pas encore de compte&nbsp;?
+            <a class="fw-bold" rel="nofollow" href="{{ path('app_register', {_target_path: targetPath}) }}">Créer un compte gratuitement</a>
+        </p>
+    </twig:Tabler:Modal:Body>
+</twig:Tabler:Modal>

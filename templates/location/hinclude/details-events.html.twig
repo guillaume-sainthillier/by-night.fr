@@ -15,12 +15,11 @@
         <div class="small text-secondary mb-2">
             {{ shown }} sur {{ '{count, plural, one {# sortie affichée} other {# sorties affichées}}'|trans({count: eventsData.count}, 'messages+intl-icu') }}
         </div>
-        <div class="progress progress-sm mx-auto mb-3 more-progress" role="progressbar" aria-label="Sorties affichées" aria-valuenow="{{ shown }}" aria-valuemin="0" aria-valuemax="{{ eventsData.count }}">
-            <div class="progress-bar" style="width: {{ (shown / eventsData.count * 100)|round }}%"></div>
-        </div>
-        <button type="button" class="btn btn-primary">
-            <twig:Icon name="lucide:circle-plus" />
+        <twig:Tabler:Progress size="sm" class="mx-auto mb-3 more-progress">
+            <twig:Tabler:Progress:Bar value="{{ (shown / eventsData.count * 100)|round }}" aria-label="Sorties affichées" aria-valuetext="{{ shown }} sur {{ eventsData.count }}" />
+        </twig:Tabler:Progress>
+        <twig:Tabler:Button variant="primary" type="button" icon="lucide:circle-plus">
             {{ '{count, plural, one {Voir la sortie suivante} other {Voir les # sorties suivantes}}'|trans({count: next}, 'messages+intl-icu') }}
-        </button>
+        </twig:Tabler:Button>
     </div>
 {% endif %}

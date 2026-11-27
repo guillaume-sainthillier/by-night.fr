@@ -11,9 +11,9 @@
 {% block reset_body %}
     {{ form_start(resetForm) }}
     {{ form_row(resetForm.plainPassword) }}
-    <button class="btn btn-primary btn-lg w-100" type="submit">
+    <twig:Tabler:Button variant="primary" size="lg" block type="submit">
         Enregistrer le mot de passe
-        <twig:Icon name="lucide:check" class="icon-end" />
-    </button>
+        <twig:Tabler:Icon name="lucide:check" class="icon-end" />
+    </twig:Tabler:Button>
     {{ form_end(resetForm) }}
 {% endblock %}

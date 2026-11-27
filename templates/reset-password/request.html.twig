@@ -5,13 +5,13 @@
 
 {% block reset_body %}
     {% for flashError in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+        <twig:Tabler:Alert variant="danger" description="{{ flashError }}" />
     {% endfor %}
 
     {{ form_start(requestForm) }}
     {{ form_row(requestForm.email, {icon_prepend: 'lucide:at-sign', attr: requestForm.email.vars.attr|merge({placeholder: 'vous@exemple.fr'})}) }}
     <p class="small text-secondary d-flex gap-2">
-        <twig:Icon name="lucide:info" class="flex-shrink-0 mt-1" />
+        <twig:Tabler:Icon name="lucide:info" class="flex-shrink-0 mt-1" />
         <span>
             {%- set lifetimeMinutes = tokenLifetime // 60 -%}
             Le lien reste valable
@@ -23,9 +23,9 @@
             Pensez à regarder dans vos courriers indésirables si vous ne le recevez pas d'ici quelques minutes.
         </span>
     </p>
-    <button class="btn btn-primary btn-lg w-100" type="submit">
+    <twig:Tabler:Button variant="primary" size="lg" block type="submit">
         Envoyer le lien de réinitialisation
-        <twig:Icon name="lucide:send" class="icon-end" />
-    </button>
+        <twig:Tabler:Icon name="lucide:send" class="icon-end" />
+    </twig:Tabler:Button>
     {{ form_end(requestForm) }}
 {% endblock %}

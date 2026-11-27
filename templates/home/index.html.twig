@@ -5,7 +5,7 @@
 {% block breadcrumb_widget '' %}
 
 {% block body %}
-    <section class="hero-home py-5" {{ load_page('index', {apiCityURL: url('api_cities', {q: '__QUERY__'}), agendaURL: path('app_location_index', {location: '__LOCATION__'})}) }}>
+    <section class="hero-home py-5" {{ load_page('index') }}>
         <div class="container-lg">
             <div class="row justify-content-center text-center mb-5">
                 <div class="col-lg-9">
@@ -20,29 +20,29 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     {{ form_start(search_form, {attr: {class: 'card card-lg shadow form-city-picker', role: 'search'}}) }}
-                    <div class="card-body">
+                    <twig:Tabler:Card:Body>
                         <div class="row g-3 align-items-end">
                             <div class="col-md-5">
                                 {{ form_label(search_form.term) }}
                                 <div class="input-icon">
-                                    <span class="input-icon-addon"><twig:Icon name="lucide:search" /></span>
+                                    <span class="input-icon-addon"><twig:Tabler:Icon name="lucide:search" /></span>
                                     {{ form_widget(search_form.term, {attr: {class: 'form-control-lg'}}) }}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required" for="home-city">Où sortir&nbsp;?</label>
                                 <div class="input-icon">
-                                    <span class="input-icon-addon"><twig:Icon name="lucide:map-pin" /></span>
+                                    <span class="input-icon-addon"><twig:Tabler:Icon name="lucide:map-pin" /></span>
                                     {# No name: the city goes in the path of the agenda (pages/index.js sets the form action), not in its query #}
                                     <input type="text" id="home-city" class="form-control form-control-lg" placeholder="Toulouse, Lyon, Genève…" value="{{ memberCity.name ?? '' }}" required data-city-name>
                                     <input type="hidden" value="{{ memberCity.slug ?? '' }}" data-city-slug>
                                 </div>
                             </div>
                             <div class="col-md-3 d-grid">
-                                <button class="btn btn-primary btn-lg choose-city-action" type="submit" disabled>
+                                <twig:Tabler:Button variant="primary" size="lg" type="submit" disabled class="choose-city-action">
                                     Explorer
-                                    <twig:Icon name="lucide:arrow-right" class="icon-end" />
-                                </button>
+                                    <twig:Tabler:Icon name="lucide:arrow-right" class="icon-end" />
+                                </twig:Tabler:Button>
                             </div>
                         </div>
                         <div class="mt-4 pt-3 border-top" role="radiogroup" aria-labelledby="home-when">
@@ -53,7 +53,7 @@
                                 {% endfor %}
                             </div>
                         </div>
-                    </div>
+                    </twig:Tabler:Card:Body>
                     {{ form_end(search_form) }}
                 </div>
             </div>

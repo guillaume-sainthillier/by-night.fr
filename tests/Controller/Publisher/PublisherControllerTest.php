@@ -78,7 +78,7 @@ final class PublisherControllerTest extends AppWebTestCase
         $client->loginUser($member);
 
         $client->request('GET', '/organisateurs/le-bikini');
-        self::assertSelectorExists(\sprintf('aside .btn-follow.btn-primary[data-href="/api/publishers/%d/follow"][data-intent="suivre"]', $publisher->getId()));
+        self::assertSelectorExists(\sprintf('aside .btn-follow.btn-primary[data-follow="publisher"][data-follow-id="%d"][data-intent="suivre"]', $publisher->getId()));
         self::assertSelectorTextContains('aside [data-followers]', '2 abonnés');
 
         $client->loginUser($publisher->getOwner());

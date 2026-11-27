@@ -1,3 +1,4 @@
+import { getJson } from '@silarhi/app-js/http'
 import autoComplete from '@tarekraafat/autocomplete.js'
 import { highlightMatch } from '@/js/utils/highlight'
 
@@ -6,7 +7,8 @@ export type AutocompleteRecord = Record<string, unknown>
 
 export interface AutocompleteOptions<T extends AutocompleteRecord> {
     element: string | HTMLInputElement
-    url: string
+    /** The URL of the results of the text typed */
+    url: (query: string) => string
     valueField?: string
     labelField?: string
     valueInput?: string | HTMLInputElement | null
@@ -89,14 +91,8 @@ export function create<T extends AutocompleteRecord = AutocompleteRecord>({
         data: {
             src: async (query) => {
                 fetchError = null
-                const fetchUrl = url.replace('__QUERY__', encodeURIComponent(query))
                 try {
-                    const res = await fetch(fetchUrl, fetchOptions)
-                    if (!res.ok) {
-                        throw new Error(`HTTP ${res.status}`)
-                    }
-                    const data: unknown = await res.json()
-                    return transformResponse(data)
+                    return transformResponse(await getJson<unknown>(url(query), fetchOptions))
                 } catch (error) {
                     fetchError = error
                     if (onError) {

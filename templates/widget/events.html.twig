@@ -20,14 +20,14 @@
     {{ reprise_entry_link_tags('app') }}
 </head>
 <body class="bg-transparent">
-    <div class="card mb-0">
-        <div class="card-header">
+    <twig:Tabler:Card class="mb-0">
+        <twig:Tabler:Card:Header>
             <div class="min-w-0">
                 <h1 class="card-title text-truncate mb-0">Prochains événements</h1>
                 <div class="small text-secondary text-truncate">{{ name }}</div>
             </div>
-        </div>
-        <div class="list-group list-group-flush">
+        </twig:Tabler:Card:Header>
+        <twig:Tabler:ListGroup flush>
             {% for event in events %}
                 {% set session = event.sessionFor %}
                 {% set when = null %}
@@ -42,10 +42,10 @@
                         {% set when = session.startAt|format_date(pattern: 'EEE d MMMM')|capitalize ~ (start ? ' · ' ~ start) %}
                     {% endif %}
                 {% endif %}
-                <a class="list-group-item list-group-item-action d-flex align-items-center gap-3" href="{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})|utm('event') }}">
-                    <span class="avatar avatar-lg rounded overflow-hidden flex-shrink-0">
+                <twig:Tabler:ListGroup:Item action href="{{ url('app_event_details', {slug: event.slug, id: event.id, location: event.locationSlug})|utm('event') }}" class="d-flex align-items-center gap-3">
+                    <twig:Tabler:Avatar size="lg" class="rounded overflow-hidden flex-shrink-0">
                         <twig:Event:Thumb event="{{ event }}" width="{{ 96 }}" class="w-100 h-100 object-fit-cover" loading="lazy" />
-                    </span>
+                    </twig:Tabler:Avatar>
                     <span class="d-block min-w-0">
                         {% if when %}
                             <span class="d-block small text-primary fw-medium text-truncate">{{ when }}</span>
@@ -58,18 +58,18 @@
                             </span>
                         {% endif %}
                         {% if event.status %}
-                            <span class="badge bg-warning-lt mt-1">{{ event.status.label }}</span>
+                            <twig:Tabler:Badge variant="warning" light class="mt-1">{{ event.status.label }}</twig:Tabler:Badge>
                         {% endif %}
                     </span>
-                </a>
+                </twig:Tabler:ListGroup:Item>
             {% else %}
-                <div class="card-body text-secondary">Aucun événement à venir pour le moment.</div>
+                <twig:Tabler:Card:Body class="text-secondary">Aucun événement à venir pour le moment.</twig:Tabler:Card:Body>
             {% endfor %}
-        </div>
-        <div class="card-footer bg-transparent d-flex align-items-center justify-content-between gap-2 small">
+        </twig:Tabler:ListGroup>
+        <twig:Tabler:Card:Footer class="bg-transparent d-flex align-items-center justify-content-between gap-2 small">
             <a href="{{ ownerUrl|utm('agenda') }}">Tout l'agenda</a>
             <a class="text-secondary" href="{{ url('app_index')|utm('brand') }}">Agenda par <strong>By Night</strong></a>
-        </div>
-    </div>
+        </twig:Tabler:Card:Footer>
+    </twig:Tabler:Card>
 </body>
 </html>
